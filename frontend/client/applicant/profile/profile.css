@@ -1,0 +1,485 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Colors */
+:root {
+  --default: #212121;
+  --sec-color: #8b5ec5;
+  --main-color: #532989;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to top, var(--main-color), #dfd9ece5),
+    url("../img/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Navigation */
+header {
+  width: 100%;
+  background-color: #dfd9ec;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.logo1 {
+  width: 55px;
+}
+
+.logo2 {
+  width: 60px;
+}
+
+.logo-text-container {
+  text-align: left;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #002ab4;
+}
+
+.logo-subtext {
+  font-size: 0.9rem;
+  color: var(--main-color);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+#nav-profile-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-profile-pic {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 2px solid; /* Add transparent border */
+  transition: all 0.3s ease; /* Add smooth transition */
+}
+
+.nav-profile-pic:hover {
+  transform: scale(1.1); /* Slightly increase size */
+  box-shadow: 0 0 15px rgba(83, 41, 137, 0.7); /* Glow effect using main color */
+  border-color: var(--main-color); /* Border appears on hover */
+  cursor: pointer;
+}
+
+.nav-profile-pic:active {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(83, 41, 137, 0.5);
+}
+
+.nav ul {
+  list-style-type: none;
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  justify-content: center;
+}
+
+.nav ul li {
+  display: inline;
+  position: relative;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.nav ul li a {
+  color: var(--main-color);
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 10px;
+  position: relative;
+  height: auto;
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: color 0.3s ease-in-out;
+  transition: all 0.3s ease; /* Add smooth transition */
+}
+
+.nav ul li a:hover {
+  transform: scale(1.1); /* Slightly increase size */
+  transition: all 0.3s ease; /* Add smooth transition */
+
+  color: var(--sec-color);
+}
+
+.separator {
+  width: 2px;
+  background-color: var(--main-color);
+}
+
+.icon a {
+  color: var(--main-color);
+  font-size: 24px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  width: 200px;
+  padding: 10px 0;
+  z-index: 100;
+  top: 40px;
+  text-align: center;
+  color: var(--main-color);
+}
+
+/* Dropdown Arrow */
+.dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+}
+
+/* Profile Dropdown Specific Styling */
+.profile-dropdown {
+  width: 150px;
+}
+
+.profile.dropdown .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+}
+
+/* Dropdown Links */
+.dropdown-content a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  color: inherit !important;
+  background-color: #f1f1f1;
+}
+
+/* Show dropdown when active */
+.dropdown.active .dropdown-content {
+  display: block;
+}
+
+/* General Styles */
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  background-color: #f9fafb;
+  color: #333;
+}
+
+/* Container */
+.container {
+  width: 800px;
+  margin: 150px 0 50px;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Header */
+.profile-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* Ensure Profile Info Stays Next to Image */
+.profile-info {
+  flex-grow: 1; /* Prevents shifting */
+  margin-left: 20px;
+}
+
+/* Align Edit Profile Button to the Right */
+.edit-profile-button {
+  padding: 8px 14px;
+  background: var(--main-color);
+  color: white;
+  font-size: 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: absolute;
+  right: 20px; /* Stick to the right */
+  top: 60%; /* Align vertically */
+  transform: translateY(-50%);
+}
+
+.edit-profile-button:hover {
+  background: var(--sec-color);
+}
+
+.profile-pic {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--main-color);
+  transition: transform 0.3s ease;
+}
+
+.profile-pic:hover {
+  transform: scale(1.05);
+}
+
+.profile-pic-container {
+  position: relative;
+  display: inline-block;
+}
+
+.upload-icon {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--main-color);
+  color: white;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+  display: none;
+}
+
+.profile-pic-container.edit-mode .upload-icon {
+  display: block;
+}
+
+.profile-info {
+  margin-left: 20px;
+}
+
+.profile-info h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #222;
+}
+
+.job-title {
+  font-size: 16px;
+  color: #777;
+  margin: 5px 0;
+}
+
+.location {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Edit & Save Button Styling */
+.edit-button,
+.save-button {
+  display: inline-block;
+  padding: 8px 14px;
+  background: var(--main-color);
+  color: white;
+  font-size: 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: absolute;
+  right: 20px; /* Align to the right */
+  bottom: 15px; /* Align to the bottom */
+}
+
+/* Hover Effect */
+.edit-button:hover,
+.save-button:hover {
+  background: var(--sec-color);
+}
+
+.edit-button:hover {
+  background: var(--sec-color);
+}
+
+/* Adjust Section for Bottom Placement */
+.section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 50px; /* Adds space for the button */
+  min-height: 120px;
+}
+
+/* Position Edit Button in Bottom Right */
+.section .edit-button {
+  position: absolute;
+  right: 20px; /* Align to right */
+  bottom: 5px; /* Align to bottom */
+}
+
+.section h2 {
+  font-size: 20px;
+  color: var(--main-color);
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 8px;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+/* Two-column grid inside sections */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Two equal columns */
+  gap: 15px; /* Space between grid items */
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.info-item span:first-child {
+  font-weight: bold;
+  color: #222;
+  font-size: 14px;
+}
+
+.info-item span:last-child {
+  color: #555;
+  font-size: 14px;
+}
+
+.edit-input {
+  width: 100%; /* Adjust width to fit the layout */
+  max-width: 200px; /* Prevents it from being too wide */
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  display: block; /* Ensures inputs stay aligned */
+  background: transparent;
+}
+
+/* Input Field Focus Effect */
+.edit-input:focus {
+  border-color: var(--main-color);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-info {
+    margin-top: 10px;
+  }
+
+  .edit-button {
+    display: block;
+    text-align: center;
+  }
+
+  /* Stack into one column for mobile */
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.iti__selected-dial-code {
+  display: none; /* Hide the country code */
+}
+
+.iti__flag-container {
+  width: 40px; /* Make the dropdown smaller */
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.notification.success {
+  background-color: #4caf50;
+}
+.notification.error {
+  background-color: #f44336;
+}
+.notification.warning {
+  background-color: #ff9800;
+}
+.notification.info {
+  background-color: #2196f3;
+}

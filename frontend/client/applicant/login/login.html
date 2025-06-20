@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ETEEAP Tracking System</title>
+  <link rel="stylesheet" href="login.css" />
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png" />
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img src="../img/RTU Logo.png" class="logo1" />
+      <img src="../img/IFLDE Logo.png" class="logo2" />
+      <div class="logo-text-container">
+        <h2 class="logo-text">Rizal Technological University</h2>
+        <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <ul>
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="../about/about.html">About Us</a></li>
+        <li><a href="../downloads/downloads.html">Downloads</a></li>
+        <li><a href="../news/news.html">News</a></li>
+        <button class="btnLogin-popup">Login</button>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="wrapper">
+    <!-- Login Form -->
+    <div class="form-box login">
+      <h2>Login</h2>
+      <div class="role-tabs">
+        <button class="role-tab active" data-role="applicant">Applicant</button>
+        <button class="role-tab" data-role="assessor">Assessor</button>
+        <button class="role-tab" data-role="admin">Admin</button>
+      </div>
+
+      <!-- Applicant Login -->
+      <form id="applicantLoginForm" class="login-form active" data-role="applicant">
+        <div class="input-box">
+          <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          <input type="email" id="applicantEmail" required />
+          <label>Email</label>
+        </div>
+        <div class="input-box">
+          <input type="password" id="applicantPassword" required />
+          <label>Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <div class="forgot"><a href="#" class="forgot-link">Forgot Password?</a></div>
+        <button type="submit" class="btn">Login</button>
+        <div class="google-btn">
+          <button type="button" class="btn google">
+            <img src="../img/Google Logo.png" alt="Google Logo" /> Continue with Google
+          </button>
+        </div>
+        <div class="login-register">
+          <p>Don't have an account?? <a href="#" class="register-link">Register</a></p>
+        </div>
+      </form>
+
+      <!-- Admin Login -->
+      <form id="adminLoginForm" class="login-form" data-role="admin">
+        <div class="input-box">
+          <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          <input type="email" id="adminEmail" required />
+          <label>Email</label>
+        </div>
+        <div class="input-box">
+          <input type="password" id="adminPassword" required />
+          <label>Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <div class="remember-me">
+          <label><input type="checkbox" id="rememberMe" /> Remember me</label>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <div id="admin-error-message" class="error-message"></div>
+      </form>
+
+      <!-- Assessor Login -->
+      <form id="assessorLoginForm" class="login-form" data-role="assessor">
+        <div class="input-box">
+          <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          <input type="email" id="assessorEmail" required />
+          <label>Email</label>
+        </div>
+        <div class="input-box">
+          <input type="password" id="assessorPassword" required />
+          <label>Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <div id="assessor-error-message" class="error-message"></div>
+      </form>
+    </div>
+
+    <!-- Registration -->
+    <div class="form-box register">
+      <h2>Applicant Registration</h2>
+      <form id="registerForm">
+        <div class="input-box">
+          <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          <input type="email" id="regEmail" required />
+          <label>Email</label>
+        </div>
+        <div class="input-box">
+          <input type="password" id="regPassword" required />
+          <label>Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <div class="input-box">
+          <input type="password" id="confirmPassword" required />
+          <label>Confirm Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <div class="terms">
+          <label>
+            <input type="checkbox" id="terms-checkbox" />
+            I agree to the <a href="#" id="terms-link">terms & conditions</a>
+          </label>
+        </div>
+        <button type="submit" id="register-btn" class="btn">Register</button>
+        <div class="login-register">
+          <p>Already have an account? <a href="#" class="login-link">Login</a></p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Terms & Conditions Modal -->
+    <div id="terms-con" class="terms-con">
+      <div class="terms-content">
+        <h2>Terms and Conditions</h2>
+        <div class="terms-scroll">
+          <p>You confirm that all submitted information is correct.</p>
+          <p>You agree to the rules set by RTU & IFLEDE.</p>
+          <p>You consent to data processing for this application.</p>
+        </div>
+        <button id="accept-btn" class="btn">Accept</button>
+      </div>
+    </div>
+
+    <!-- Forgot Password -->
+    <div class="form-box forgot">
+      <h2>Reset Password</h2>
+      <p>Enter the email associated with your account and we'll send a reset email.</p>
+      <form id="resetForm">
+        <div class="input-box">
+          <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          <input type="email" required id="emailInput" />
+          <label>Email Address</label>
+        </div>
+        <button type="submit" class="btn">Send</button>
+      </form>
+    </div>
+
+    <!-- Verification Code -->
+    <div id="verificationForm" class="form-box verification">
+      <h2>Verification</h2>
+      <form id="verifyCodeForm">
+        <div class="input-box">
+          <span class="icon"><ion-icon name="key"></ion-icon></span>
+          <input type="text" required id="codeInput" />
+          <label>Verification Code</label>
+        </div>
+        <div class="resend-code">
+          <p>Didn't receive a code? <a href="#" class="resend-code">Resend</a></p>
+        </div>
+        <button type="submit" class="btn">Verify</button>
+      </form>
+    </div>
+
+    <!-- New Password -->
+    <div id="newPasswordForm" class="form-box new-password">
+      <h2>New Password</h2>
+      <form id="newPasswordSubmit">
+        <div class="input-box">
+          <input type="password" id="newpassword" required />
+          <label>Enter New Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <div class="input-box">
+          <input type="password" id="confirmNewPassword" required />
+          <label>Confirm Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <button type="submit" class="btn">Reset Password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ✅ Notification (single instance) -->
+  <div class="notification" id="notification" style="display: none;"></div>
+
+  <!-- ✅ Only one script reference -->
+  <script src="login.js"></script>
+</body>
+</html>

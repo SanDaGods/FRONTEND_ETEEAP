@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETEEAP Tracking System</title>
+    <link rel="stylesheet" href="information.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
+        <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
+
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="../img/RTU Logo.png" class="logo1">
+            <img src="../img/IFLDE Logo.png" class="logo2">
+            <div class="logo-text-container">
+                <h2 class="logo-text">Rizal Technological University</h2>
+                <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+      <div class="logo">
+        <img src="../img/RTU Logo.png" alt="RTU Logo" class="rtu-logo">
+        <div class="text">
+          <h2 class="title">Rizal Technological University</h2>
+          <h2 class="sub-title">ETEEAP Initial Screening </h2>
+        </div>
+      </div>
+      <div class="data-privacy">
+        <div class="sub-text">
+          <h4>Data Privacy Notice:</h4>
+          <p>Rizal Technological University is dedicated to protecting your privacy information as required by Data Privacy Act of 2012.</p>
+        </div>
+      </div>
+
+      <hr>
+
+      <h2>Personal Information</h2>
+      <form id="personalForm">
+          <div class="name">
+              <div class="input">
+                  <input type="text" id="firstname" name="firstname" value="Juan" required>
+                  <label for="firstname">First Name</label>
+              </div>
+              <div class="input">
+                  <input type="text" id="middlename" name="middlename" value="Dela">
+                  <label for="middlename">Middle Name</label>
+              </div>
+              <div class="input">
+                  <input type="text" id="lastname" name="lastname" value="Cruz" required>
+                  <label for="lastname">Last Name</label>
+              </div>
+              <div class="input suffix">
+                  <input type="text" id="suffix" name="suffix" value="Jr.">
+                  <label for="suffix">Suffix</label>
+              </div>
+          </div>
+
+          <div class="additional-info">
+            <div class="input gender">
+                <select id="gender" name="gender" required>
+                    <option value="male" selected>Male</option>
+                    <option value="female">Female</option>
+                </select>
+                <label for="gender">Gender</label>
+            </div>
+            <div class="input age">
+              <input type="number" id="age" name="age" value="30" required>
+              <label for="age">Age</label>
+          </div>
+            <div class="input">
+                <input type="text" id="occupation" name="occupation" value="Software Developer" required>
+                <label for="occupation">Occupation</label>
+            </div>
+            <div class="input">
+                <input type="text" id="nationality" name="nationality" value="Filipino" required>
+                <label for="nationality">Nationality</label>
+            </div>
+            <div class="input">
+                <select id="civilstatus" name="civilstatus" required>
+                    <option value="single" selected>Single</option>
+                    <option value="married">Married</option>
+                    <option value="widowed">Widowed</option>
+                    <option value="divorced">Divorced</option>
+                </select>
+                <label for="civilstatus">Civil Status</label>
+            </div>
+          </div>
+
+          <hr>
+
+          <h2>Birth Date / Place</h2>
+          <div class="birth-info">
+              <div class="input birth">
+                  <input type="date" id="birth-date" name="birth-date" value="1993-05-15" required>
+                  <label for="birth-date">Birth Date</label>
+              </div>
+              <div class="input">
+                  <input type="text" id="birthplace" name="birthplace" value="Manila, Philippines" required>
+                  <label for="birthplace">Birth Place</label>
+              </div>
+          </div>
+
+
+          <hr>
+
+          <h2>Contact Information</h2>
+          <div class="contact-info">
+              <div class="input">
+                  <input type="tel" id="mobile-number" name="mobile-number" value="09171234567" required>
+                  <label for="mobile-number">Mobile Number</label>
+              </div>
+              <div class="input">
+                  <input type="number" id="telephone-number" name="telephone-number" value="0287654321">
+                  <label for="telephone-number">Telephone Number</label>
+              </div>
+              <div class="input">
+                  <input type="email" id="email-address" name="email-address" value="juan.delacruz@example.com" required>
+                  <label for="email-address">Email Address</label>
+              </div>
+          </div>
+
+          <hr>
+
+          <h2>Home Address</h2>
+          <div class="address">
+            <div class="input">
+                <input type="text" id="country" name="country" value="Philippines" required>
+                <label for="country">Country</label>
+            </div>
+            <div class="input">
+              <input type="text" id="province" name="province" value="Metro Manila" required>
+              <label for="province">Province/State</label>
+            </div>
+            <div class="input">
+              <input type="text" id="city" name="city" value="Mandaluyong City" required>
+              <label for="city">City</label>
+            </div>
+          </div>
+
+          <div class="additional-address">
+            <div class="input street">
+              <input type="text" id="street" name="street" value="123 Pioneer Street" required>
+              <label for="street">Street</label>
+            </div>
+            <div class="input zip-code">
+              <input type="number" id="zip-code" name="zip-code" value="1550" required>
+              <label for="zip-code">Zip-Code</label>
+            </div>
+          </div>
+
+          <hr>
+
+          <h2>Course</h2>
+          <div class="course">
+            <div class="input">
+              <label for="First-prio">First Priority</label>
+              <select id="First-prio" name="First-prio" required>
+                  <option value="BS Information Technology" selected>Bachelor of Science in Information Technology</option>
+                  <option value="BS Entrepreneurship">Bachelor of Science in Entrepreneurship</option>
+                  <option value="BS Office Administration">Bachelor of Science in Office Administration</option>
+                  <option value="BSBA Operations Management">Bachelor of Science in Business Administration major in Operations Management</option>
+                  <option value="BSBA Marketing Management">Bachelor of Science in Business Administration major in Marketing Management</option>
+                  <option value="BSBA Financial Management">Bachelor of Science in Business Administration major in Financial Management</option>
+                  <option value="BSBA Human Resource Management">Bachelor of Science in Business Administration major in Human Resource Management</option>
+                  <option value="BS Political Science">Bachelor of Science in Political Science</option>
+                  <option value="BS Statistics">Bachelor of Science in Statistics</option>
+                  <option value="BS Biology">Bachelor of Science in Biology</option>
+                  <option value="BS Astronomy">Bachelor of Science in Astronomy</option>
+              </select>
+            </div>
+            <div class="input">
+              <label for="second-prio">Second Priority</label>
+              <select id="second-prio" name="second-prio" required>
+                  <option value="BSBA Human Resource Management" selected>Bachelor of Science in Business Administration major in Human Resource Management</option>
+                  <option value="BS Information Technology">Bachelor of Science in Information Technology</option>
+                  <option value="BS Entrepreneurship">Bachelor of Science in Entrepreneurship</option>
+                  <option value="BS Office Administration">Bachelor of Science in Office Administration</option>
+                  <option value="BSBA Operations Management">Bachelor of Science in Business Administration major in Operations Management</option>
+                  <option value="BSBA Marketing Management">Bachelor of Science in Business Administration major in Marketing Management</option>
+                  <option value="BSBA Financial Management">Bachelor of Science in Business Administration major in Financial Management</option>
+                  <option value="BS Political Science">Bachelor of Science in Political Science</option>
+                  <option value="BS Statistics">Bachelor of Science in Statistics</option>
+                  <option value="BS Biology">Bachelor of Science in Biology</option>
+                  <option value="BS Astronomy">Bachelor of Science in Astronomy</option>
+              </select>
+            </div>
+            <div class="input">
+              <label for="third-prio">Third Priority</label>
+              <select id="third-prio" name="third-prio" required>
+                  <option value="BSBA Operations Management" selected>Bachelor of Science in Business Administration major in Operations Management</option>
+                  <option value="BS Information Technology">Bachelor of Science in Information Technology</option>
+                  <option value="BS Entrepreneurship">Bachelor of Science in Entrepreneurship</option>
+                  <option value="BS Office Administration">Bachelor of Science in Office Administration</option>
+                  <option value="BSBA Marketing Management">Bachelor of Science in Business Administration major in Marketing Management</option>
+                  <option value="BSBA Financial Management">Bachelor of Science in Business Administration major in Financial Management</option>
+                  <option value="BSBA Human Resource Management">Bachelor of Science in Business Administration major in Human Resource Management</option>
+                  <option value="BS Political Science">Bachelor of Science in Political Science</option>
+                  <option value="BS Statistics">Bachelor of Science in Statistics</option>
+                  <option value="BS Biology">Bachelor of Science in Biology</option>
+                  <option value="BS Astronomy">Bachelor of Science in Astronomy</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="submit">
+            <button type="submit">Next Page</button>
+          </div>
+      </form>
+  </div>
+
+  <script src="information.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

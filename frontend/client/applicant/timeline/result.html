@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ETEEAP Tracking System</title>
+    <link rel="stylesheet" href="result.css" />
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png" />
+  </head>
+  <body>
+    <header>
+      <div class="logo-container">
+        <img src="../img/RTU Logo.png" class="logo1" />
+        <img src="../img/IFLDE Logo.png" class="logo2" />
+        <div class="logo-text-container">
+          <h2 class="logo-text">Rizal Technological University</h2>
+          <p class="logo-subtext">
+            Institute of Flexible Learning & Digital Education
+          </p>
+        </div>
+        <nav class="nav">
+          <ul>
+            <li><a href="../timeline/timeline.html">Home</a></li>
+            <li><a href="../portfolio/portfolio.html">Portfolio</a></li>
+            <li class="separator"></li>
+
+            <!-- Messages Dropdown -->
+            <li class="icon dropdown">
+              <a href="#" class="dropdown-toggle"
+                ><i class="fa-solid fa-envelope"></i
+              ></a>
+              <div class="dropdown-content">
+                <p>No new messages</p>
+              </div>
+            </li>
+
+            <!-- Notifications Dropdown -->
+            <li class="icon dropdown">
+              <a href="#" class="dropdown-toggle"
+                ><i class="fa-solid fa-bell"></i
+              ></a>
+              <div class="dropdown-content">
+                <p>No new notifications</p>
+              </div>
+            </li>
+
+            <!-- Profile Dropdown -->
+            <li class="profile dropdown">
+              <a href="#" class="dropdown-toggle">
+                <img
+                  id="nav-profile-pic"
+                  class="nav-profile-pic"
+                  src="../img/default.jpg"
+                  alt="Profile"
+                />
+                <span id="nav-profile-name">Applicant</span>
+              </a>
+              <div class="dropdown-content profile-dropdown">
+                <a href="../profile/profile.html"
+                  ><i class="fa-solid fa-user"></i> Profile</a
+                >
+                <a href="#" id="logout"
+                  ><i class="fa-solid fa-sign-out-alt"></i> Logout</a
+                >
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container">
+      <h1>Results:</h1>
+      <hr />
+      <div id="error-message"></div>
+      <div class="results">
+        <h2 id="applicantName">Loading...</h2>
+        <hr />
+        <div class="score-line">
+          <p>Educational Qualifications:</p>
+          <p class="score" id="eduScore">0/20</p>
+        </div>
+        <div class="score-line">
+          <p>Work Experience:</p>
+          <p class="score" id="workScore">0/40</p>
+        </div>
+        <div class="score-line">
+          <p>Professional Achievements:</p>
+          <p class="score" id="achieveScore">0/25</p>
+        </div>
+        <div class="score-line">
+          <p>Interview:</p>
+          <p class="score" id="interviewScore">0/15</p>
+        </div>
+      </div>
+      <hr />
+      <div class="remarks-line">
+        <p class="remarks-text">
+          <strong>Remarks:</strong>
+          <span class="remarks" id="remarks">Loading...</span>
+        </p>
+        <p class="total-score" id="totalScore">
+          <strong>Total Score: Loading...</strong>
+        </p>
+      </div>
+      <hr />
+      <p class="department-course" id="departmentCourse">
+        <strong>Courses:</strong> Loading...
+      </p>
+    </div>
+
+    <div id="loading" style="display: none">
+      <i class="fas fa-spinner fa-spin fa-3x" style="color: #532989"></i>
+    </div>
+
+    <script src="./result.js"></script>
+
+    <link rel="stylesheet" href="../../shared/js/common/navprofile.css" />
+    <script src="../../shared/js/common/navprofile.js"></script>
+    <script src="../../shared/js/auth.js"></script>
+  </body>
+</html>

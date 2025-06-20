@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETEEAP Tracking System</title>
+  <style>
+   /* General Reset for consistent styling across browsers */
+   * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* General body styling */
+    body {
+      font-family: Poppins, sans-serif;
+    }
+
+    /* Styles for the main registration page */
+    .register-page {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100vh; /* Full viewport height */
+      position: relative;
+    }
+
+    /* Container for the entire page */
+    .page-container {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%; /* Full height of the page */
+      width: 100%;
+      align-items: center;
+      padding-bottom: 78px; /* For spacing at the bottom */
+    }
+
+    /* Styling for the background image */
+    .background-image {
+      position: absolute;
+      inset: 0; /* Covering entire area */
+      height: 100%;
+      width: 100%;
+      object-fit: cover; /* Ensures the image fills the container */
+      object-position: center;
+      z-index: -1; /* Places it behind other content */
+    }
+
+    /* Header section styling */
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 5%; /* Adds padding on all sides, horizontal responsive */
+      background-color: #fff; /* White background */
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); /* Subtle shadow effect */
+      width: 100%;
+      z-index: 10; /* Keeps it above the background image */
+    }
+
+    /* Container for the logos and text in the header */
+    .logo-container {
+      display: flex;
+      gap: 10px; /* Adds spacing between logo and text */
+      align-items: center;
+    }
+
+    /* Styling for the primary logo (RTU logo) */
+    .logo-primary {
+      aspect-ratio: 1.02; /* Keeps the image proportional */
+      object-fit: contain; /* Prevents distortion */
+      width: 49px; /* Fixed width */
+      border-radius: 50%; /* Circular shape */
+    }
+
+    /* Styling for the secondary logo (IFLeD logo) */
+    .logo-secondary {
+      aspect-ratio: 1; /* Square aspect ratio */
+      object-fit: contain;
+      width: 55px;
+    }
+
+    /* Styling for the header text (university and institute names) */
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      font-weight: 500; /* Medium weight font */
+      color: #4C308F; /* Dark purple */
+    }
+
+    /* Specific color for the university name */
+    .university-name {
+      color: #002AB4; /* Blue color */
+    }
+
+    /* Specific color for the institute name */
+    .institute-name {
+      color: #482C8D; /* Purple shade */
+    }
+
+    /* Navigation menu styling */
+    .nav-menu {
+      display: flex;
+      gap: 20px; /* Spacing between navigation items */
+      font-weight: 700; /* Bold font */
+      color: #4C308F; /* Dark purple */
+    }
+
+    /* Individual navigation items */
+    .nav-item {
+      white-space: nowrap; /* Prevents text wrapping */
+      cursor: pointer;
+      text-decoration: none; /* Removes underline */
+      color: #482C8D; /* Matches the color of the university name */
+    }
+
+    /* Hover effect for navigation items */
+    .nav-item:hover {
+      color: #351F6A; /* Slightly darker shade */
+    }
+
+    /* Styling for the banner section (if used) */
+    .banner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff; /* White text for contrast */
+      gap: 20px; /* Spacing between elements */
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    /* Styling for the banner logo (if used) */
+    .banner-logo {
+      width: 100px;
+      height: auto;
+      background: none; /* Ensures no background is applied */
+      box-shadow: none; /* Remove any unnecessary shadow */
+    }
+
+    /* Banner text container */
+    .banner-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Main system title in the banner */
+    .system-title {
+      font-size: 35px;
+      font-weight: 700; /* Bold text */
+    }
+
+    /* University title styling */
+    .university-title {
+      font-size: 30px;
+      font-family: 'Poltawski Nowy', sans-serif;
+    }
+
+    /* Placeholder for page content */
+    .content-placeholder {
+      background-color: #fff; /* White card-like background */
+      border-radius: 25px; /* Rounded corners */
+      box-shadow: 0 4px 4px 2px rgba(0, 0, 0, 0.25); /* Card shadow */
+      width: 90%; /* Takes up most of the width */
+      max-width: 400px; /* Limits maximum width */
+      padding: 25px; /* Inner spacing */
+      color: #4C308F; /* Dark purple text */
+      margin: 20px 0; /* Vertical spacing */
+      text-align: center; /* Centered text */
+    }
+
+    /* Styling for content placeholder headings */
+    .content-placeholder h3 {
+      font-size: 32px;
+      font-weight: 700; /* Bold heading */
+      margin-bottom: 20px; /* Space below heading */
+    }
+
+    /* Paragraphs within the content placeholder */
+    .content-placeholder p {
+      font-size: 16px; /* Regular paragraph size */
+    }
+
+    /* Responsive styles for smaller screens */
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center items */
+      }
+
+      .nav-menu {
+        flex-direction: column; /* Stack navigation items vertically */
+        align-items: center; /* Center items */
+        margin-top: 10px; /* Space above menu */
+      }
+
+      .content-placeholder {
+        width: 100%; /* Use full width for smaller screens */
+        padding: 20px; /* Adjust padding */
+      }
+
+      .banner-logo {
+        width: 80px; /* Smaller banner logo */
+      }
+
+      .system-title {
+        font-size: 28px; /* Smaller title text */
+      }
+
+      .university-title {
+        font-size: 24px; /* Smaller university title */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Main registration page container -->
+  <div class="register-page">
+    <div class="page-container">
+      <!-- Background image -->
+      <img class="background-image" src="../images/background.png" alt="Background Image" />
+    
+      <!-- Header section -->
+      <header class="header-container">
+        <div class="logo-container">
+          <!-- RTU Logo -->
+          <img class="logo-primary" src="../images/rtulogo.png" alt="RTU Logo"/>
+          <!-- IFLeD Logo -->
+          <img class="logo-secondary" src="../images/ifldelogo.png" alt="IFLeD Logo"  />
+          <!-- Header text for university and institute -->
+          <div class="header-text">
+            <div class="university-name">Rizal Technological University</div>
+            <div class="institute-name">Institute of Flexible Learning & Digital Education</div>
+          </div>
+        </div>
+        <!-- Navigation menu -->
+        <nav class="nav-menu">
+          <a href="#" class="nav-item">Home</a>
+          <a href="#" class="nav-item">About Us</a>
+          <a href="#" class="nav-item">Downloads</a>
+          <a href="#" class="nav-item">Services</a>
+          <a href="#" class="nav-item">News</a>
+        </nav>
+      </header>
+    </div>
+  </div>
+</body>
+</html>

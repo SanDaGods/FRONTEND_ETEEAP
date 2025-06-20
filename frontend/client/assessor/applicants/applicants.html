@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Applicants - ETEEAP</title>
+    <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./applicants.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!--Sidebar-->
+      <div class="sidebar">
+        <div class="logo">
+          <img src="/images/ifldelogo.png" class="iflde" />
+          ETEEAP
+        </div>
+
+        <div class="nav-item" data-section="dashboard">
+          <a href="../dashboard/dashboard.html">
+            <i class="fas fa-chart-pie"></i>
+            Dashboard
+          </a>
+        </div>
+
+        <div class="nav-item" data-section="dashboard">
+          <a href="../dashboard/dashboard.html">
+            <i class="fas fa-users"></i>
+            Applicants
+          </a>
+        </div>
+      </div>
+
+      <!--Main Content-->
+      <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search applicants..."
+              id="searchInput"
+            />
+          </div>
+
+          <div class="user-profile">
+            <div class="profile-dropdown">
+              <div class="user-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <span class="username">Loading...</span>
+              <!-- This will be replaced -->
+              <i class="fas fa-caret-down dropdown-toggle"></i>
+              <div class="dropdown-menu">
+                <a href="../profile/profile.html" class="dropdown-item">
+                  <i class="fas fa-user"></i>
+                  Profile
+                </a>
+
+                <a href="#" class="dropdown-item" id="logoutLink">
+                  <i class="fas fa-sign-out-alt"></i>
+                  Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Applicants Section -->
+        <div id="applicantsSection" class="section active">
+          <div class="applicant-list">
+            <div class="table-header">
+              <h2>Applicant Management</h2>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Course</th>
+                  <th>Date of Assigned</th>
+                  <th>Status</th>
+                  <th>Score</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="applicantTableBody">
+                <!-- Will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+      <div class="spinner"></div>
+    </div>
+
+    <script src="../../shared/js/auth.js"></script>
+    <script src="./applicants.js"></script>
+  </body>
+</html>

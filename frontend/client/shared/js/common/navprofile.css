@@ -1,0 +1,73 @@
+#nav-profile-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-profile-pic {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 2px solid; /* Add transparent border */
+  transition: all 0.3s ease; /* Add smooth transition */
+}
+
+.nav-profile-pic:hover {
+  transform: scale(1.1); /* Slightly increase size */
+  box-shadow: 0 0 15px rgba(83, 41, 137, 0.7); /* Glow effect using main color */
+  border-color: var(--main-color); /* Border appears on hover */
+  cursor: pointer;
+}
+
+.nav-profile-pic:active {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(83, 41, 137, 0.5);
+}
+
+.profile.dropdown .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+}
+/* Base dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  padding: 10px;
+  z-index: 999;
+  right: 0;
+  top: 100%;
+}
+
+/* Show dropdown when toggled */
+.dropdown-content.show {
+  display: block;
+}
+
+/* Position fix for different dropdowns */
+.nav ul {
+  position: relative;
+}
+
+.icon.dropdown,
+.profile.dropdown {
+  position: relative;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.3s;
+}
+
+.dropdown-content a:hover {
+  background-color: #f0f0f0;
+}

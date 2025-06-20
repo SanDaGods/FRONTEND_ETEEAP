@@ -1,0 +1,294 @@
+/* Reset for box sizing, margin, and padding */
+* {
+  box-sizing: border-box; /* Makes width/height include padding and border */
+  margin: 0; /* Removes default margin */
+  padding: 0; /* Removes default padding */
+}
+
+/* Base font styling for the page */
+body {
+  font-family: Poppins, sans-serif; /* Sets font family */
+}
+
+/* Main container for page layout */
+.page-container {
+  display: flex; /* Enables flexible layout */
+  flex-direction: column; /* Arranges children vertically */
+  position: relative; /* Allows absolute positioning of children */
+  height: 100%; /* Full height of parent */
+  width: 100%; /* Full width of parent */
+  align-items: center; /* Centers content horizontally */
+  padding-bottom: 78px; /* Adds spacing at the bottom */
+}
+
+/* Full-screen background image styling */
+.background-image {
+  position: absolute; /* Fills the entire container */
+  inset: 0; /* Covers all edges */
+  height: 100%; /* Full height */
+  width: 100%; /* Full width */
+  object-fit: cover; /* Ensures image covers container */
+  object-position: center; /* Centers the image */
+  z-index: -1; /* Places it behind other content */
+}
+
+/* Header section styling */
+.header-container {
+  display: flex; /* Aligns items horizontally */
+  justify-content: space-between; /* Space between left and right content */
+  align-items: center; /* Centers content vertically */
+  padding: 10px 5%; /* Adds padding on all sides */
+  background-color: #fff; /* White background */
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); /* Subtle shadow effect */
+  width: 100%; /* Full width of the page */
+  z-index: 10; /* Ensures it stays above background */
+}
+
+/* Logo container for header */
+.logo-container {
+  display: flex; /* Horizontal alignment of logos */
+  gap: 10px; /* Spacing between logos */
+  align-items: center; /* Centers logos vertically */
+}
+
+/* Primary logo styling */
+.logo-primary {
+  aspect-ratio: 1.02; /* Maintains aspect ratio */
+  object-fit: contain; /* Ensures logo fits within bounds */
+  width: 49px; /* Fixed width */
+  border-radius: 50%; /* Makes logo circular */
+}
+
+/* Secondary logo styling */
+.logo-secondary {
+  aspect-ratio: 1; /* Maintains aspect ratio */
+  object-fit: contain; /* Ensures logo fits within bounds */
+  width: 55px; /* Fixed width */
+}
+
+/* Header text styling */
+.header-text {
+  display: flex; /* Aligns text vertically */
+  flex-direction: column;
+  font-weight: 500; /* Medium font weight */
+  color: #4C308F; /* Purple color */
+}
+
+/* Specific styling for university and institute names */
+.university-name {
+  color: #002AB4; /* Blue color */
+}
+.institute-name {
+  color: #482C8D; /* Purple color */
+}
+
+/* Navigation menu styling */
+.nav-menu {
+  display: flex; /* Aligns items horizontally */
+  gap: 20px; /* Space between menu items */
+  font-weight: 700; /* Bold text */
+  color: #4C308F; /* Purple color */
+}
+
+/* Individual navigation item styling */
+.nav-item {
+  white-space: nowrap; /* Prevents text wrapping */
+  cursor: pointer; /* Pointer cursor for hover */
+  text-decoration: none; /* Removes underline */
+  color: #482C8D; /* Purple text */
+  font-size: 20px; /* Set consistent font size */
+}
+
+/* Navigation item hover effect */
+.nav-item:hover {
+  color: #351F6A; /* Darker purple on hover */
+}
+
+/* Banner section styling */
+.banner-container {
+  display: flex; /* Horizontal alignment */
+  justify-content: center; /* Centers content */
+  align-items: center; /* Centers items vertically */
+  text-align: center; /* Centers text */
+  color: #fff; /* White text */
+  gap: 20px; /* Space between items */
+  width: 100%; /* Full width */
+  margin-top: 20px; /* Space above the banner */
+}
+
+/* Banner logo styling */
+.banner-logo {
+  width: 100px; /* Fixed width */
+  height: auto; /* Adjusts height proportionally */
+  background: none; /* No background color */
+  box-shadow: none; /* Removes shadow */
+}
+
+/* Banner text styling */
+.banner-text {
+  display: flex; /* Vertical alignment */
+  flex-direction: column;
+  align-items: center; /* Centers text */
+}
+
+/* Main system title styling */
+.system-title {
+  font-size: 35px; /* Large font size */
+  font-weight: 700; /* Bold text */
+}
+
+/* University title styling */
+.university-title {
+  font-size: 30px; /* Large font size */
+  font-family: 'Poltawski Nowy', sans-serif; /* Custom font */
+}
+
+/* Shared styling for login, register, and forgot password forms */
+.login-form-container,
+.register-form-container,
+.forgot-password-form-container {
+  background-color: #fff; /* White background */
+  border-radius: 25px; /* Rounded corners */
+  box-shadow: 0 4px 4px 2px rgba(0, 0, 0, 0.25); /* Subtle shadow */
+  width: 90%; /* Relative width */
+  max-width: 400px; /* Maximum width */
+  padding: 25px; /* Space inside the form */
+  color: #4C308F; /* Purple text */
+  margin: 20px 0; /* Space around the form */
+}
+
+/* Shared styling for form headings */
+.login-heading,
+.register-heading,
+.forgot-password-heading {
+  font-size: 32px; /* Large font size */
+  font-weight: 700; /* Bold text */
+  text-align: center; /* Center align text */
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+/* Form group styling for spacing */
+.form-group {
+  margin-top: 20px; /* Adds space between fields */
+}
+
+/* Input field styling */
+.form-input {
+  border-radius: 6px; /* Rounded corners */
+  background-color: #fdfdfd; /* Light gray background */
+  margin-top: 8px; /* Space above the input */
+  color: #bcbcbc; /* Gray placeholder text */
+  text-align: center; /* Centers text inside input */
+  padding: 10px; /* Padding inside input */
+  border: 1px solid #ccc; /* Light gray border */
+  width: 100%; /* Full width */
+}
+
+/* Links for forgot password and register */
+.forgot-password,
+.register-link {
+  font-size: 12px; /* Smaller font size */
+  display: block; /* Block layout for spacing */
+  text-align: center; /* Center align text */
+  margin-top: 20px; /* Space above the link */
+  color: #4C308F; /* Purple text */
+}
+
+/* Button styling for login, register, and reset */
+.login-button,
+.register-button,
+.reset-button {
+  background-color: #4C308F; /* Purple background */
+  color: white; /* White text */
+  font-weight: 700; /* Bold text */
+  padding: 10px; /* Padding inside the button */
+  border-radius: 20px; /* Rounded corners */
+  border: none; /* Removes border */
+  width: 100%; /* Full width */
+  cursor: pointer; /* Pointer cursor */
+  margin-top: 20px; /* Space above the button */
+  font-size: 16px; /* Medium font size */
+}
+
+/* Google login button styling */
+.google-login {
+  display: flex; /* Aligns content horizontally */
+  align-items: center; /* Centers items vertically */
+  justify-content: center; /* Centers content horizontally */
+  background-color: white; /* White background */
+  border: 1px solid #492D8D; /* Purple border */
+  border-radius: 20px; /* Rounded corners */
+  width: 100%; 
+  padding: 10px; /* Space inside button */
+  margin-top: 10px; /* Space above button */
+  cursor: pointer; /* Pointer cursor */
+}
+
+/* Google icon styling */
+.google-icon {
+  width: 25px; /* Fixed width */
+  margin-right: 10px; /* Space to the right of the icon */
+}
+
+/* Google text styling */
+.google-text {
+  font-size: 14px; /* Medium font size */
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 768px) {
+  /* Adjust header layout */
+  .header-container {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center align items */
+  }
+
+  /* Adjust navigation menu */
+  .nav-menu {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center align items */
+    margin-top: 10px; /* Space above the menu */
+  }
+
+  /* Adjust form containers */
+  .login-form-container,
+  .register-form-container,
+  .forgot-password-form-container {
+    width: 100%; /* Full width */
+    padding: 20px; /* Reduced padding */
+  }
+
+  /* Adjust banner logo size */
+  .banner-logo {
+    width: 80px; /* Smaller width */
+  }
+
+  /* Adjust system title font size */
+  .system-title {
+    font-size: 28px; /* Smaller font size */
+  }
+
+  /* Adjust university title font size */
+  .university-title {
+    font-size: 24px; /* Smaller font size */
+  }
+}
+
+/* Styling for links globally */
+a {
+  text-decoration: none; /* Removes underline from links */
+}
+
+
+.error-message {
+  display: none;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.register-form-container {
+  position: relative;
+}

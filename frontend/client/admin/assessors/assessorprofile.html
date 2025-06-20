@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RTU ETEEAP - Admin Assessor Profile</title>
+  <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="AssessorProfile.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+     <div class="container">
+    <!--Sidebar--->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="../IFLDE Logo.png" class="iflde">
+        ETEEAP
+      </div>
+      <div class="nav-item" data-section="dashboard">
+        <a href="../dashboard/dashboard.html">
+        <i class="fas fa-chart-pie"></i>
+        Dashboard
+      </a>
+      </div>
+      <div class="nav-item" data-section="students">
+        <a href="../applicants/applicants.html">
+        <i class="fas fa-users"></i>
+        Applicants
+      </a>
+      </div>
+      <div class="nav-item active" data-section="assessors">
+        <a href="../assessors/assessor.html">
+        <i class="fas fa-users"></i>
+        Assessors
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="courses">
+        <a href="../courses/course.html">
+        <i class="fas fa-book"></i>
+        Courses
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="files">
+        <a href="../documents/docs.html">
+        <i class="fas fa-file"></i>
+        Files
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="users">
+        <a href="../admins/admin.html">
+        <i class="fas fa-user"></i>
+        Admins
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="logs">
+        <a href="../activitylogs/logs.html">
+        <i class="fas fa-clock"></i>
+        Activity Logs
+      </a>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="evaluation-title">Assessor Profile</div>
+        
+        <div class="user-profile">
+          <div class="profile-dropdown">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <span class="username">Admin</span>
+            <i class="fas fa-caret-down dropdown-toggle"></i>
+            <div class="dropdown-menu">
+              <a href="/Frontend/Admin/Admis/AdminProfile.html" class="dropdown-item">
+                <i class="fas fa-user"></i> Profile
+              </a>
+              <a href="#" class="dropdown-item">
+                <i class="fas fa-cog"></i> Settings
+              </a>
+              <a href="/Frontend/AdminSide/1.adminLogin/adminlogin.html" class="dropdown-item" id="logoutLink">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back Button -->
+      <div class="back-button-container">
+        <button class="back-button" onclick="window.history.back()">
+          <i class="fas fa-arrow-left"></i> Back to Assessors
+        </button>
+      </div>
+
+      <!-- Profile Content -->
+      <div class="profile-content">
+        <div class="profile-card">
+          <div class="profile-header">
+            <h2>Assessor Information</h2>
+            <div class="profile-actions">
+              <button class="action-btn edit-btn" id="editAssessorBtn">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="action-btn delete-btn" id="deleteAssessorBtn">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-picture-container">
+              <div class="profile-picture">
+                <i class="fas fa-user-circle"></i>
+              </div>
+            </div>
+            <div class="profile-details">
+              <div class="detail-item">
+                <span class="detail-label">Assessor ID:</span>
+                <span class="detail-value" id="assessorId">Loading...</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Full Name:</span>
+                <span class="detail-value" id="fullName">Loading...</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value" id="email">Loading...</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Expertise:</span>
+                <span class="detail-value" id="expertise">Loading...</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Assessor Type:</span>
+                <span class="detail-value" id="assessorType">Loading...</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" id="status">Loading...</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Member Since:</span>
+                <span class="detail-value" id="createdAt">Loading...</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Last Login:</span>
+                <span class="detail-value" id="lastLogin">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assessor's Applicants Section -->
+        <div class="applicants-section">
+          <h3>Current Applicants Assigned</h3>
+          <div class="applicants-list" id="assignedApplicantsList">
+            <!-- Will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteConfirmationModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Confirm Deletion</h2>
+          <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this assessor? This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="action-btn" onclick="closeDeleteModal()">Cancel</button>
+          <button class="action-btn delete-btn" onclick="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script src="../../shared/js/auth.js"></script>
+    <script src="./AssessorProfile.js"></script>
+ 
+  </div>
+</body>
+</html>

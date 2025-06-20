@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETEEAP Tracking System</title>
+    <link rel="stylesheet" href="downloads.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="../img/RTU Logo.png" class="logo1">
+            <img src="../img/IFLDE Logo.png" class="logo2">
+            <div class="logo-text-container">
+                <h2 class="logo-text">Rizal Technological University</h2>
+                <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+            </div>
+        </div>
+        <nav class="nav">
+            <ul>
+                <li><a href="../../../../index.html">Home</a></li>
+                <li><a href="../about/about.html">About Us</a></li>
+                <li><a href="../downloads/downloads.html">Downloads</a></li>
+                <li><a href="../news/news.html">News</a></li>
+                <button class="btnLogin-popup" onclick="window.location.href='../login/login.html';">Login</button>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="container-boxes">
+            <div class="box"> 
+                <h3>Application Form</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-APPLICATION-FORM.docx" download>Download</a>
+            </div>
+            <div class="box">
+                <h3>Application Letter</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-APPLICATION-LETTER.docx" download>Download</a>
+            </div>
+            <div class="box">
+                <h3>Acknowledgement Form</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-Acknowledgement-Form-agreeing-to-comply-with-residency-and-enrollment-policies.docx" download>Download</a>
+            </div>
+            <div class="box">
+                <h3>Interview Form</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-Interview-Form.docx" download>Download</a>
+            </div>
+            <div class="box"> 
+                <h3>Pre-Evaluation Form</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-Pre-Evaluation-Form.docx" download>Download</a>
+            </div>
+            <div class="box">
+                <h3>Documanetary Evaluation Instrument</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-Documanetary-Evaluation-Instrument.docx" download>Download</a>
+            </div>
+            <div class="box">
+                <h3>Approval Sheet for Assessment & Evaluation</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-Approval-Sheet-for-Assessment-and-Evaluation.docx" download>Download</a>
+            </div>
+            <div class="box">
+                <h3>Certificate of Approval</h3>
+                <img src="../img/Docs Logo.png" alt="MS Word Logo" class="word-logo">
+                <a href="../Forms/ETEEAP-Certificate-of-Approval-for-Documentary-Assessment-and-Evaluation.docx" download>Download</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col logo-left">
+                    <img src="../img/Bagong Pilipinas Logo.png" alt="Left Logo">
+                </div>
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <div>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <p>Room 5021, Main Academic Building, RTU Main Campus, Boni Ave., Mandaluyong.</p>
+                    </div>
+                    <div>
+                        <i class="fa fa-phone"></i>
+                        <p>(02) 8534-8267 local 1240</p>
+                    </div>
+                    <div>
+                        <i class="fa fa-envelope"></i>
+                        <p>iflde@rtu.edu.ph</p>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../home/index.html">Home</a></li>
+                        <li><a href="../about/about.html">About Us</a></li>
+                        <li><a href="../downloads/downloads.html">Downloads</a></li>
+                        <li><a href="../news/news.html">News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col logo-right">
+                    <img src="../img/Republika ng Pilipinas.png" alt="Right Logo">
+                </div>
+            </div>
+        </div>
+        <div class="copyrightText">
+            <p>Copyright © 2024. All Rights Reserved</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        ScrollReveal().reveal('.box', { 
+            origin: 'bottom', // Animation starts from the bottom
+            distance: '150px', // Moves up by 50px
+            duration: 800, // Animation duration in ms
+            delay: 300, // Delay before each box appears
+            easing: 'ease-in-out', // Smooth transition
+            interval: 150, // Stagger effect between boxes
+            reset: false // Animation only runs once
+        });
+    });
+    </script>
+</body>
+</html>

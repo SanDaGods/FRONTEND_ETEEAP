@@ -1,0 +1,468 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Colors */
+:root {
+  --default: #212121;
+  --sec-color: #8b5ec5;
+  --main-color: #532989;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to top, var(--main-color), #dfd9ece5),
+    url("../img/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Navigation */
+header {
+  width: 100%;
+  background-color: #dfd9ec;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.logo1 {
+  width: 55px;
+}
+
+.logo2 {
+  width: 60px;
+}
+
+.logo-text-container {
+  text-align: left;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #002ab4;
+}
+
+.logo-subtext {
+  font-size: 0.9rem;
+  color: var(--main-color);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.nav ul {
+  list-style-type: none;
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  justify-content: center;
+}
+
+.nav ul li {
+  display: inline;
+  position: relative;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.nav ul li a {
+  color: var(--main-color);
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 10px;
+  position: relative;
+  height: auto;
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: color 0.3s ease-in-out;
+  transition: all 0.3s ease; /* Add smooth transition */
+}
+
+.nav ul li a:hover {
+  color: var(--sec-color);
+}
+
+.separator {
+  width: 2px;
+  background-color: var(--main-color);
+}
+
+.icon a {
+  color: var(--main-color);
+  font-size: 24px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  width: 200px;
+  padding: 10px 0;
+  z-index: 100;
+  top: 40px;
+  text-align: center;
+  color: var(--main-color);
+}
+
+/* Dropdown Arrow */
+.dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+}
+
+/* Profile Dropdown Specific Styling */
+.profile-dropdown {
+  width: 150px;
+}
+
+/* Dropdown Links */
+.dropdown-content a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  color: inherit !important;
+  background-color: #f1f1f1;
+}
+
+/* Show dropdown when active */
+.dropdown.active .dropdown-content {
+  display: block;
+}
+
+.timeline {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  position: absolute;
+  top: 20%; /* Adjust as needed */
+  left: 50%;
+  transform: translate(-50%, 0); /* Adjusts centering */
+  color: var(--main-color);
+  width: 100%; /* Ensures text stays centered */
+}
+
+/* Progress bar */
+#progress-bar {
+  display: table;
+  width: 100%;
+  max-width: 1100px;
+  padding: 15px 0;
+  table-layout: fixed;
+  counter-reset: step;
+  position: fixed; /* Fix it to the bottom of the screen */
+  top: 50%; /* Ensure it stays at the bottom */
+  left: 50%; /* Center it horizontally */
+  transform: translateX(-50%); /* Center alignment */
+}
+
+#progress-bar li {
+  list-style-type: none;
+  display: table-cell;
+  width: 20%;
+  font-size: 1.5rem;
+  position: relative;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Step title */
+#progress-bar li .step-title {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+#progress-bar li .sub-text {
+  font-size: 0.8rem;
+  color: #fff;
+  max-width: 200px;
+  display: inline-block; /* Ensures it respects max-width */
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Move the title and description ABOVE for steps 1, 3, 5 */
+#progress-bar li:nth-child(even) .step-title {
+  position: absolute;
+  top: -90px; /* Move title higher */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#progress-bar li:nth-child(even) .sub-text {
+  position: relative;
+  top: -120px; /* Adjust paragraph position */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Step circle */
+#progress-bar li:before {
+  width: 50px;
+  height: 50px;
+  color: var(--default);
+  content: counter(step);
+  counter-increment: step;
+  line-height: 50px;
+  font-size: 18px;
+  border: 1px solid var(--grey);
+  display: block;
+  text-align: center;
+  margin: 0 auto 10px auto;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+#progress-bar li.step-todo p {
+  color: #18151b73;
+}
+
+/* Step line */
+#progress-bar li:after {
+  width: 100%;
+  height: 10px;
+  content: "";
+  position: absolute;
+  background-color: #fff;
+  top: 25px;
+  left: -50%;
+  z-index: -1;
+}
+
+#progress-bar li:first-child:after {
+  content: none;
+}
+
+/* Step Completed */
+#progress-bar li.step-done {
+  color: var(--main-color);
+}
+
+#progress-bar li.step-done:before {
+  border-color: var(--main-color);
+  background-color: var(--main-color);
+  color: #fff;
+  content: "\2713"; /* Unicode checkmark */
+  font-family: Arial, sans-serif;
+}
+
+#progress-bar li.step-done + li:after {
+  background-color: var(--main-color);
+}
+
+/* Active Step */
+#progress-bar li.step-active {
+  color: var(--main-color);
+}
+
+#progress-bar li.step-active:before {
+  border-color: var(--main-color);
+  color: var(--main-color);
+  font-weight: 700;
+}
+
+/* Future Steps */
+#progress-bar li.step-todo {
+  color: #372d4473;
+}
+
+#progress-bar li.step-todo:before {
+  border-color: #ccc;
+  color: #ccc;
+}
+
+/* Failed Step */
+#progress-bar li.step-failed {
+  color: #f44336;
+}
+
+#progress-bar li.step-failed:before {
+  border-color: #f44336;
+  background-color: #f44336;
+  color: #fff;
+  content: "✕"; /* Unicode X mark */
+  font-family: Arial, sans-serif;
+}
+
+#progress-bar li.step-failed + li:after {
+  background-color: #f44336;
+}
+
+/* Rejected Step */
+#progress-bar li.step-rejected {
+  color: #f44336;
+}
+
+#progress-bar li.step-rejected:before {
+  border-color: #f44336;
+  background-color: #f44336;
+  color: #fff;
+  content: "!"; /* Exclamation mark */
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+#progress-bar li.step-rejected .sub-text {
+  color: #f44336 !important;
+  font-weight: bold;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(83, 41, 137, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(83, 41, 137, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(83, 41, 137, 0);
+  }
+}
+
+@keyframes pulse-alert {
+  0% {
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+  }
+}
+
+#progress-bar li.step-active:before {
+  animation: pulse 2s infinite;
+}
+
+#progress-bar li.step-rejected:before {
+  animation: pulse-alert 2s infinite;
+}
+
+/* Adjustments for hidden steps */
+#progress-bar li[style*="display: none"] + li:after {
+  display: none;
+}
+
+/* Result link styling */
+#result-link {
+  color: var(--main-color);
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+#result-link:hover {
+  color: var(--sec-color);
+  text-decoration: underline;
+}
+
+#result-link[href="#"] {
+  color: #ccc;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+/* Timeline title states */
+.timeline[data-status="failed"],
+.timeline[data-status="rejected"] {
+  color: #f44336;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #progress-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 20px;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-top: 100px;
+  }
+
+  #progress-bar li {
+    display: block;
+    width: 100%;
+    margin-bottom: 30px;
+    text-align: left;
+  }
+
+  #progress-bar li:after {
+    width: 10px;
+    height: 100%;
+    top: 50px;
+    left: 20px;
+  }
+
+  #progress-bar li:nth-child(even) .step-title,
+  #progress-bar li:nth-child(even) .sub-text {
+    position: static;
+    transform: none;
+    top: auto;
+    left: auto;
+  }
+
+  #progress-bar li:before {
+    position: absolute;
+    left: 0;
+  }
+
+  .step-title,
+  .sub-text {
+    margin-left: 60px;
+  }
+}

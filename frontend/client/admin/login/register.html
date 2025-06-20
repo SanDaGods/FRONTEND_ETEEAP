@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETEEAP Tracking System</title>
+  <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="./register.css"> <!-- Link to external CSS file for styling -->
+</head>
+
+<body>
+  <div class="register-page">
+    <div class="page-container">
+      <img class="background-image" src="../../img/background.png" alt="Background Image" /> <!-- Background image for the page -->
+    
+      <!-- Header Section -->
+      <header class="header-container">
+        <!-- Logo container for RTU and IFLeD logos -->
+        <div class="logo-container">
+          <img class="logo-primary" src="../../img/rtulogo.png" alt="RTU Logo" loading="lazy" /> <!-- RTU logo -->
+          <img class="logo-secondary" src="../../img/ifldelogo.png" alt="IFLeD Logo" loading="lazy" /> <!-- IFLeD logo -->
+          <div class="header-text">
+            <div class="university-name">Rizal Technological University</div> <!-- University name -->
+            <div class="institute-name">Institute of Flexible Learning & Digital Education</div> <!-- Institute name -->
+          </div>
+        </div>
+        <!-- Navigation menu -->
+      </header>
+
+      <!-- Banner Section -->
+      <div class="banner-container">
+        <img class="banner-logo" src="../../img/rizal-technological-university-logo.png" alt="ETEEAP Logo" loading="lazy" /> <!-- RTU banner logo -->
+        <div class="banner-text">
+          <h1 class="system-title">ETEEAP Tracking System</h1> <!-- System title -->
+          <h2 class="university-title">Rizal Technological University</h2> <!-- University title -->
+        </div>
+      </div>
+
+
+      
+      <!-- Registration Form -->
+      <form id="registerForm" class="register-form-container">
+        <h3 class="register-heading">Register</h3> <!-- Registration form heading -->
+
+         <!-- Full Name -->
+         <div class="form-group">
+          <label for="full-name">Full Name</label>
+          <input type="text" id="full-name" name="full-name" class="form-input" placeholder="Enter your full name" required />
+        </div>
+        
+
+        <!-- Email input field -->
+        <div class="form-group">
+          <label for="email">Email</label> <!-- Label for email -->
+          <input type="email" id="email" class="form-input" placeholder="Enter your email" required /> <!-- Email input -->
+        </div>
+
+        <!-- Password input field -->
+        <div class="form-group">
+          <label for="password">Password</label> <!-- Label for password -->
+          <input type="password" id="password" class="form-input" placeholder="Enter your password" required /> <!-- Password input -->
+        </div>
+
+        <!-- Confirm password input field -->
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label> <!-- Label for confirm password -->
+          <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password" required /> <!-- Confirm password input -->
+        </div>
+
+        <!-- Register button -->
+        <button type="submit" class="register-button">Register</button>
+
+        <!-- Google registration button -->
+        <button type="button" class="google-login">
+          <img class="google-icon" src="../../ing/google.png" alt="Google Icon" loading="lazy" /> <!-- Google icon -->
+          <span class="google-text">Continue with Google</span> <!-- Google login text -->
+        </button>
+      </form>
+      
+    </div>
+  </div>
+
+  <script src ="./register.js"></script>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETEEAP Tracking System</title>
+  
+  
+  <style>
+  
+  /* Reset for box sizing, margin, and padding */
+* {
+  box-sizing: border-box; /* Makes width/height include padding and border */
+  margin: 0; /* Removes default margin */
+  padding: 0; /* Removes default padding */
+}
+
+/* Base font styling for the page */
+body {
+  font-family: Poppins, sans-serif; /* Sets font family */
+}
+
+/* Main container for page layout */
+.page-container {
+  display: flex; /* Enables flexible layout */
+  flex-direction: column; /* Arranges children vertically */
+  position: relative; /* Allows absolute positioning of children */
+  height: 100%; /* Full height of parent */
+  width: 100%; /* Full width of parent */
+  align-items: center; /* Centers content horizontally */
+  padding-bottom: 78px; /* Adds spacing at the bottom */
+}
+
+/* Full-screen background image styling */
+.background-image {
+  position: absolute; /* Fills the entire container */
+  top: 0;
+  left: 0;
+  width: 100vw; /* 100% of the viewport width */
+  height: 100vh; /* 100% of the viewport height */
+  object-fit: cover; /* Ensures image covers container */
+  object-position: center; /* Centers the image */
+  z-index: -1; /* Places it behind other content */
+}
+
+
+/* Header section styling */
+.header-container {
+  display: flex; /* Aligns items horizontally */
+  justify-content: space-between; /* Space between left and right content */
+  align-items: center; /* Centers content vertically */
+  padding: 10px 5%; /* Adds padding on all sides */
+  background-color: #fff; /* White background */
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); /* Subtle shadow effect */
+  width: 100%; /* Full width of the page */
+  z-index: 10; /* Ensures it stays above background */
+}
+
+/* Logo container for header */
+.logo-container {
+  display: flex; /* Horizontal alignment of logos */
+  gap: 10px; /* Spacing between logos */
+  align-items: center; /* Centers logos vertically */
+}
+
+/* Primary logo styling */
+.logo-primary {
+  aspect-ratio: 1.02; /* Maintains aspect ratio */
+  object-fit: contain; /* Ensures logo fits within bounds */
+  width: 49px; /* Fixed width */
+  border-radius: 50%; /* Makes logo circular */
+}
+
+/* Secondary logo styling */
+.logo-secondary {
+  aspect-ratio: 1; /* Maintains aspect ratio */
+  object-fit: contain; /* Ensures logo fits within bounds */
+  width: 55px; /* Fixed width */
+}
+
+/* Header text styling */
+.header-text {
+  display: flex; /* Aligns text vertically */
+  flex-direction: column;
+  font-weight: 500; /* Medium font weight */
+  color: #4C308F; /* Purple color */
+}
+
+/* Specific styling for university and institute names */
+.university-name {
+  color: #002AB4; /* Blue color */
+}
+.institute-name {
+  color: #482C8D; /* Purple color */
+}
+
+
+
+
+/* Navigation menu styling */
+.nav-menu {
+  display: flex; /* Aligns items horizontally */
+  gap: 20px; /* Space between menu items */
+  font-weight: 700; /* Bold text */
+  color: #4C308F; /* Purple color */
+}
+
+/* Individual navigation item styling */
+.nav-item {
+  white-space: nowrap; /* Prevents text wrapping */
+  cursor: pointer; /* Pointer cursor for hover */
+  text-decoration: none; /* Removes underline */
+  color: #482C8D; /* Purple text */
+  font-size: 20px; /* Set consistent font size */
+}
+
+/* Navigation item hover effect */
+.nav-item:hover {
+  color: #351F6A; /* Darker purple on hover */
+}
+
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 19px;
+}
+
+.divider {
+  aspect-ratio: 0.03;
+  object-fit: contain;
+  width: 1px;
+  align-self: stretch;
+  margin: auto 0;
+}
+
+.notification-icon {
+  aspect-ratio: 1.12;
+  object-fit: contain;
+  width: 38px;
+  align-self: stretch;
+  margin: auto 0;
+}
+
+.notification-badge {
+  align-self: stretch;
+  display: flex;
+  align-items: start;
+  gap: 11px;
+  color: #fff;
+  white-space: nowrap;
+  margin: auto 0;
+  font: 10px Quicksand, sans-serif;
+}
+
+.badge-icon {
+  aspect-ratio: 0.91;
+  object-fit: contain;
+  width: 31px;
+}
+
+.user-profile {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #4c308f;
+  font: 18px Poppins, sans-serif;
+}
+
+.profile-container {
+  background-color: #fff;
+  display: flex;
+  width: 100%;
+  padding-bottom: 6px;
+  flex-direction: column;
+}
+
+.profile-divider {
+  background-color: #f5f2f2;
+  display: flex;
+  height: 1px;
+}
+
+.profile-info {
+  align-self: center;
+  display: flex;
+  margin-top: 6px;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-image {
+  aspect-ratio: 1.05;
+  object-fit: contain;
+  width: 44px;
+  align-self: stretch;
+}
+
+.profile-name {
+  align-self: stretch;
+  flex-basis: auto;
+  margin: auto 0;
+}
+
+.dropdown-icon {
+  aspect-ratio: 2;
+  object-fit: contain;
+  width: 20px;
+  align-self: stretch;
+  margin: auto 0;
+}
+
+
+
+/* Banner section styling */
+.banner-container {
+  display: flex; /* Horizontal alignment */
+  justify-content: center; /* Centers content */
+  align-items: center; /* Centers items vertically */
+  text-align: center; /* Centers text */
+  color: #fff; /* White text */
+  gap: 20px; /* Space between items */
+  width: 100%; /* Full width */
+  margin-top: 20px; /* Space above the banner */
+}
+
+/* Banner logo styling */
+.banner-logo {
+  width: 100px; /* Fixed width */
+  height: auto; /* Adjusts height proportionally */
+  background: none; /* No background color */
+  box-shadow: none; /* Removes shadow */
+}
+
+/* Banner text styling */
+.banner-text {
+  display: flex; /* Vertical alignment */
+  flex-direction: column;
+  align-items: center; /* Centers text */
+}
+
+/* Main system title styling */
+.system-title {
+  font-size: 35px; /* Large font size */
+  font-weight: 700; /* Bold text */
+}
+
+/* University title styling */
+.university-title {
+  font-size: 30px; /* Large font size */
+  font-family: 'Poltawski Nowy', sans-serif; /* Custom font */
+}
+
+/* Shared styling for login, register, and forgot password forms */
+.login-form-container,
+.register-form-container,
+.forgot-password-form-container {
+  background-color: #fff; /* White background */
+  border-radius: 25px; /* Rounded corners */
+  box-shadow: 0 4px 4px 2px rgba(0, 0, 0, 0.25); /* Subtle shadow */
+  width: 90%; /* Relative width */
+  max-width: 400px; /* Maximum width */
+  padding: 25px; /* Space inside the form */
+  color: #4C308F; /* Purple text */
+  margin: 20px 0; /* Space around the form */
+}
+
+/* Shared styling for form headings */
+.login-heading,
+.register-heading,
+.forgot-password-heading {
+  font-size: 32px; /* Large font size */
+  font-weight: 700; /* Bold text */
+  text-align: center; /* Center align text */
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+/* Form group styling for spacing */
+.form-group {
+  margin-top: 20px; /* Adds space between fields */
+}
+
+/* Input field styling */
+.form-input {
+  border-radius: 6px; /* Rounded corners */
+  background-color: #fdfdfd; /* Light gray background */
+  margin-top: 8px; /* Space above the input */
+  color: #bcbcbc; /* Gray placeholder text */
+  text-align: center; /* Centers text inside input */
+  padding: 10px; /* Padding inside input */
+  border: 1px solid #ccc; /* Light gray border */
+  width: 100%; /* Full width */
+}
+
+/* Links for forgot password and register */
+.forgot-password,
+.register-link {
+  font-size: 12px; /* Smaller font size */
+  display: block; /* Block layout for spacing */
+  text-align: center; /* Center align text */
+  margin-top: 20px; /* Space above the link */
+  color: #4C308F; /* Purple text */
+}
+
+/* Button styling for login, register, and reset */
+.login-button,
+.register-button,
+.reset-button {
+  background-color: #4C308F; /* Purple background */
+  color: white; /* White text */
+  font-weight: 700; /* Bold text */
+  padding: 10px; /* Padding inside the button */
+  border-radius: 20px; /* Rounded corners */
+  border: none; /* Removes border */
+  width: 100%; /* Full width */
+  cursor: pointer; /* Pointer cursor */
+  margin-top: 20px; /* Space above the button */
+  font-size: 16px; /* Medium font size */
+}
+
+/* Google login button styling */
+.google-login {
+  display: flex; /* Aligns content horizontally */
+  align-items: center; /* Centers items vertically */
+  justify-content: center; /* Centers content horizontally */
+  background-color: white; /* White background */
+  border: 1px solid #492D8D; /* Purple border */
+  border-radius: 20px; /* Rounded corners */
+  padding: 10px; /* Space inside button */
+  margin-top: 10px; /* Space above button */
+  cursor: pointer; /* Pointer cursor */
+}
+
+/* Google icon styling */
+.google-icon {
+  width: 25px; /* Fixed width */
+  margin-right: 10px; /* Space to the right of the icon */
+}
+
+/* Google text styling */
+.google-text {
+  font-size: 14px; /* Medium font size */
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 768px) {
+  /* Adjust header layout */
+  .header-container {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center align items */
+  }
+
+  /* Adjust navigation menu */
+  .nav-menu {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center align items */
+    margin-top: 10px; /* Space above the menu */
+  }
+
+  /* Adjust form containers */
+  .login-form-container,
+  .register-form-container,
+  .forgot-password-form-container {
+    width: 100%; /* Full width */
+    padding: 20px; /* Reduced padding */
+  }
+
+  /* Adjust banner logo size */
+  .banner-logo {
+    width: 80px; /* Smaller width */
+  }
+
+  /* Adjust system title font size */
+  .system-title {
+    font-size: 28px; /* Smaller font size */
+  }
+
+  /* Adjust university title font size */
+  .university-title {
+    font-size: 24px; /* Smaller font size */
+  }
+}
+
+/* Styling for links globally */
+a {
+  text-decoration: none; /* Removes underline from links */
+}
+
+    /* Additional CSS for dropdown */
+    .dropdown-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: fixed; /* Use fixed positioning to ensure it stays on top */
+      top: 60px; /* Adjust this value based on your header height */
+      right: 20px; /* Adjust this value to align with the dropdown icon */
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1000; /* Ensure it appears above other elements */
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dropdown-menu a {
+      color: #4C308F;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .show-dropdown {
+      display: block;
+    }
+
+  
+</style>
+</head>
+
+<body>
+<div class="login-page">
+    <div class="page-container">
+      <img class="background-image" src="../images/background.png" alt="background.img" /> <!-- Background image for the page -->
+
+    
+      <!-- Header Section -->
+      <header class="header-container">
+        <!-- RTU and IFLeD logos with university/institute details -->
+        <div class="logo-container">
+	
+      <img src="../images/rtulogo.png" alt="RTU University Logo" class="logo-primary" />
+      <img src="../images/ifldelogo.png" alt="IFLDE Logo" class="logo-secondary" />
+      <div class="header-text">
+        <div class="university-name">Rizal Technological University</div>
+        <div class="institute-name">Institute of Flexible Learning & Digital Education</div>
+      </div>
+    </div>
+    
+    <nav class="nav-menu">
+      <a href="../HomePage/homepage.html" class="nav-item">Home</a>
+      <a href="#" class="nav-item">Portfolio</a>
+    </nav>
+    
+    <div class="user-section">
+      <img src="../images/line.png" alt="" class="divider" />
+      <img src="../images/mail.png" alt="Notifications" class="notification-icon" />
+      <div class="notification-badge">
+        <img src="../images/bells2.png" alt="" class="badge-icon" />
+        <span>1</span>
+      </div>
+      <div class="user-profile">
+        <div class="profile-container">
+          <div class="profile-divider"></div>
+          <div class="profile-info">
+            <img src="../images/profile.png" alt="User Avatar" class="profile-image" />
+            <span class="profile-name">Aaron Gatongay</span>
+            <div class="dropdown-container">
+                  <img src="../images/dropdown.png" alt="Dropdown" class="dropdown-icon" id="dropdown-icon" />
+                  <div class="dropdown-menu" id="dropdown-menu">
+                    <a href="#">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="#">Logout</a>
+                  </div>
+                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+	 
+	 
+    </div>
+  </div>
+  
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const dropdownIcon = document.getElementById("dropdown-icon");
+    const dropdownMenu = document.getElementById("dropdown-menu");
+
+    // Toggle dropdown visibility when clicking the dropdown icon
+    dropdownIcon.addEventListener("click", function (event) {
+      event.stopPropagation(); // Prevent the click from bubbling up
+      dropdownMenu.classList.toggle("show-dropdown");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (event) {
+      if (!dropdownIcon.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownMenu.classList.remove("show-dropdown");
+      }
+    });
+
+    // Close dropdown when clicking on a dropdown item
+    dropdownMenu.addEventListener("click", function (event) {
+      if (event.target.tagName === 'A') {
+        dropdownMenu.classList.remove("show-dropdown");
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETEEAP Tracking System - Document Submission</title>
+    <link rel="stylesheet" href="information.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
+
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="../img/RTU Logo.png" class="logo1">
+            <img src="../img/IFLDE Logo.png" class="logo2">
+            <div class="logo-text-container">
+                <h2 class="logo-text">Rizal Technological University</h2>
+                <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="logo">
+            <img src="../img/RTU Logo.png" alt="RTU Logo" class="rtu-logo">
+            <div class="text">
+                <h2 class="title">Rizal Technological University</h2>
+                <h2 class="sub-title">ETEEAP Initial Screening</h2>
+            </div>
+        </div>
+        
+        <div class="data-privacy">
+            <div class="sub-text">
+                <h4>Data Privacy Notice:</h4>
+                <p>Rizal Technological University is dedicated to protecting your privacy information as required by Data Privacy Act of 2012.</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="document">
+            <div>
+                <h4>Documents Required for Initial Screening:</h4>
+                <p>1. Diploma or Transcript of Records (TOR)</p>
+                <p>2. 1x1 ID Picture</p>
+                <p>3. Resume</p>
+                <p>4. Birth Certificate</p>
+                <p>5. Barangay Clearance or NBI Clearance or Passport</p>
+                <p>6. Certificate of Employment (Notarized)</p>
+                <p>7. Certificates of Training</p>
+                <p>8. Other supporting documents that qualify your application in the ETEEAP Program.</p>
+            </div>
+          
+            <div>
+                <h4>For unemployed applicants, submit one of the following:</h4>
+                <p>• Income Tax Return (ITR)</p>
+                <p>• SSS</p>
+                <p>• PhilHealth</p>
+                <p>• Pag-IBIG records</p>
+
+                <div class="note">
+                    <br><br><strong>Note:</strong> Merge all documents using this <a href="https://smallpdf.com/merge-pdf" onclick="openImage()">link</a>.<br>
+                    <p><strong>File name format:</strong> Lastname_Firstname_Middlename_Suffix (Initial_Screening)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="submission">
+            <div class="upload" action="/uploads" method="post" enctype="multipart/form-data">
+                <h3 class="initial-submission">Initial Submission</h3>
+                <p>Drag and Drop files here</p>
+                <p>Max of 25mb file size</p>
+                <label for="file-upload" class="file-upload">Choose Files</label>
+                <input type="file" id="file-upload" name="files" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"/>
+            </div>
+            
+            <div class="files">
+                <h3 class="uploaded-files">Uploaded Files</h3>
+                <div class="file-container">
+                    <div class="file-list" id="file-list"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="submit">
+            <button type="button" id="submit-btn">Submit Documents</button>
+        </div>
+    </div>
+
+    <script src="filesubmission.js"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+/* General Reset for Box Sizing, Margin, and Padding */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Body styling with font family */
+body {
+  font-family: Poppins, sans-serif;
+}
+
+/* Container for the registration page layout */
+.register-page {
+  display: flex; /* Enables flexible layout */
+  flex-direction: column; /* Arranges children in a column */
+  overflow: hidden; /* Prevents overflow of child elements */
+  height: 100vh; /* Full viewport height */
+  position: relative; /* Allows absolute positioning for child elements */
+}
+
+/* Wrapper for page content */
+.page-container {
+  display: flex; /* Enables flexible layout */
+  flex-direction: column; /* Arranges children in a column */
+  position: relative; /* For stacking elements like background */
+  height: 100%; /* Full height of the parent */
+  width: 100%; /* Full width of the parent */
+  align-items: center; /* Center children horizontally */
+  padding-bottom: 78px; /* Bottom padding for spacing */
+}
+
+/* Background image styling */
+.background-image {
+  position: absolute; /* Ensures it covers the entire screen */
+  inset: 0; /* Covers all sides */
+  height: 100%;
+  width: 100%;
+  object-fit: cover; /* Scales image to cover container */
+  object-position: center; /* Centers the image */
+  z-index: -1; /* Places it behind other elements */
+}
+
+/* Header section styling */
+.header-container {
+  display: flex; /* Layout for aligning header items */
+  justify-content: space-between; /* Space between left and right items */
+  align-items: center; /* Vertically center items */
+  padding: 10px 5%; /* Padding for spacing */
+  background-color: #fff; /* White background */
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); /* Adds subtle shadow */
+  width: 100%; /* Full width of the container */
+  z-index: 10; /* Ensures it stays above background */
+}
+
+/* Logo container for flex layout */
+.logo-container {
+  display: flex; /* Horizontal alignment */
+  gap: 10px; /* Space between logos */
+  align-items: center; /* Align logos vertically */
+}
+
+/* Primary logo styling */
+.logo-primary {
+  aspect-ratio: 1.02; /* Maintains aspect ratio */
+  object-fit: contain; /* Ensures logo fits within bounds */
+  width: 49px; /* Fixed width */
+  border-radius: 50%; /* Makes it circular */
+}
+
+/* Secondary logo styling */
+.logo-secondary {
+  aspect-ratio: 1; /* Maintains aspect ratio */
+  object-fit: contain; /* Ensures logo fits within bounds */
+  width: 55px; /* Fixed width */
+}
+
+/* Text within the header section */
+.header-text {
+  display: flex; /* Stacks text vertically */
+  flex-direction: column;
+  font-weight: 500; /* Medium font weight */
+  color: #4C308F; /* Purple text */
+}
+
+/* University name styling */
+.university-name {
+  color: #002AB4; /* Blue color */
+}
+
+/* Institute name styling */
+.institute-name {
+  color: #482C8D; /* Purple color */
+}
+
+/* Navigation menu styling */
+.nav-menu {
+  display: flex; /* Aligns items horizontally */
+  gap: 20px; /* Space between menu items */
+  font-weight: 700; /* Bold text */
+  color: #4C308F; /* Purple color */
+}
+
+/* Individual navigation item styling */
+.nav-item {
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  color: #482C8D;
+  font-size: 1.3rem; 
+  padding: 0.1rem; 
+  display: inline-block; 
+  transition: color 0.3s ease; 
+}
+
+/* Navigation item hover effect */
+.nav-item:hover {
+  color: #351F6A; /* Darker purple on hover */
+}
+
+/* Banner container for centering */
+.banner-container {
+  display: flex; /* Aligns items horizontally */
+  justify-content: center; /* Centers items */
+  align-items: center; /* Centers items vertically */
+  text-align: center; /* Centers text */
+  color: #fff; /* White text */
+  gap: 20px; /* Space between items */
+  width: 100%; /* Full width */
+  margin-top: 20px; /* Adds space above the banner */
+}
+
+/* Banner logo styling */
+.banner-logo {
+  width: 100px; /* Fixed width */
+  height: auto; /* Adjusts height proportionally */
+  background: none; /* No background color */
+  box-shadow: none; /* Removes shadow */
+}
+
+/* Banner text styling */
+.banner-text {
+  display: flex; /* Aligns text vertically */
+  flex-direction: column; /* Stacks text */
+  align-items: center; /* Centers text */
+}
+
+/* System title styling */
+.system-title {
+  font-size: 35px; /* Large font size */
+  font-weight: 700; /* Bold text */
+}
+
+/* University title styling */
+.university-title {
+  font-size: 30px; /* Large font size */
+  font-family: 'Poltawski Nowy', sans-serif; /* Custom font */
+}
+
+/* Forgot password form styling */
+.forgot-password-form-container {
+  background-color: #fff; /* White background */
+  border-radius: 25px; /* Rounded corners */
+  box-shadow: 0 4px 4px 2px rgba(0, 0, 0, 0.25); /* Adds shadow */
+  width: 90%; /* Relative width */
+  max-width: 400px; /* Max width for larger screens */
+  padding: 25px; /* Padding inside the form */
+  color: #4C308F; /* Purple text */
+  margin: 20px 0; /* Space around the form */
+}
+
+/* Forgot password heading */
+.forgot-password-heading {
+  font-size: 32px; /* Large font size */
+  font-weight: 700; /* Bold text */
+  text-align: center; /* Center aligns the text */
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+/* Form group styling for spacing */
+.form-group {
+  margin-top: 20px; /* Space above the group */
+}
+
+/* Input field styling */
+.form-input {
+  border-radius: 6px; /* Rounded corners */
+  background-color: #fdfdfd; /* Light gray background */
+  margin-top: 8px; /* Space above input */
+  color: #000000; /* Gray placeholder text */
+  text-align: left; /* Centers text */
+  padding: 10px; /* Space inside the input */
+  border: 1px solid #ccc; /* Light gray border */
+  width: 100%; /* Full width */
+}
+
+/* Reset button styling */
+.reset-button {
+  background-color: #4C308F; /* Purple background */
+  color: white; /* White text */
+  font-weight: 700; /* Bold text */
+  padding: 10px; /* Space inside the button */
+  border-radius: 20px; /* Rounded corners */
+  border: none; /* Removes border */
+  width: 100%; /* Full width */
+  cursor: pointer; /* Pointer cursor */
+  margin-top: 20px; /* Space above the button */
+  font-size: 16px; /* Medium font size */
+}
+
+/* Responsive styling for small screens */
+@media (max-width: 768px) {
+  /* Adjust header layout for small screens */
+  .header-container {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center align items */
+  }
+
+  /* Adjust navigation menu for small screens */
+  .nav-menu {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center align items */
+    margin-top: 10px; /* Space above menu */
+  }
+
+  /* Adjust form container for small screens */
+  .forgot-password-form-container {
+    width: 100%; /* Full width */
+    padding: 20px; /* Reduce padding */
+  }
+
+  /* Adjust banner logo for small screens */
+  .banner-logo {
+    width: 80px; /* Smaller width */
+  }
+
+  /* Adjust system title for small screens */
+  .system-title {
+    font-size: 28px; /* Smaller font size */
+  }
+
+  /* Adjust university title for small screens */
+  .university-title {
+    font-size: 24px; /* Smaller font size */
+  }
+}

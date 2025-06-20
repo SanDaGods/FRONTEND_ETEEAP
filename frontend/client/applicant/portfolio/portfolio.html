@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETEEAP Tracking System</title>
+    <link rel="stylesheet" href="portfolio.css">
+    <link rel="stylesheet" href="../../shared/js/common/navprofile.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
+    
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="../img/RTU Logo.png" class="logo1">
+            <img src="../img/IFLDE Logo.png" class="logo2">
+            <div class="logo-text-container">
+                <h2 class="logo-text">Rizal Technological University</h2>
+                <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="../timeline/timeline.html">Home</a></li>
+                    <li><a href="../portfolio/portfolio.html">Portfolio</a></li>
+                    <li class="separator"></li>
+
+                    <!-- Messages Dropdown -->
+                    <li class="icon dropdown">
+                        <a href="#" class="dropdown-toggle"><i class="fa-solid fa-envelope"></i></a>
+                        <div class="dropdown-content">
+                            <p>No new messages</p>
+                        </div>
+                    </li>
+
+                    <!-- Notifications Dropdown -->
+                    <li class="icon dropdown">
+                        <a href="#" class="dropdown-toggle"><i class="fa-solid fa-bell"></i></a>
+                        <div class="dropdown-content">
+                            <p>No new notifications</p>
+                        </div>
+                    </li>
+
+                    <!-- Profile Dropdown -->
+                    <li class="profile dropdown">
+                        <a href="#" class="dropdown-toggle">
+                                   <img id="nav-profile-pic" class="nav-profile-pic" src="../img/default.jpg" alt="Profile">
+                            <span id="nav-profile-name">Applicant</span>
+                        </a>
+                        <div class="dropdown-content profile-dropdown">
+                            <a href="../profile/profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+                            <a href="#" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="title">
+            <h2>My Portfolio</h2>
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search">
+                <i class="fas fa-times clear-search"></i>
+            </div>
+        </div>
+        <div class="file-count">No. of files:</div>
+        <form class="form">
+            <hr>
+            <div class="dropdown-section">
+                <div class="top-section">
+                    <h4>Initial Submissions</h4>
+                    <div class="right-section">
+                        <span class="file-count">0</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </div>
+                </div>
+                <!-- Move table before the upload button -->
+                <table class="file-table hidden">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Uploaded</th>
+                            <th>File ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <!-- Place upload button after the table -->
+                <label class="upload-btn hidden" for="file-input-initial"> <i class="fas fa-plus"></i> Add</label>
+                <input type="file" class="file-input" multiple hidden>
+            </div>
+            
+            <hr>
+
+            <div class="dropdown-section">
+                <div class="top-section">
+                    <h4>Updated Resume / CV</h4>
+                    <div class="right-section">
+                        <span class="file-count">0</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </div>
+                </div>
+         
+                <input type="file" class="file-input" multiple hidden>
+                <table class="file-table hidden">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Uploaded</th>
+                            <th>File ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <label class="upload-btn hidden" for="file-input-initial"> <i class="fas fa-plus"></i> Add</label>
+
+            </div>
+            <hr>
+            <div class="dropdown-section">
+                <div class="top-section">
+                    <h4>Certificate of Training</h4>
+                    <div class="right-section">
+                        <span class="file-count">0</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </div>
+                </div>
+                <input type="file" class="file-input" multiple hidden>
+                <table class="file-table hidden">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Uploaded</th>
+                            <th>File ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <label class="upload-btn hidden" for="file-input-initial"> <i class="fas fa-plus"></i> Add</label>
+
+            </div>
+            <hr>
+            <div class="dropdown-section">
+                <div class="top-section">
+                    <h4>Awards</h4>
+                    <div class="right-section">
+                        <span class="file-count">0</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </div>
+                </div>
+                <input type="file" class="file-input" multiple hidden>
+                <table class="file-table hidden">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Uploaded</th>
+                            <th>File ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                                <label class="upload-btn hidden" for="file-input-initial"> <i class="fas fa-plus"></i> Add</label>
+
+            </div>
+
+            <hr>
+            <div class="dropdown-section">
+                <div class="top-section">
+                    <h4>Interview Form</h4>
+                    <div class="right-section">
+                        <span class="file-count">0</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </div>
+                </div>
+                <input type="file" class="file-input" multiple hidden>
+                <table class="file-table hidden">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Uploaded</th>
+                            <th>File ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                                <label class="upload-btn hidden" for="file-input-initial"> <i class="fas fa-plus"></i> Add</label>
+
+            </div>
+
+            <hr>
+            <div class="dropdown-section">
+                <div class="top-section">
+                    <h4>Others</h4>
+                    <div class="right-section">
+                        <span class="file-count">0</span>
+                        <i class="fa-solid fa-chevron-down arrow"></i>
+                    </div>
+                </div>
+                <input type="file" class="file-input" multiple hidden>
+                <table class="file-table hidden">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Uploaded</th>
+                            <th>File ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                                <label class="upload-btn hidden" for="file-input-initial"> <i class="fas fa-plus"></i> Add</label>
+            </div>
+            <hr>
+            <h5>You may submit your complete portfolio once your initial screening is approved.</h5>
+        </form>
+    </div>
+
+    
+                  <div class="modal" id="fileModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body">
+                <button class="slider-btn prev-btn">&lt;</button>
+                <div class="file-viewer">
+                    <iframe id="fileViewer" frameborder="0"></iframe>
+                    <img id="imageViewer" alt="File preview">
+                </div>
+                <button class="slider-btn next-btn">&gt;</button>
+            </div>
+            <div class="file-info">
+                <span id="currentFileText">File 1 of 1</span>
+                <span id="fileName">filename.ext</span>
+            </div>
+        </div>
+    </div>
+    
+  <div class="notification" id="notification" style="display: none;"></div>
+  
+<script src="portfolio.js"></script>
+<script src="../../shared/js/common/navprofile.js"></script>
+<script src="../../shared/js/auth.js"></script>
+
+</body>
+</html>

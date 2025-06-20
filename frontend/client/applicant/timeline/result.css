@@ -1,0 +1,233 @@
+:root {
+  --default: #212121;
+  --sec-color: #8b5ec5;
+  --main-color: #532989;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to top, var(--main-color), #dfd9ece5),
+    url("../img/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Navigation */
+header {
+  width: 100%;
+  background-color: #dfd9ec;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.logo1 {
+  width: 55px;
+}
+
+.logo2 {
+  width: 60px;
+}
+
+.logo-text-container {
+  text-align: left;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #002ab4;
+}
+
+.logo-subtext {
+  font-size: 0.9rem;
+  color: var(--main-color);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.nav ul {
+  list-style-type: none;
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  justify-content: center;
+}
+
+.nav ul li {
+  display: inline;
+  position: relative;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.nav ul li a {
+  color: var(--main-color);
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 10px;
+  position: relative;
+  height: auto;
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav ul li a:hover {
+  color: var(--sec-color);
+}
+
+.separator {
+  width: 2px;
+  background-color: var(--main-color);
+}
+
+.icon a {
+  color: var(--main-color);
+  font-size: 24px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  width: 200px;
+  padding: 10px 0;
+  z-index: 100;
+  top: 40px;
+  text-align: center;
+  color: var(--main-color);
+}
+
+/* Dropdown Arrow */
+.dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+}
+
+/* Profile Dropdown Specific Styling */
+.profile-dropdown {
+  width: 150px;
+}
+
+/* Dropdown Links */
+.dropdown-content a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  color: inherit !important;
+  background-color: #f1f1f1;
+}
+
+/* Show dropdown when active */
+.dropdown.active .dropdown-content {
+  display: block;
+}
+
+hr {
+  border: none;
+  border-top: 2px solid #ccc;
+  margin: 20px 0;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 700px;
+  margin: 50px auto;
+  padding: 20px;
+}
+h1 {
+  color: #532989;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+h2 {
+  color: #532989;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+.score-line {
+  color: #532989;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.score {
+  font-weight: bold;
+}
+.remarks-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.remarks-text {
+  color: #532989;
+  margin: 0;
+}
+.remarks {
+  color: green;
+  font-weight: bold;
+}
+.department-course {
+  color: #532989;
+  margin-top: 20px;
+  font-size: 14px;
+}
+.total-score {
+  color: #532989;
+  margin: 0;
+}

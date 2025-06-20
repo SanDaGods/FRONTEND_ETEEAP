@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ETEEAP - Evaluation Submission</title>
+  <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="./approval.css">
+</head>
+<body>
+  <div class="container">
+    <!--Sidebar-->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="/images/ifldelogo.png" class="iflde">
+        ETEEAP
+      </div>
+
+      <div class="nav-item" data-section="dashboard">
+        <a href="../dashboard/dashboard.html">
+          <i class="fas fa-chart-pie"></i>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="nav-item active" data-section="dashboard">
+        <a href="../applicants/applicants.html">
+          <i class="fas fa-users"></i>
+          Applicants
+        </a>
+      </div>
+    </div>
+
+    <!--Main Content-->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="evaluation-title">Evaluation Submission</div>
+
+        <div class="user-profile">
+          <div class="profile-dropdown">
+              <div class="user-avatar">
+                  <i class="fas fa-user"></i>
+              </div>
+              <span class="username">Loading...</span>
+              <i class="fas fa-caret-down dropdown-toggle"></i>
+              <div class="dropdown-menu">
+                <a href="../profile/profile.html" class="dropdown-item">
+                  <i class="fas fa-user"></i>
+                  Profile
+                </a>
+                <a href="#" class="dropdown-item" id="logoutLink">
+                  <i class="fas fa-sign-out-alt"></i>
+                  Logout
+                </a>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Evaluation Content -->
+      <div class="evaluation-content">
+        <!-- Left Profile Card -->
+        <div class="profile-card-container">
+          <div class="profile-card">
+            <div class="profile-picture">
+              <img src="/images/profile-placeholder.jpg" alt="Profile Picture">
+            </div>
+            <div class="profile-details">
+              <h2>Juan Dela Cruz</h2>
+              <hr>
+              <p><strong>Email:</strong> juandelacruz@email.com</p>
+              <p><strong>Contact Number:</strong> +63 912 345 6789</p>
+              <p><strong>Address:</strong> 123 Main St, Quezon City</p>
+              <p><strong>Gender:</strong> Male</p>
+              <p><strong>Age:</strong> 32</p>
+              <p><strong>Civil Status:</strong> Married</p>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="course-applied">
+              <h2>Course Applied</h2>
+              <hr>
+              <p><strong>Program:</strong> Bachelor of Science in Information Technology</p>
+              <p><strong>Major:</strong> Software Development</p>
+              <p><strong>Level:</strong> Undergraduate</p>
+              <div class="applied-on-container">
+                <p><strong>Applied On:</strong> January 15, 2023</p>
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="action-buttons">
+              <button class="evaluate-button">
+                <i class="fas fa-check"></i> Approve
+              </button>
+              <button class="reject-button">
+                <i class="fas fa-times"></i> Reject
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Container -->
+        <div class="right-container">
+          <!-- Evaluation Result Card -->
+          <div class="evaluation-result-card">
+            <h1>Evaluation Result</h1>
+            <hr>
+            <p>
+              <span class="label">Total Credits Required:</span>
+              <span>120 units</span>
+            </p>
+            <p>
+              <span class="label">Credits Earned:</span>
+              <span>85 units</span>
+            </p>
+            <p>
+              <span class="label">Credits Needed:</span>
+              <span>35 units</span>
+            </p>
+            <p>
+              <span class="label">Estimated Duration:</span>
+              <span>2 semesters</span>
+            </p>
+            <p>
+              <span class="label">Status:</span>
+              <span style="color: #28a745; font-weight: 600;">Qualified</span>
+            </p>
+          </div>
+
+          <!-- Documents Card -->
+          <div class="documents-container">
+            <div class="documents-header">
+              <h1 class="documents-title">Applicant Portfolio</h1>
+              <div class="documents-controls">
+                <div class="search-container">
+                  <i class="fas fa-search"></i>
+                  <input type="search" id="search-input" class="search-input" placeholder="Search documents..." />
+                </div>
+                <div class="file-count">
+                  <span class="count-number">12</span> files
+                </div>
+              </div>
+            </div>
+
+            <!-- Document Categories - Accordion Style -->
+            <div class="portfolio-accordion">
+              <!-- Initial Submissions -->
+              <div class="portfolio-category">
+                <div class="category-header" onclick="toggleCategory('initial-submissions')">
+                  <div class="category-title">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Initial Submissions</span>
+                  </div>
+                  <div class="category-meta">
+                    <span class="file-count">7 files</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                </div>
+                <div class="category-content" id="initial-submissions">
+                  <table class="document-table">
+                    <thead>
+                      <tr>
+                        <th>Document</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <i class="fas fa-file-pdf"></i>
+                          Diploma.pdf
+                        </td>
+                        <td><span class="status-badge status-viewed">Reviewed</span></td>
+                        <td>2023-10-01</td>
+                        <td>
+                          <button class="action-btn view-btn" title="View" data-filepath="ETEEAP-Acknowledgement-Form.pdf">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="action-btn download-btn" title="Download" data-filepath="ETEEAP-Acknowledgement-Form.pdf">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <i class="fas fa-file-pdf"></i>
+                          Certificate1.pdf
+                        </td>
+                        <td><span class="status-badge status-viewed">Reviewed</span></td>
+                        <td>2023-10-01</td>
+                        <td>
+                          <button class="action-btn view-btn" title="View" data-filepath="Certificate1.pdf">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="action-btn download-btn" title="Download" data-filepath="Certificate1.pdf">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Updated Resume/CV -->
+              <div class="portfolio-category">
+                <div class="category-header" onclick="toggleCategory('resume-cv')">
+                  <div class="category-title">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Resume/CV</span>
+                  </div>
+                  <div class="category-meta">
+                    <span class="file-count">3 files</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                </div>
+                <div class="category-content" id="resume-cv">
+                  <table class="document-table">
+                    <thead>
+                      <tr>
+                        <th>Document</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <i class="fas fa-file-word"></i>
+                          Resume_2023.docx
+                        </td>
+                        <td><span class="status-badge status-pending">Pending Review</span></td>
+                        <td>2023-11-15</td>
+                        <td>
+                          <button class="action-btn view-btn" title="View" data-filepath="Resume_2023.docx">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="action-btn download-btn" title="Download" data-filepath="Resume_2023.docx">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Certificate of Training -->
+              <div class="portfolio-category">
+                <div class="category-header" onclick="toggleCategory('training-certs')">
+                  <div class="category-title">
+                    <i class="fas fa-certificate"></i>
+                    <span>Training Certificates</span>
+                  </div>
+                  <div class="category-meta">
+                    <span class="file-count">5 files</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                </div>
+                <div class="category-content" id="training-certs">
+                  <table class="document-table">
+                    <thead>
+                      <tr>
+                        <th>Document</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <i class="fas fa-file-pdf"></i>
+                          AWS_Certification.pdf
+                        </td>
+                        <td><span class="status-badge status-approved">Approved</span></td>
+                        <td>2022-08-10</td>
+                        <td>
+                          <button class="action-btn view-btn" title="View" data-filepath="AWS_Certification.pdf">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="action-btn download-btn" title="Download" data-filepath="AWS_Certification.pdf">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Awards -->
+              <div class="portfolio-category">
+                <div class="category-header" onclick="toggleCategory('awards')">
+                  <div class="category-title">
+                    <i class="fas fa-trophy"></i>
+                    <span>Awards</span>
+                  </div>
+                  <div class="category-meta">
+                    <span class="file-count">4 files</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                </div>
+                <div class="category-content" id="awards">
+                  <table class="document-table">
+                    <thead>
+                      <tr>
+                        <th>Document</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <i class="fas fa-file-pdf"></i>
+                          Best_Employee_2022.pdf
+                        </td>
+                        <td><span class="status-badge status-approved">Approved</span></td>
+                        <td>2022-12-15</td>
+                        <td>
+                          <button class="action-btn view-btn" title="View" data-filepath="Best_Employee_2022.pdf">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="action-btn download-btn" title="Download" data-filepath="Best_Employee_2022.pdf">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Interview Form -->
+              <div class="portfolio-category">
+                <div class="category-header" onclick="toggleCategory('interview')">
+                  <div class="category-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Interview Form</span>
+                  </div>
+                  <div class="category-meta">
+                    <span class="file-count">1 file</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                </div>
+                <div class="category-content" id="interview">
+                  <table class="document-table">
+                    <thead>
+                      <tr>
+                        <th>Document</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <i class="fas fa-file-pdf"></i>
+                          Interview_Assessment.pdf
+                        </td>
+                        <td><span class="status-badge status-pending">Pending Review</span></td>
+                        <td>2023-12-05</td>
+                        <td>
+                          <button class="action-btn view-btn" title="View" data-filepath="Interview_Assessment.pdf">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="action-btn download-btn" title="Download" data-filepath="Interview_Assessment.pdf">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Others -->
+              <div class="portfolio-category">
+                <div class="category-header" onclick="toggleCategory('others')">
+                  <div class="category-title">
+                    <i class="fas fa-ellipsis-h"></i>
+                    <span>Other Documents</span>
+                  </div>
+                  <div class="category-meta">
+                    <span class="file-count">4 files</span>
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                </div>
+                <div class="category-content" id="others">
+                  <table class="document-table">
+                    <thead>
+                      <tr>
+                        <th>Document</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <i class="fas fa-file-pdf"></i>
+                          Recommendation_Letter.pdf
+                        </td>
+                        <td><span class="status-badge status-viewed">Reviewed</span></td>
+                        <td>2023-09-20</td>
+                        <td>
+                          <button class="action-btn view-btn" title="View" data-filepath="Recommendation_Letter.pdf">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button class="action-btn download-btn" title="Download" data-filepath="Recommendation_Letter.pdf">
+                            <i class="fas fa-download"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- PDF Viewer Modal -->
+  <div class="pdf-viewer-modal" id="pdfViewerModal">
+    <div class="pdf-viewer-content">
+      <div class="pdf-viewer-header">
+        <h3 id="pdfModalTitle">Document Viewer</h3>
+        <button class="pdf-close-btn" onclick="closePdfModal()">&times;</button>
+      </div>
+      <iframe class="pdf-viewer-body" id="pdfViewerFrame"></iframe>
+      <div class="pdf-viewer-footer">
+        <button class="pdf-download-btn" onclick="downloadCurrentPdf()">
+          <i class="fas fa-download"></i> Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/js/auth.js"></script>
+  <script src="./Approval.js"></script>
+</body>
+</html>

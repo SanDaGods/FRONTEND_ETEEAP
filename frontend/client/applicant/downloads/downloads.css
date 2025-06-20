@@ -1,0 +1,367 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(to top, #532989, #dfd9ece5),
+    url("../img/background.jpg") no-repeat right fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Navigation */
+header {
+  width: 100%;
+  background-color: #dfd9ec;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo1 {
+  width: 55px;
+}
+
+.logo2 {
+  width: 60px;
+}
+
+.logo-text-container {
+  text-align: left;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #002ab4;
+}
+
+.logo-subtext {
+  font-size: 0.9rem;
+  color: #532989;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.nav ul {
+  list-style-type: none;
+  display: flex;
+  padding: 10px 0;
+  justify-content: center;
+}
+
+.nav ul li {
+  display: inline;
+  position: relative;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-right: 40px;
+}
+
+.nav ul li a {
+  color: #532989;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 10px;
+  position: relative;
+  height: auto;
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.nav a:after {
+  content: "";
+  position: absolute;
+  background-color: #532989;
+  border-radius: 5px;
+  height: 3px;
+  width: 100%;
+  left: 0;
+  bottom: 5px;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform 0.5s;
+}
+
+.nav a:hover:after {
+  transform-origin: left;
+  transform: scaleX(1);
+}
+
+.nav .btnLogin-popup {
+  width: 100px;
+  height: 45px;
+  background: transparent;
+  border: 3px solid #532989;
+  outline: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 1.1em;
+  color: #532989;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.5s;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nav .btnLogin-popup:hover {
+  background: #532989;
+  color: #dfd9ec;
+}
+
+hr {
+  border: none;
+  border-top: 2px solid #ccc;
+  width: 80%; /* Makes the line shorter */
+  margin: 20px auto; /* Centers the line */
+  display: block;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  margin-top: 100px;
+}
+
+/* Grid layout for boxes */
+.container-boxes {
+  display: grid;
+  gap: 20px;
+  max-width: 1200px;
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto;
+  justify-content: center;
+}
+
+/* Box styling */
+.box {
+  background: linear-gradient(to top, #532989, #946eca);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  height: 100%;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Style the download button */
+.box a {
+  margin-top: auto;
+  text-decoration: none;
+  font-weight: bold;
+  color: #fff;
+  padding: 8px 15px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  transition: 0.3s;
+  display: inline-block;
+  background: transparent;
+  position: relative;
+}
+
+/* Hover effect */
+.box a:hover {
+  background: #fff;
+  color: #532989;
+  transform: scale(1.1); /* Slightly enlarges the button */
+  box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.3);
+}
+
+/* Add arrow on hover */
+.box a:hover::after {
+  color: #532989; /* Changes arrow color */
+  transition: 0.3s;
+}
+
+.box h3 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.box img {
+  width: 75%;
+  height: auto;
+  margin: 20px 0;
+}
+
+/* Footer */
+.footer {
+  background: linear-gradient(to top, #532989, #dfd9eccc),
+    url("../img/background-footer.png") no-repeat top center;
+  background-size: cover;
+  padding: 40px 0 10px;
+  position: relative;
+}
+
+.footer .container {
+  max-width: 1170px;
+  margin: auto;
+}
+
+.footer .row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  align-items: flex-start;
+}
+
+.footer ul {
+  list-style: none;
+}
+
+.footer-col {
+  width: 20%;
+  padding: 0 20px;
+  box-sizing: border-box;
+  flex-shrink: 0; /* Prevent columns from shrinking */
+  flex-grow: 1; /* Allow columns to grow if needed */
+}
+
+.footer-col h4 {
+  font-size: 1.2rem;
+  color: #532989;
+  margin-bottom: 35px;
+  font-weight: bold;
+  position: relative;
+}
+
+.footer-col h4::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  background-color: #532989;
+  height: 3px;
+  box-sizing: border-box;
+  width: 50px;
+}
+
+.footer-col ul li:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.footer-col div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.footer-col p,
+a {
+  display: inline-block;
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 300;
+  margin-left: 5px;
+}
+
+.footer-col i {
+  font-size: 1.2rem;
+  color: #532989;
+}
+
+.footer-col ul li a {
+  font-size: 1rem;
+  text-transform: capitalize;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 300;
+  color: #fff;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.footer-col ul li a:hover {
+  color: #532989;
+  padding-left: 8px;
+}
+
+.footer-col .social-links a {
+  display: inline-block;
+  height: 40px;
+  width: 40px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 0 10px 10px 0;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 50%;
+  color: #532989;
+  transition: all 0.5s ease;
+}
+
+.footer-col .social-links a:hover {
+  background-color: #dfd9ec;
+}
+
+.logo-left,
+.logo-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-left {
+  margin-left: -20px;
+  margin-right: 100px;
+}
+
+.logo-right {
+  margin-left: -40px;
+}
+
+.logo-left img {
+  min-width: 230px;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(1px 1px 10px black);
+}
+
+.logo-right img {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(1px 1px 10px black);
+}
+
+.copyrightText {
+  display: flex;
+  justify-content: center;
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 300;
+  padding-top: 50px;
+}

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>rtu-eteeap-admin</title>
+    <link rel="icon" href="/images/ifldelogo.png" type="image/x-icon">
+    <link rel="stylesheet" href="./docs.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+      <div class="container">
+    <!--Sidebar--->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="../IFLDE Logo.png" class="iflde">
+        ETEEAP
+      </div>
+      <div class="nav-item" data-section="dashboard">
+        <a href="../dashboard/dashboard.html">
+        <i class="fas fa-chart-pie"></i>
+        Dashboard
+      </a>
+      </div>
+      <div class="nav-item" data-section="students">
+        <a href="../applicants/applicants.html">
+        <i class="fas fa-users"></i>
+        Applicants
+      </a>
+      </div>
+      <div class="nav-item" data-section="assessors">
+        <a href="../assessors/assessor.html">
+        <i class="fas fa-users"></i>
+        Assessors
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="courses">
+        <a href="../courses/course.html">
+        <i class="fas fa-book"></i>
+        Courses
+      </a>
+      </div>
+
+      <div class="nav-item active" data-section="files">
+        <a href="../documents/docs.html">
+        <i class="fas fa-file"></i>
+        Files
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="users">
+        <a href="../admins/admin.html">
+        <i class="fas fa-user"></i>
+        Admins
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="logs">
+        <a href="../activitylogs/logs.html">
+        <i class="fas fa-clock"></i>
+        Activity Logs
+      </a>
+      </div>
+    </div>
+
+    <!--Main Content-->
+    <div class="main-content">
+      <!-- Header -->
+       
+      <div class="header">
+        <div class="search-bar">
+       <i class="fas fa-search"></i>
+       <input type="text" placeholder="Search..." id="searchInput" />
+     </div>
+     
+     <div class="user-profile">
+       <div class="user-avatar">
+         <i class="fas fa-user"></i>
+       </div>
+
+       <div class="profile-dropdown">
+         <span class="profile-name"> Admin
+         <i class="fas fa-chevron-down" class="dropdown-toggle"></i>
+         <div class="dropdown-menu">
+           <a href="#" class="dropdown-item">
+             <i class="fas fa-user-cog"></i> My Profile
+           </a>
+           <a href="#" class="dropdown-item" id="logoutLink">
+            <i class="fas fa-sign-out-alt"></i>Logout
+          </span>
+          </a>
+         </div>
+       </div>
+     </div>
+   </div>
+
+
+      <!-- students Section -->
+      <div id="studentsSection" class="section active">
+        <div class="student-list">
+          <div class="table-header">
+            <h2>Initial Submissions - 0 Total Files</h2>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>File ID</th>
+                <th>Filename</th>
+                <th>Author</th>
+                <th>Size</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="allStudentsTableBody">
+              <!-- Will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+  </div>
+
+  
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteConfirmationModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Confirm Deletion</h2>
+        <button class="close-btn" onclick="closeDeleteModal()">
+          &times;
+        </button>
+      </div>
+      <div style="margin: 20px 0">
+        <p>
+          Are you sure you want to delete this item? This action cannot be
+          undone.
+        </p>
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: flex-end">
+        <button
+          class="action-btn"
+          onclick="closeDeleteModal()"
+          style="padding: 8px 16px"
+        >
+          Cancel
+        </button>
+        <button
+          class="action-btn delete-btn"
+          onclick="confirmDelete()"
+          style="padding: 8px 16px"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+<!-- Course Modal -->
+<div class="modal" id="courseModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="courseModalTitle">Add New Course</h2>
+      <button class="close-btn" onclick="closeCourseModal()">
+        &times;
+      </button>
+    </div>
+    <form id="courseForm">
+      <div class="form-group">
+        <label for="courseName">Course Name</label>
+        <input type="text" id="courseName" required />
+      </div>
+      <div class="form-group">
+        <label for="courseDescription">Description</label>
+        <textarea id="courseDescription" required rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="courseDuration">Duration (months)</label>
+        <input type="number" id="courseDuration" required min="1" />
+      </div>
+      <div class="form-group">
+        <label for="courseStatus">Status</label>
+        <select id="courseStatus" required>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <button type="submit" class="submit-btn">Save Course</button>
+    </form>
+  </div>
+</div>
+
+
+
+  <script src="./docs.js"></script>
+  <script src="../../shared/js/auth.js"></script>
+</body>
+</html>

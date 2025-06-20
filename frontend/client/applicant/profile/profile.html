@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETEEAP Tracking System</title>
+    <link rel="stylesheet" href="profile.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="../img/RTU Logo.png" class="logo1">
+            <img src="../img/IFLDE Logo.png" class="logo2">
+            <div class="logo-text-container">
+                <h2 class="logo-text">Rizal Technological University</h2>
+                <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="../timeline/timeline.html">Home</a></li>
+                    <li><a href="../portfolio/portfolio.html">Portfolio</a></li>
+                    <li class="separator"></li>
+
+                    <!-- Messages Dropdown -->
+                    <li class="icon dropdown">
+                        <a href="#" class="dropdown-toggle"><i class="fa-solid fa-envelope"></i></a>
+                        <div class="dropdown-content">
+                            <p>No new messages</p>
+                        </div>
+                    </li>
+
+                    <!-- Notifications Dropdown -->
+                    <li class="icon dropdown">
+                        <a href="#" class="dropdown-toggle"><i class="fa-solid fa-bell"></i></a>
+                        <div class="dropdown-content">
+                            <p>No new notifications</p>
+                        </div>
+                    </li>
+
+                    <!-- Profile Dropdown -->
+                    <li class="profile dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <img id="nav-profile-pic" class="nav-profile-pic" src="../img/default.jpg" alt="Profile">
+                            <span id="nav-profile-name">Applicant</span>
+                        </a>
+                        <div class="dropdown-content profile-dropdown">
+                            <a href="../Profile/profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+                            <a href="#" id="logout"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-pic-container">
+                <img id="profile-pic" src="../img/Profile Icon.jpg" alt="Profile Picture" class="profile-pic">
+                <label for="profile-pic-upload" class="upload-icon">
+                    <i class="fa-solid fa-camera"></i>
+                </label>
+                <input type="file" id="profile-pic-upload" class="profile-pic-upload" style="display:none;">
+            </div>
+    
+            <div class="profile-info">
+                <h1 id="user-name">Loading...</h1>
+                <p class="job-title" id="user-occupation">Loading...</p>
+                <p class="location" id="user-email"><i class="fa-solid fa-envelope"></i> Loading...</p>
+            </div>
+            <a href="#" class="edit-profile-button"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+        </div>
+    
+        <div class="section">
+            <h2><i class="fa-solid fa-user"></i> Personal Information</h2>
+            <div class="info-grid" id="personal-info-container">
+                <div class="info-item"><span>First Name:</span><span id="first-name">Loading...</span></div>
+                <div class="info-item"><span>Middle Name:</span><span id="middle-name">Loading...</span></div>
+                <div class="info-item"><span>Last Name:</span><span id="last-name">Loading...</span></div>
+                <div class="info-item"><span>Suffix:</span><span id="suffix">Loading...</span></div>
+                <div class="info-item"><span>Gender:</span><span id="gender">Loading...</span></div>
+                <div class="info-item"><span>Age:</span><span id="age">Loading...</span></div>
+                <div class="info-item"><span>Occupation:</span><span id="occupation">Loading...</span></div>
+                <div class="info-item"><span>Nationality:</span><span id="nationality">Loading...</span></div>
+                <div class="info-item"><span>Civil Status:</span><span id="civil-status">Loading...</span></div>
+                <div class="info-item"><span>Birthday:</span><span id="birthday">Loading...</span></div>
+                <div class="info-item"><span>Birth Place:</span><span id="birth-place">Loading...</span></div>
+                <div class="info-item"><span>Phone:</span><span id="phone">Loading...</span></div>
+                <div class="info-item"><span>Telephone:</span><span id="telephone">Loading...</span></div>
+                <div class="info-item"><span>Email:</span><span id="email">Loading...</span></div>
+            </div>
+            <a href="#" class="edit-button"><i class="fa-solid fa-pen"></i> Edit</a>
+        </div>
+    
+        <div class="section">
+            <h2><i class="fa-solid fa-map-marker-alt"></i> Address</h2>
+            <div class="info-grid" id="address-container">
+                <div class="info-item"><span>Country:</span><span id="country">Loading...</span></div>
+                <div class="info-item"><span>Province:</span><span id="province">Loading...</span></div>
+                <div class="info-item"><span>City/State:</span><span id="city">Loading...</span></div>
+                <div class="info-item"><span>Street:</span><span id="street">Loading...</span></div>
+                <div class="info-item"><span>Zip-Code:</span><span id="zip-code">Loading...</span></div>
+            </div>
+            <a href="#" class="edit-button"><i class="fa-solid fa-pen"></i> Edit</a>
+        </div>
+    
+        <div class="section">
+            <h2><i class="fa-solid fa-book"></i> Course</h2>
+            <div class="info-grid" id="course-container">
+                <div class="info-item"><span>First Priority:</span><span id="first-priority">Loading...</span></div>
+                <div class="info-item"><span>Second Priority:</span><span id="second-priority">Loading...</span></div>
+                <div class="info-item"><span>Third Priority:</span><span id="third-priority">Loading...</span></div>
+            </div>
+            <a href="#" class="edit-button"><i class="fa-solid fa-pen"></i> Edit</a>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification" style="display: none;"></div>
+
+    <script src="profile.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+</body>
+</html>

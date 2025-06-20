@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>rtu-eteeap-admin</title>
+  <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="./applicants.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+      <div class="container">
+    <!--Sidebar--->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="../IFLDE Logo.png" class="iflde">
+        ETEEAP
+      </div>
+      <div class="nav-item" data-section="dashboard">
+        <a href="../dashboard/dashboard.html">
+        <i class="fas fa-chart-pie"></i>
+        Dashboard
+      </a>
+      </div>
+      <div class="nav-item active" data-section="students">
+        <a href="../applicants/applicants.html">
+        <i class="fas fa-users"></i>
+        Applicants
+      </a>
+      </div>
+      <div class="nav-item" data-section="assessors">
+        <a href="../assessors/assessor.html">
+        <i class="fas fa-users"></i>
+        Assessors
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="courses">
+        <a href="../courses/course.html">
+        <i class="fas fa-book"></i>
+        Courses
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="files">
+        <a href="../documents/docs.html">
+        <i class="fas fa-file"></i>
+        Files
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="users">
+        <a href="../admins/admin.html">
+        <i class="fas fa-user"></i>
+        Admins
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="logs">
+        <a href="../activitylogs/logs.html">
+        <i class="fas fa-clock"></i>
+        Activity Logs
+      </a>
+      </div>
+    </div>
+
+    <!--Main Content-->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search..." id="searchInput" />
+        </div>
+        
+        <div class="user-profile">
+          <div class="profile-dropdown">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <span class="username">Admin</span>
+            <i class="fas fa-caret-down dropdown-toggle"></i>
+            <div class="dropdown-menu">
+              <a href="#" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                Profile
+              </a>
+              <a href="#" class="dropdown-item">
+                <i class="fas fa-cog"></i>
+                Settings
+              </a>
+              <a href="#" class="dropdown-item" id="logoutLink">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  
+
+      <!-- students Section -->
+      <div id="studentsSection" class="section active">
+        <div class="student-list">
+          <div class="table-header">
+  <h2>All Applicants</h2>
+  <button id="export-btn" class="export-button">
+    <i class="fas fa-file-export"></i> Export
+  </button>
+</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Applicant ID</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Application Date</th>
+                <th>Current Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="allStudentsTableBody">
+              <!-- Will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+<div class="loading-spinner" id="loadingSpinner">
+  <div class="spinner"></div>
+</div>
+
+<div class="notification" id="notification" style="display: none;"></div>
+
+<script src="../../shared/js/auth.js"></script>
+  <script src="./applicants.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  
+</body>
+</html>

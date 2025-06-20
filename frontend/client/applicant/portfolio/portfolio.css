@@ -1,0 +1,563 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+:root {
+  --default: #212121;
+  --sec-color: #8b5ec5;
+  --main-color: #532989;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to top, #532989, #dfd9ece5),
+    url("../img/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Navigation */
+header {
+  width: 100%;
+  background-color: #dfd9ec;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.logo1 {
+  width: 55px;
+}
+
+.logo2 {
+  width: 60px;
+}
+
+.logo-text-container {
+  text-align: left;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #002ab4;
+}
+
+.logo-subtext {
+  font-size: 0.9rem;
+  color: var(--main-color);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.nav ul {
+  list-style-type: none;
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav ul li {
+  display: inline;
+  position: relative;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.nav ul li a {
+  color: var(--main-color);
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 10px;
+  position: relative;
+  height: auto;
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav ul li a:hover {
+  color: var(--sec-color);
+}
+
+.separator {
+  width: 2px;
+  background-color: var(--main-color);
+}
+
+.icon a {
+  color: var(--main-color);
+  font-size: 24px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  width: 200px;
+  padding: 10px 0;
+  z-index: 100;
+  top: 40px;
+  text-align: center;
+  color: var(--main-color);
+}
+
+/* Dropdown Arrow */
+.dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent white transparent;
+}
+
+/* Profile Dropdown Specific Styling */
+.profile-dropdown {
+  width: 150px;
+}
+
+/* Dropdown Links */
+.dropdown-content a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  color: inherit !important;
+  background-color: #f1f1f1;
+}
+
+/* Show dropdown when active */
+.dropdown.active .dropdown-content {
+  display: block;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 20px;
+  background: linear-gradient(to top, #dfd9ec2f, #dfd9ece5);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 150px 0 50px 0;
+  width: 90%;
+}
+
+hr {
+  border: none;
+  border-top: 2px solid #8966b8;
+  margin: 20px 0;
+}
+
+.title {
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  color: var(--main-color);
+}
+.search-container {
+  position: relative;
+  width: 300px; /* Adjust the width of the search bar */
+}
+
+.search-bar {
+  width: 100%;
+  height: 30px; /* Set a specific height for the search bar */
+  padding: 0 30px 0 10px; /* Adjust padding to control the size and keep the icon positioned */
+  font-size: 14px;
+  border: 2px var(--main-color);
+  border-radius: 4px 5px;
+}
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #999;
+  font-size: 16px;
+  display: none; /* Hidden by default */
+}
+
+.clear-search:hover {
+  color: #333; /* Darker color on hover */
+}
+
+.file-count {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--main-color);
+  align-self: flex-end;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  color: var(--main-color);
+}
+
+h5 {
+  text-align: center;
+  display: block;
+  width: 100%;
+  color: var(--main-color);
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+  max-height: 50px; /* Default height */
+  transition: max-height 0.5s ease-in-out;
+  opacity: 1;
+}
+
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  cursor: pointer;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  font-size: 16px;
+  transition: transform 0.3s ease-in-out;
+  margin-left: 10px;
+}
+
+.file-count {
+  font-weight: bold;
+  position: relative;
+  top: -5px;
+  font-size: 14px;
+}
+
+/* Expand height when active */
+.expanded {
+  max-height: 1000px; /* Adjust based on content */
+  opacity: 1;
+}
+
+/* Rotate arrow when active */
+.rotated {
+  transform: rotate(180deg);
+}
+
+/* Upload button styling */
+.upload-btn {
+  display: block;
+  margin-top: 10px; /* Add margin-top to create space between table and button */
+  margin-bottom: 5px;
+  margin-right: 5px;
+  padding: 8px 12px;
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 80px;
+  text-align: center;
+  align-self: flex-end;
+  transition: opacity 0.3s ease-in-out;
+  transition: 0.2s ease;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  gap: 8px;
+}
+.upload-btn i {
+  font-size: 14px;
+}
+/* Hide button by default */
+.hidden {
+  opacity: 0;
+  max-height: 0;
+  visibility: hidden;
+  transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.upload-btn:hover {
+  background-color: var(--sec-color);
+  transform: scale(1.2);
+  transition: 0.2s ease;
+}
+
+.file-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  border-radius: 5px 5px 0 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+.file-table thead th {
+  background-color: var(--main-color);
+  color: white;
+  text-align: left;
+  padding: 10px;
+}
+.file-table th,
+.file-table td {
+  padding: 12px 15px;
+  text-align: left;
+}
+.file-table td:first-child {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-table tbody tr {
+  border-bottom: 1px solid #532989;
+  transition: 0.3s ease-in-out;
+}
+
+.file-table tbody tr:last-of-type {
+  border-bottom: 2px solid #532989;
+}
+
+.file-table tbody tr:hover {
+  transition: 0.3s ease-in-out;
+}
+
+.hidden {
+  display: none;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.delete-btn,
+.view-btn {
+  cursor: pointer;
+  padding: 5px 10px;
+  margin: 2px;
+  border: none;
+  border-radius: 5px;
+
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.delete-btn {
+  background-color: rgb(255, 0, 0);
+  color: white;
+}
+.view-btn {
+  background-color: var(--main-color);
+  color: white;
+}
+
+.delete-btn:hover,
+.view-btn:hover {
+  transform: scale(1.5);
+}
+
+.delete-btn i,
+.view-btn i {
+  font-size: 14px;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 5px;
+  color: white;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notification.success {
+  background-color: #4caf50;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+
+.notification.info {
+  background-color: #2196f3;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  height: 90vh;
+  margin: 2% auto;
+  background-color: #0000007e;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--main-color);
+  z-index: 1001;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+  background: var(--main-color);
+  color: white;
+  transform: scale(1.1);
+}
+
+.modal-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(100% - 40px);
+  margin: 20px 0;
+}
+
+.file-viewer {
+  flex-grow: 1;
+  height: 100%;
+  margin: 0 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#fileViewer,
+#imageViewer {
+  max-width: 100%;
+  max-height: 100%;
+  display: none;
+}
+
+#fileViewer {
+  width: 100%;
+  height: 100%;
+}
+
+#imageViewer {
+  object-fit: contain;
+}
+
+.slider-btn {
+  padding: 15px 20px;
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  margin: 0 10px;
+  min-width: 50px;
+  z-index: 1001;
+}
+
+.slider-btn:hover:not(:disabled) {
+  background-color: var(--sec-color);
+  transform: scale(1.1);
+}
+
+.slider-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.file-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  margin-top: 10px;
+  opacity: 0.5;
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETEEAP Tracking System</title>
+    <link rel="stylesheet" href="news.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="../img/RTU Logo.png" class="logo1">
+            <img src="../img/IFLDE Logo.png" class="logo2">
+            <div class="logo-text-container">
+                <h2 class="logo-text">Rizal Technological University</h2>
+                <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+            </div>
+        </div>
+        <nav class="nav">
+            <ul>
+                <li><a href="../../../../index.html">Home</a></li>
+                <li><a href="../about/about.html">About Us</a></li>
+                <li><a href="../downloads/downloads.html">Downloads</a></li>
+                <li><a href="../news/news.html">News</a></li>
+                <button class="btnLogin-popup" onclick="window.location.href='../login/login.html';">Login</button>
+            </ul>
+    </header>
+    
+    <section class="news">
+        <div class="container">
+            <h3>ETEEAP Provides Opportunities for Professionals</h3>
+            <p>Date: January 2023</p>
+            <h5>According to the Commission on Higher Education (CHED), the Expanded Tertiary Education Equivalency and 
+                Accreditation Program (ETEEAP) continues to provide opportunities for professionals to earn academic degrees 
+                based on work experience and prior learning. This program, highlighted in recent news, aims to make higher education 
+                more accessible for working individuals, especially those who cannot attend regular classes due to career demands. 
+                Institutions like Rizal Technological University actively participate in the program, offering flexible learning options 
+                and ensuring quality education through strict accreditation processes. ETEEAP plays a vital role in addressing the educational 
+                needs of the workforce, fostering career advancement and professional growth in the Philippines (CHED, 2023).
+            </h5>
+
+            <h3>RTU Joins the Expansion of ETEEAP Programs</h3>
+            <p>Date: July 2023</p>
+            <h5>Rizal Technological University (RTU) announced its active participation in the nationwide expansion of the Expanded Tertiary Education 
+                Equivalency and Accreditation Program (ETEEAP). This initiative, spearheaded by CHED, aims to increase the number of accredited 
+                universities offering the program. RTU will focus on providing opportunities for professionals in education, engineering, and business 
+                fields, ensuring high standards of quality and accessibility for learners balancing work and education (RTU, 2023).
+            </h5>
+        </div>
+    </section>    
+    
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col logo-left">
+                    <img src="../img/Bagong Pilipinas Logo.png" alt="Left Logo">
+                </div>
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <div>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <p>Room 5021, Main Academic Building, RTU Main Campus, Boni Ave., Mandaluyong.</p>
+                    </div>
+                    <div>
+                        <i class="fa fa-phone"></i>
+                        <p>(02) 8534-8267 local 1240</p>
+                    </div>
+                    <div>
+                        <i class="fa fa-envelope"></i>
+                        <p>iflde@rtu.edu.ph</p>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../home/index.html">Home</a></li>
+                        <li><a href="../about/about.html">About Us</a></li>
+                        <li><a href="../downloads/downloads.html">Downloads</a></li>
+                        <li><a href="../news/news.html">News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col logo-right">
+                    <img src="../img/Republika ng Pilipinas.png" alt="Right Logo">
+                </div>
+            </div>
+        </div>
+        <div class="copyrightText">
+            <p>Copyright © 2024. All Rights Reserved</p>
+        </div>
+    </footer>
+    
+    <!-- News Page Animation -->
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script>
+        // Scroll to the top on page refresh
+        window.addEventListener("beforeunload", () => {
+            window.scrollTo(0, 0);
+        });
+
+        // Initialize ScrollReveal
+        const sr = ScrollReveal({
+            reset: false,
+            distance: '60px',
+            duration: 2500,
+            delay: 400
+        });
+
+        const elements = [
+            { selector: '.news', origin: 'bottom' },
+        ];
+    
+        elements.forEach(item => {
+            sr.reveal(item.selector, { delay: 50, origin: item.origin, reset: false });
+        });
+    </script>
+</body>
+</html>

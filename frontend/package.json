@@ -1,0 +1,15 @@
+{
+  "name": "eteeap-tracking-system",
+  "version": "1.0.0",
+  "description": "test express",
+  "license": "ISC",
+  "author": "Capstone Intellects",
+  "type": "commonjs",
+  "scripts": {
+    "start": "npm run build && npx serve -s frontend -l $PORT",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETEEAP Tracking System</title>
+  <link rel="stylesheet" href="aboutus.css">
+  <style> 
+  
+  * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Poppins, sans-serif;
+  height: 100%; /* Ensure body takes full height */
+  overflow-y: auto; /* Enables scrolling when content overflows */
+}
+
+/* Ensuring the page takes at least full viewport height */
+.register-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Makes sure the page fills the viewport */
+  overflow: hidden;
+  position: relative;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Makes sure the page content takes the available space */
+}
+
+
+.background-image {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: -1;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5%;
+  background-color: #fff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  z-index: 10;
+}
+
+.logo-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.logo-primary {
+  aspect-ratio: 1.02;
+  object-fit: contain;
+  width: 49px;
+  border-radius: 50%;
+}
+
+.logo-secondary {
+  aspect-ratio: 1;
+  object-fit: contain;
+  width: 55px;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #4C308F;
+}
+
+.university-name {
+  color: #002AB4;
+}
+
+.institute-name {
+  color: #482C8D;
+}
+
+.header-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 20px;
+  font-weight: 700;
+  color: #4C308F;
+}
+
+.nav-item {
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  color: #482C8D;
+}
+
+.nav-item:hover {
+  color: #351F6A;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 13px;
+  font-size: 16px;
+}
+
+.btn-primary {
+  border-radius: 15px;
+  background-color: rgba(76, 48, 143, 1);
+  padding: 10px 17px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-outline {
+  border-radius: 15px;
+  color: rgba(76, 48, 143, 1);
+  padding: 10px 12px;
+  border: 1px solid rgba(76, 48, 143, 1);
+  cursor: pointer;
+}
+
+.banner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+  gap: 20px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.banner-logo {
+  width: 100px;
+  height: auto;
+  background: none;
+  box-shadow: none;
+}
+
+.banner-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.system-title {
+  font-size: 35px;
+  font-weight: 700;
+}
+
+.university-title {
+  font-size: 30px;
+  font-family: 'Poltawski Nowy', sans-serif;
+}
+
+.content-placeholder {
+  background-color: #fff;
+  border-radius: 25px;
+  box-shadow: 0 4px 4px 2px rgba(0, 0, 0, 0.25);
+  width: 90%;
+  max-width: 400px;
+  padding: 25px;
+  color: #4C308F;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.content-placeholder h3 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.content-placeholder p {
+  font-size: 16px;
+}
+
+/* General Footer Styling */
+.footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: url('images/footer.png') no-repeat center center/cover;
+    font-family: Poppins, sans-serif;
+    color: white;
+    padding: 20px 0;
+    font-size: 16px;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.footer-heading {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.footer-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    flex-wrap: wrap;
+}
+
+.footer-col {
+    text-align: center;
+    width: 22%;
+    padding: 10px;
+}
+
+.footer-logo-container {
+    margin-bottom: 10px; /* Space between logo and link */
+}
+
+.footer-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.footer-link-container {
+    margin-top: 10px;
+}
+
+.footer-link, .footer-phone, .footer-email-link {
+    font-size: 16px;
+    color: white;
+    text-decoration: none;
+}
+
+.footer-link:hover, .footer-phone:hover, .footer-email-link:hover {
+    text-decoration: underline;
+}
+
+.footer-address {
+    font-size: 14px;
+    color: white;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .footer-heading {
+        font-size: 24px;
+    }
+
+    .footer-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-col {
+        width: 90%;
+        margin-bottom: 15px;
+    }
+}
+
+	.copyright {
+	text-align: center;
+	font-size: 14px; /* Smaller font for copyright */
+	margin-top: 15px;
+	padding-top: 15px;
+	border-top: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+	width: 100%;
+	color: #fff;
+	padding: 21px 70px;
+	font: 500 24px/1.3 Poppins, sans-serif;
+	}
+
+	@media (max-width: 768px) {
+	.footer-heading {
+    font-size: 24px; /* Smaller heading for mobile */
+	}
+
+  .footer-row {
+    flex-direction: column;
+    align-items: center;
+	}
+
+  .footer-col {
+    width: 90%; /* Full width for columns on mobile */
+    margin-bottom: 15px;
+	}
+
+  .footer-logo {
+    width: 35px; /* Smaller logo size for mobile */
+    height: 35px; /* Smaller logo size for mobile */
+	}
+
+  .footer-email-link {
+    font-size: 16px;
+  }
+
+  .header-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nav-menu {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .content-placeholder {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .banner-logo {
+    width: 80px;
+  }
+
+  .system-title {
+    font-size: 28px;
+  }
+
+  .university-title {
+    font-size: 24px;
+  }
+}
+
+.about-us-content {
+  color: #fff;
+  text-align: left;
+  padding: 50px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-us-content h3 {
+  font-size: 35px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.about-us-content p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+  </style>
+</head>
+
+
+
+<body>
+  <div class="register-page">
+    <div class="page-container">
+      <img class="background-image" src="../images/background.png" alt="Background Image" />
+    
+      <header class="header-container">
+        <div class="logo-container">
+          <img class="logo-primary" src="../images/rtulogo.png" alt="RTU Logo" />
+          <img class="logo-secondary" src="../images/ifldelogo.png" alt="IFLeD Logo" />
+          <div class="header-text">
+            <div class="university-name">Rizal Technological University</div>
+            <div class="institute-name">Institute of Flexible Learning & Digital Education</div>
+          </div>
+        </div>
+        <div class="header-right">
+          <nav class="nav-menu">
+            <a href="../HomePage/homepage.html" class="nav-item">Home</a>
+            <a href="../AboutUS/aboutus.html" class="nav-item">About Us</a>
+            <a href="#" class="nav-item">Downloads</a>
+            <a href="#" class="nav-item">Services</a>
+            <a href="#" class="nav-item">News</a>
+          </nav>
+          <!-- Auth Buttons Section -->
+          <div class="auth-buttons">
+		  <a href="../ApplicantLogIn/login.html">
+            <button class="btn-primary">Login</button>
+			</a>
+		<a href="../ApplicantLogIn/register.html">	
+            <button class="btn-outline">Sign Up</button>
+			</a>
+          </div>
+        </div>
+      </header>
+
+<div class="about-us-content">
+  <br><h3>Insert Text Here</h3>
+  <p>Insert Text Here</p>
+  
+  
+  <br><h3>Insert Text</h3>
+  <p>Insert Text</p>
+
+
+</div>
+
+
+    <!-- Footer Section -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-heading">
+            <h2 class="footer-title">CONTACT US!</h2>
+        </div>
+
+        <div class="footer-row">
+            <div class="footer-col">
+                <div class="footer-logo-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook Logo" class="footer-logo">
+                </div>
+                <div class="footer-link-container">
+                    <a href="https://www.facebook.com/rtuiflde" class="footer-link">Facebook</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-logo-container">
+                    <img src="../images/location.jpg" alt="Location Logo" class="footer-logo">
+                </div>
+                <div class="footer-link-container">
+                    <address class="footer-address">
+                        Room 5021, Main Academic Building, RTU Main Campus, Boni Ave., Mandaluyong.
+                    </address>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-logo-container">
+                    <img src="../images/phone.png" alt="Phone Logo" class="footer-logo">
+                </div>
+                <div class="footer-link-container">
+                    <a href="tel:02-8534-8267" class="footer-phone">(02) 8534-8267 local 1240</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-logo-container">
+                    <img src="../images/email.png" alt="Email Icon" class="footer-logo">
+                </div>
+                <div class="footer-link-container">
+                    <a href="mailto:iflde@rtu.edu.ph" class="footer-email-link">iflde@rtu.edu.ph</a>
+                </div>
+            </div>
+        </div>
+    </div>
+	

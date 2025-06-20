@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RTU-ETEEAP - Applicant Profile</title>
+  <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="./applicantprofile.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container">
+    <!--Sidebar--->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="../IFLDE Logo.png" class="iflde">
+        ETEEAP
+      </div>
+      <div class="nav-item" data-section="dashboard">
+        <a href="../dashboard/dashboard.html">
+        <i class="fas fa-chart-pie"></i>
+        Dashboard
+      </a>
+      </div>
+      <div class="nav-item active" data-section="students">
+        <a href="../applicants/applicants.html">
+        <i class="fas fa-users"></i>
+        Applicants
+      </a>
+      </div>
+      <div class="nav-item" data-section="assessors">
+        <a href="../assessors/assessor.html">
+        <i class="fas fa-users"></i>
+        Assessors
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="courses">
+        <a href="../courses/course.html">
+        <i class="fas fa-book"></i>
+        Courses
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="files">
+        <a href="../documents/docs.html">
+        <i class="fas fa-file"></i>
+        Files
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="users">
+        <a href="../admins/admin.html">
+        <i class="fas fa-user"></i>
+        Admins
+      </a>
+      </div>
+
+      <div class="nav-item" data-section="logs">
+        <a href="../activitylogs/logs.html">
+        <i class="fas fa-clock"></i>
+        Activity Logs
+      </a>
+      </div>
+    </div>
+
+    <!--Main Content-->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-title">
+          <button id="backButton" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Applicants
+          </button>
+        </div>
+        
+        <div class="user-profile">
+          <div class="profile-dropdown">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <!-- Applicant Profile Content -->
+      <div class="profile-content">
+        <div class="profile-card">
+          <div class="profile-header">
+            <h2>Applicant Profile</h2>
+            <div class="status-container">
+              <span id="statusBadge" class="status-badge"></span>
+              <span>Application Date: <span id="createdAt"></span></span>
+            </div>
+          </div>
+          
+          <div class="profile-body">
+            <!-- Profile Header -->
+            <div class="profile-info">
+              <div class="profile-pic-container">
+                <div class="profile-pic">
+                  <i class="fas fa-user"></i>
+                </div>
+              </div>
+              <div class="profile-details">
+                <h1 id="profile-name">Loading...</h1>
+                <p class="job-title" id="profile-occupation"></p>
+                <p class="location">
+                  <i class="fas fa-envelope"></i> <span id="profile-email"></span>
+                </p>
+                <p>Applicant ID: <span id="applicantId"></span></p>
+              </div>
+            </div>
+
+            <!-- Two Column Layout -->
+            <div class="two-column-details">
+              <!-- Left Column -->
+              <div class="column">
+                <div class="info-section">
+                  <h3><i class="fas fa-user-circle"></i> Personal Information</h3>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span>Gender:</span>
+                      <span id="profile-gender"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Age:</span>
+                      <span id="profile-age"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Nationality:</span>
+                      <span id="profile-nationality"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Civil Status:</span>
+                      <span id="profile-civil-status"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Birthdate:</span>
+                      <span id="profile-birthdate"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Birthplace:</span>
+                      <span id="profile-birthplace"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="info-section">
+                  <h3><i class="fas fa-phone"></i> Contact Information</h3>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span>Phone:</span>
+                      <span id="profile-phone"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Telephone:</span>
+                      <span id="profile-telephone"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column -->
+              <div class="column">
+                <div class="info-section">
+                  <h3><i class="fas fa-map-marker-alt"></i> Address Information</h3>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span>Country:</span>
+                      <span id="profile-country"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Province:</span>
+                      <span id="profile-province"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>City:</span>
+                      <span id="profile-city"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>Street:</span>
+                      <span id="profile-street"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>ZIP Code:</span>
+                      <span id="profile-zip"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="info-section">
+                  <h3><i class="fas fa-graduation-cap"></i> Course Priorities</h3>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span>1st Priority:</span>
+                      <span id="profile-first-priority"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>2nd Priority:</span>
+                      <span id="profile-second-priority"></span>
+                    </div>
+                    <div class="info-item">
+                      <span>3rd Priority:</span>
+                      <span id="profile-third-priority"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents Section -->
+            <!-- Update your documents container -->
+<div class="info-section full-width">
+  <h3><i class="fas fa-file"></i> Submitted Documents</h3>
+  <div id="documents-container" class="documents-container">
+    <!-- Template for document items -->
+    <template id="document-template">
+      <div class="document-item">
+        <i class="fas fa-file-pdf document-icon"></i>
+        <div class="document-info">
+          <span class="document-name"></span>
+          <span class="document-date"></span>
+        </div>
+        <button class="btn btn-secondary document-download">
+          <i class="fas fa-download"></i> Download
+        </button>
+      </div>
+    </template>
+    
+    <!-- Fallback content -->
+    <div class="no-documents">
+      <i class="fas fa-folder-open"></i>
+      <p>No documents submitted yet</p>
+    </div>
+  </div>
+</div>
+
+            <!-- Action Buttons -->
+            <div class="profile-actions">
+              <button id="approveBtn" class="btn btn-success">
+                <i class="fas fa-check"></i> Approve Application
+              </button>
+              <button id="rejectBtn" class="btn btn-danger">
+                <i class="fas fa-times"></i> Reject Application
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Notification -->
+  <div class="notification" id="notification" style="display: none;"></div>
+
+  <!-- Assign Assessor Modal -->
+  <div class="modal" id="assignAssessorModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Assign Assessor</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="assessorSelect">Select Assessor:</label>
+          <select id="assessorSelect" class="form-control">
+            <option value="" disabled selected>Select an assessor</option>
+          </select>
+        </div>
+        <div id="assessorDetails" class="assessor-details" style="display: none;">
+          <h4>Assessor Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span>Assessor ID:</span>
+              <span id="assessorIdDisplay"></span>
+            </div>
+            <div class="info-item">
+              <span>Type:</span>
+              <span id="assessorTypeDisplay"></span>
+            </div>
+            <div class="info-item">
+              <span>Expertise:</span>
+              <span id="assessorExpertiseDisplay"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="confirmAssignBtn" class="btn btn-primary">Assign Assessor</button>
+        <button class="btn btn-secondary close-modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../shared/js/auth.js"></script>
+  <script src="./applicantprofile.js"></script>
+</body>
+</html>
