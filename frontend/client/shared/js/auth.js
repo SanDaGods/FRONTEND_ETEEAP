@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app";
+const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 
 /**
  * Checks authentication status and redirects to login if not authenticated

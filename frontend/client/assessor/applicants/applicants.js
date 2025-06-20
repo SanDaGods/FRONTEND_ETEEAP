@@ -1,6 +1,6 @@
 // ApplicantList.js - Updated to match AssessorDashboard functionality
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://updated-backend-production-ff82.up.railway.app";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://backendeteeap-production.up.railway.app";
 let applicants = [];
 let currentSection = "applicants";
 

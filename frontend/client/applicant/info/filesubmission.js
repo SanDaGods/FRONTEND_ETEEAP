@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app"; 
+  const API_BASE_URL = "https://backendeteeap-production.up.railway.app"; 
 
   const fileInput = document.getElementById("file-upload");
   const dropArea = document.querySelector(".upload");

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-      const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app";
+      const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
   
   // Authentication and dropdown code remains the same
   const logoutButton = document.querySelector("#logout");
