@@ -37,23 +37,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+// New Timeline Logic
 async function fetchApplicantStatus() {
   try {
-    console.log("Fetching auth status from:", `${API_BASE_URL}/api/auth-status`);
-    
     const response = await fetch(`${API_BASE_URL}/api/auth-status`, {
-      credentials: 'include',
+      credentials: 'include', // Required for cookies
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       }
     });
 
-    console.log("Response status:", response.status);
-    
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error response text:", errorText);
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      console.error("Auth status check failed:", response.status);
+      return; // Exit without redirect
     }
 
     const data = await response.json();
@@ -62,11 +58,12 @@ async function fetchApplicantStatus() {
     if (data.authenticated && data.user) {
       updateTimeline(data.user.status);
     } else {
-      window.location.href = "../login/login.html";
+      console.log("User not authenticated:", data.message || "No authentication data");
+      // No redirect - just log the status
     }
   } catch (error) {
-    console.error("Error fetching applicant status:", error);
-    window.location.href = "../login/login.html";
+    console.error("Error checking auth status:", error);
+    // No redirect - just log the error
   }
 }
 
