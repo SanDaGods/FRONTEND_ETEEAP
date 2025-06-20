@@ -40,34 +40,16 @@ document.addEventListener("DOMContentLoaded", function () {
 // New Timeline Logic
 async function fetchApplicantStatus() {
   try {
-    console.log("Attempting to fetch auth status..."); // Debug log
-    
     const response = await fetch(`${API_BASE_URL}/api/auth-status`, {
-      credentials: 'include',
+      credentials: 'include', // Required for cookies
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json' // Explicitly ask for JSON
+        'Content-Type': 'application/json'
       }
     });
 
-    console.log("Received response:", response); // Debug log
-
-    // First check if response is HTML (indicating 404)
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('text/html')) {
-      const html = await response.text();
-      console.error("Received HTML instead of JSON:", html);
-      throw new Error("Endpoint returned HTML (likely 404)");
-    }
-
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.error("Auth status check failed:", {
-        status: response.status,
-        statusText: response.statusText,
-        errorData
-      });
-      return;
+      console.error("Auth status check failed:", response.status);
+      return; // Exit without redirect
     }
 
     const data = await response.json();
@@ -77,18 +59,11 @@ async function fetchApplicantStatus() {
       updateTimeline(data.user.status);
     } else {
       console.log("User not authenticated:", data.message || "No authentication data");
+      // No redirect - just log the status
     }
   } catch (error) {
-    console.error("Full error details:", {
-      error: error.message,
-      stack: error.stack
-    });
-    
-    // For debugging - show error on page temporarily
-    document.body.insertAdjacentHTML('beforeend', 
-      `<div style="position:fixed;bottom:0;background:red;color:white;padding:1rem;">
-        Debug: ${error.message}
-      </div>`);
+    console.error("Error checking auth status:", error);
+    // No redirect - just log the error
   }
 }
 
