@@ -37,35 +37,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-// New Timeline Logic
-async function fetchApplicantStatus() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/auth-status`, {
-      credentials: 'include', // Required for cookies
-      headers: {
-        'Content-Type': 'application/json'
+  // New Timeline Logic
+  async function fetchApplicantStatus() {
+    try {
+      const response = await fetch("/api/auth-status");
+      const data = await response.json();
+
+      if (data.authenticated && data.user) {
+        updateTimeline(data.user.status);
+      } else {
+        // Handle unauthenticated user
+        window.location.href = "../login/login.html";
       }
-    });
-
-    if (!response.ok) {
-      console.error("Auth status check failed:", response.status);
-      return; // Exit without redirect
+    } catch (error) {
+      console.error("Error fetching applicant status:", error);
     }
-
-    const data = await response.json();
-    console.log("Auth status data:", data);
-
-    if (data.authenticated && data.user) {
-      updateTimeline(data.user.status);
-    } else {
-      console.log("User not authenticated:", data.message || "No authentication data");
-      // No redirect - just log the status
-    }
-  } catch (error) {
-    console.error("Error checking auth status:", error);
-    // No redirect - just log the error
   }
-}
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
