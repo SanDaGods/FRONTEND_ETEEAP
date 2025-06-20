@@ -37,22 +37,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // New Timeline Logic
-  async function fetchApplicantStatus() {
-    try {
-      const response = await fetch("/api/auth-status");
-      const data = await response.json();
-
-      if (data.authenticated && data.user) {
-        updateTimeline(data.user.status);
-      } else {
-        // Handle unauthenticated user
-        window.location.href = "../login/login.html";
+async function fetchApplicantStatus() {
+  try {
+    console.log("Fetching auth status from:", `${API_BASE_URL}/api/auth-status`);
+    
+    const response = await fetch(`${API_BASE_URL}/api/auth-status`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
       }
-    } catch (error) {
-      console.error("Error fetching applicant status:", error);
+    });
+
+    console.log("Response status:", response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error response text:", errorText);
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log("Auth status data:", data);
+
+    if (data.authenticated && data.user) {
+      updateTimeline(data.user.status);
+    } else {
+      window.location.href = "../login/login.html";
+    }
+  } catch (error) {
+    console.error("Error fetching applicant status:", error);
+    window.location.href = "../login/login.html";
   }
+}
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
