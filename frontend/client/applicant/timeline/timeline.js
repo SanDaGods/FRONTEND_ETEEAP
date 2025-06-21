@@ -1,5 +1,7 @@
+const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", function () {
-      const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+      
   
   // Authentication and dropdown code remains the same
   const logoutButton = document.querySelector("#logout");
@@ -38,21 +40,21 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // New Timeline Logic
-  async function fetchApplicantStatus() {
-    try {
-      const response = await fetch("/api/auth-status");
-      const data = await response.json();
+async function fetchApplicantStatus() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth-status`);
+    const data = await response.json();
 
-      if (data.authenticated && data.user) {
-        updateTimeline(data.user.status);
-      } else {
-        // Handle unauthenticated user
-        window.location.href = "../login/login.html";
-      }
-    } catch (error) {
-      console.error("Error fetching applicant status:", error);
+    if (data.authenticated && data.user) {
+      updateTimeline(data.user.status);
+    } else {
+      // Handle unauthenticated user
+      window.location.href = "../login/login.html";
     }
+  } catch (error) {
+    console.error("Error fetching applicant status:", error);
   }
+}
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
