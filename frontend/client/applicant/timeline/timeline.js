@@ -1,8 +1,48 @@
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 
 document.addEventListener("DOMContentLoaded", function () {
-      
-  
+  // Notification function
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // Add to body
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      notification.classList.add('fade-out');
+      setTimeout(() => notification.remove(), 500);
+    }, 5000);
+  }
+
+  // Add some basic styles for the notification
+  const style = document.createElement('style');
+  style.textContent = `
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 5px;
+      color: white;
+      background-color: #333;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    .notification.info { background-color: #3498db; }
+    .notification.success { background-color: #2ecc71; }
+    .notification.warning { background-color: #f39c12; }
+    .notification.error { background-color: #e74c3c; }
+    .notification.fade-out {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+  `;
+  document.head.appendChild(style);
+
   // Authentication and dropdown code remains the same
   const logoutButton = document.querySelector("#logout");
 
@@ -40,23 +80,24 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // New Timeline Logic
-async function fetchApplicantStatus() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth-status`);
-    const data = await response.json();
+  async function fetchApplicantStatus() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth-status`);
+      const data = await response.json();
 
-    if (data.authenticated && data.user) {
-      updateTimeline(data.user.status);
-    } else {
-      // Handle unauthenticated user without redirect
-      console.warn("User not authenticated.");
-      // Optional: call a function to show a login modal or notify user
+      if (data.authenticated && data.user) {
+        updateTimeline(data.user.status);
+        showNotification("Timeline updated successfully!", "success");
+      } else {
+        // Handle unauthenticated user without redirect
+        showNotification("Please login to view your application timeline", "warning");
+        console.warn("User not authenticated.");
+      }
+    } catch (error) {
+      console.error("Error fetching applicant status:", error);
+      showNotification("Failed to load timeline data", "error");
     }
-  } catch (error) {
-    console.error("Error fetching applicant status:", error);
   }
-}
-
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
