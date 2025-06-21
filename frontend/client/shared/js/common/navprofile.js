@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './config.js'
+import { API_BASE_URL } from './config.js';
 
 class NavProfile {
   constructor() {
@@ -9,59 +9,92 @@ class NavProfile {
   async init() {
     try {
       await this.loadUserData();
-      this.setupEventListeners(); // <-- this sets up dropdown toggles
+      this.setupEventListeners();
     } catch (error) {
       console.error("Navigation profile initialization error:", error);
     }
   }
 
-async loadUserData() {
-  const authResponse = await fetch(`${API_BASE_URL}/auth-status`);
-  const authData = await authResponse.json();
+  async loadUserData() {
+    try {
+      const authResponse = await fetch(`${API_BASE_URL}/auth-status`, {
+        credentials: "include"
+      });
+      
+      if (!authResponse.ok) throw new Error("Auth check failed");
+      
+      const authData = await authResponse.json();
 
-  if (!authData.authenticated) {
-    console.warn("User not authenticated.");
-    return;
-  }
-
-  if (authData.user) {
-    await this.loadProfilePicture();
-    this.updateProfileName(authData.user.personalInfo || authData.user);
-  }
-}
-
-
-async loadProfilePicture() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/profile-pic/${this.userId}`);
-    if (response.ok) {
-      const blob = await response.blob();
-      const imageUrl = URL.createObjectURL(blob);
-      const navProfilePic = document.getElementById("nav-profile-pic");
-      if (navProfilePic) {
-        navProfilePic.src = imageUrl;
+      if (!authData.authenticated) {
+        console.warn("User not authenticated.");
+        return;
       }
+
+      if (authData.user) {
+        await this.loadProfilePicture();
+        this.updateProfileName(authData.user.personalInfo || authData.user);
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
     }
-  } catch (error) {
-    console.error("Error loading profile picture:", error);
   }
-}
+
+  async loadProfilePicture() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/profile-pic/${this.userId}`, {
+        credentials: "include"
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        const navProfilePic = document.getElementById("nav-profile-pic");
+        if (navProfilePic) {
+          navProfilePic.src = imageUrl;
+        }
+      }
+    } catch (error) {
+      console.error("Error loading profile picture:", error);
+    }
+  }
 
   updateProfileName(userData) {
     const navProfileName = document.getElementById("nav-profile-name");
     if (navProfileName && userData) {
       const nameParts = [userData.firstname, userData.lastname];
       const displayName = nameParts
-        .filter((part) => part && part.trim())
+        .filter(part => part && part.trim())
         .join(" ");
-      navProfileName.innerText = displayName || "Applicant";
+      navProfileName.textContent = displayName || "Applicant";
     }
   }
 
   setupEventListeners() {
-    // Toggle dropdowns on click
+    // Get logout button reference safely
+    const logoutBtn = document.getElementById("logoutBtn");
+    
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch(`${API_BASE_URL}/logout`, {
+            method: "POST",
+            credentials: "include"
+          });
+          
+          if (response.ok) {
+            localStorage.clear();
+            window.location.href = "../login/login.html";
+          }
+        } catch (err) {
+          console.error("Logout failed:", err);
+        }
+      });
+    }
+
+    // Dropdown toggle functionality
     const dropdownToggles = document.querySelectorAll(".dropdown-toggle");
-    dropdownToggles.forEach((toggle) => {
+    dropdownToggles.forEach(toggle => {
       toggle.addEventListener("click", (e) => {
         e.preventDefault();
         const dropdown = toggle.closest(".dropdown");
@@ -70,12 +103,12 @@ async loadProfilePicture() {
         const content = dropdown.querySelector(".dropdown-content");
         if (!content) return;
 
-        // Close all other dropdowns first
-        document.querySelectorAll(".dropdown-content").forEach((el) => {
+        // Close other dropdowns
+        document.querySelectorAll(".dropdown-content").forEach(el => {
           if (el !== content) el.classList.remove("show");
         });
 
-        // Toggle current one
+        // Toggle current dropdown
         content.classList.toggle("show");
       });
     });
@@ -83,33 +116,15 @@ async loadProfilePicture() {
     // Close dropdowns when clicking outside
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".dropdown")) {
-        document.querySelectorAll(".dropdown-content").forEach((el) => {
+        document.querySelectorAll(".dropdown-content").forEach(el => {
           el.classList.remove("show");
         });
       }
     });
-
-    // Logout handler
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    localStorage.clear();
-    try {
-      await fetch(`${API_BASE_URL}/logout`, { 
-        method: "POST", 
-        credentials: "include" 
-      });
-    } catch (err) {
-      console.warn("Logout failed or no session:", err);
-    }
-    window.location.href = "../login/login.html";
-  });
-}
-
   }
 }
 
-// Initialize the nav profile when the script loads
+// Initialize only after DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
   new NavProfile();
 });
