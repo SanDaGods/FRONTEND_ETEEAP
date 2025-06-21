@@ -13,8 +13,16 @@ class NavProfile {
     }
   }
 
-  async loadUserData() {
-    const authResponse = await fetch("/applicant/auth-status");
+async loadUserData() {
+  try {
+    const authResponse = await fetch(`${API_BASE_URL}/api/auth-status`, {
+      credentials: 'include'
+    });
+    
+    if (!authResponse.ok) {
+      throw new Error('Not authenticated');
+    }
+    
     const authData = await authResponse.json();
 
     if (!authData.authenticated) {
@@ -26,7 +34,11 @@ class NavProfile {
       await this.loadProfilePicture();
       this.updateProfileName(authData.user.personalInfo || authData.user);
     }
+  } catch (error) {
+    console.error("Authentication check failed:", error);
+    window.location.href = "../login/login.html";
   }
+}
 
   async loadProfilePicture() {
     try {
