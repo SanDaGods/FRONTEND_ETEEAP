@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '/shared/js/common/config.js';
+const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 
 document.addEventListener("DOMContentLoaded", function () {
       
