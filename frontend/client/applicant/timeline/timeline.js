@@ -38,29 +38,21 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // New Timeline Logic
-// timeline.js - Update the fetchApplicantStatus function
-async function fetchApplicantStatus() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/applicant/auth-status`, {
-      credentials: 'include' // Important for sending cookies
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
+  async function fetchApplicantStatus() {
+    try {
+      const response = await fetch("/api/auth-status");
+      const data = await response.json();
 
-    if (data.authenticated && data.user) {
-      updateTimeline(data.user.status);
-    } else {
-      window.location.href = "../login/login.html";
+      if (data.authenticated && data.user) {
+        updateTimeline(data.user.status);
+      } else {
+        // Handle unauthenticated user
+        window.location.href = "../login/login.html";
+      }
+    } catch (error) {
+      console.error("Error fetching applicant status:", error);
     }
-  } catch (error) {
-    console.error("Error fetching applicant status:", error);
-    window.location.href = "../login/login.html";
   }
-}
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
