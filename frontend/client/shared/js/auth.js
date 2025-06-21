@@ -1,5 +1,4 @@
-const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
-
+import { API_BASE_URL } from './common/config.js';
 /**
  * Checks authentication status and redirects to login if not authenticated
  * Call this on any protected page
