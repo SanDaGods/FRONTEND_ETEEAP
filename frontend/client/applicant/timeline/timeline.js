@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Timeline Logic
   async function fetchApplicantStatus() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth-status`, {
+      const response = await fetch(`${API_BASE_URL}/api/applicant/auth-status`, {
         credentials: 'include'
       });
       

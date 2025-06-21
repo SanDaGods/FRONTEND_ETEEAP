@@ -174,28 +174,45 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Similar updates for registration form
-  document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    // ... existing validation code ...
+document.getElementById("applicantLoginForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+  const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
+  const password = document.getElementById("applicantPassword").value;
+  
+  if (!email || !password) {
+    showNotification("Please enter both email and password", "error");
+    return;
+  }
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/applicant/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Logging in...";
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Registration failed");
-      
-      showNotification("Registration successful!", "success");
-      localStorage.setItem("userId", data.data.userId);
-      window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/info/information.html";
-    } catch (error) {
-      showNotification(`Registration failed: ${error.message}`, "error");
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/applicant/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include" // Important for cookies
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || "Login failed");
     }
-  });
+
+    showNotification("Login successful!", "success");
+    localStorage.setItem("userId", data.data.userId);
+    window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/timeline/timeline.html";
+  } catch (error) {
+    showNotification(`Login failed: ${error.message}`, "error");
+    console.error("Login error:", error);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  }
+});
 });
