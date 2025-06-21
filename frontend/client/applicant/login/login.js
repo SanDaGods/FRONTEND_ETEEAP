@@ -133,39 +133,69 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.getElementById("applicantLoginForm")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
-        const password = document.getElementById("applicantPassword").value;
-        if (!email || !password) return showNotification("Please enter both email and password", "error");
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.textContent;
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Logging in...";
+  document.getElementById("applicantLoginForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
+    const password = document.getElementById("applicantPassword").value;
+    
+    if (!email || !password) {
+      showNotification("Please enter both email and password", "error");
+      return;
+    }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-                credentials: "include"
-            });
-            const data = await response.json();
-            if (response.ok) {
-                showNotification("Login successful!", "success");
-                localStorage.setItem("userId", data.data.userId);
-                localStorage.setItem("userEmail", data.data.email);
-                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/timeline/timeline.html";
-            } else {
-                throw new Error(data.error || "Login failed");
-            }
-        } catch (error) {
-            showNotification(`Login failed: ${error.message}`, "error");
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-        }
-    });
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
 
-    // You can add similar login logic for adminLoginForm and assessorLoginForm if needed
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/applicant/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include"
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
+      showNotification("Login successful!", "success");
+      localStorage.setItem("userId", data.data.userId);
+      window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/timeline/timeline.html";
+    } catch (error) {
+      showNotification(`Login failed: ${error.message}`, "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+
+  // Similar updates for registration form
+  document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    // ... existing validation code ...
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/applicant/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Registration failed");
+      
+      showNotification("Registration successful!", "success");
+      localStorage.setItem("userId", data.data.userId);
+      window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/info/information.html";
+    } catch (error) {
+      showNotification(`Registration failed: ${error.message}`, "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
 });

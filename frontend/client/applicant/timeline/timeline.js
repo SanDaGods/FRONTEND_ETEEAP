@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-      const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+  const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
   
-  // Authentication and dropdown code remains the same
+  // Authentication and dropdown code
   const logoutButton = document.querySelector("#logout");
 
   if (logoutButton) {
@@ -37,41 +37,39 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // New Timeline Logic
- async function fetchApplicantStatus() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/auth-status`, {
-      credentials: 'include' // Important for sending cookies
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
+  // Timeline Logic
+  async function fetchApplicantStatus() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth-status`, {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
 
-    if (data.authenticated && data.user) {
-      updateTimeline(data.user.status);
-    } else {
+      if (data.authenticated && data.user) {
+        updateTimeline(data.user.status);
+      } else {
+        window.location.href = "../login/login.html";
+      }
+    } catch (error) {
+      console.error("Error fetching applicant status:", error);
       window.location.href = "../login/login.html";
     }
-  } catch (error) {
-    console.error("Error fetching applicant status:", error);
-    window.location.href = "../login/login.html";
   }
-}
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
+    const timelineTitle = document.querySelector(".timeline");
+    const resultLink = document.getElementById("result-link");
 
     // Reset all steps
     steps.forEach((step) => {
       step.className = "step-todo";
     });
-
-    // Special handling for rejected/failed states
-    const timelineTitle = document.querySelector(".timeline");
-    const resultLink = document.getElementById("result-link");
 
     switch (status) {
       case "Pending Review":
@@ -91,30 +89,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "Evaluated - Passed":
         steps.forEach((step) => (step.className = "step-done"));
-        resultLink.href = "result.html";
-        resultLink.style.pointerEvents = "auto";
-        resultLink.style.color = "";
+        if (resultLink) {
+          resultLink.href = "result.html";
+          resultLink.style.pointerEvents = "auto";
+          resultLink.style.color = "";
+        }
         break;
 
       case "Evaluated - Failed":
         steps.forEach((step) => (step.className = "step-done"));
-        steps[4].className = "step-failed"; // Add special class for failed state
-        timelineTitle.textContent = "Application Timeline (Not Passed)";
-        resultLink.href = "result.html";
-        resultLink.style.pointerEvents = "auto";
-        resultLink.style.color = "";
+        steps[4].className = "step-failed";
+        if (timelineTitle) timelineTitle.textContent = "Application Timeline (Not Passed)";
+        if (resultLink) {
+          resultLink.href = "result.html";
+          resultLink.style.pointerEvents = "auto";
+          resultLink.style.color = "";
+        }
         break;
 
       case "Rejected":
         steps[0].className = "step-done";
-        steps[1].className = "step-rejected"; // Special styling for rejection
-        steps[1].querySelector(".sub-text").textContent =
-          "Your application was rejected";
+        steps[1].className = "step-rejected";
+        if (timelineTitle) timelineTitle.textContent = "Application Timeline (Rejected)";
         // Hide remaining steps
         for (let i = 2; i < steps.length; i++) {
           steps[i].style.display = "none";
         }
-        timelineTitle.textContent = "Application Timeline (Rejected)";
         break;
 
       default:
@@ -122,5 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Initialize
   fetchApplicantStatus();
 });

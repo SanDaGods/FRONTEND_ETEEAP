@@ -1,5 +1,6 @@
 class NavProfile {
   constructor() {
+    this.API_BASE_URL = "https://backendeteeap-production.up.railway.app";
     this.userId = localStorage.getItem("userId");
     this.init();
   }
@@ -7,49 +8,61 @@ class NavProfile {
   async init() {
     try {
       await this.loadUserData();
-      this.setupEventListeners(); // <-- this sets up dropdown toggles
+      this.setupEventListeners();
     } catch (error) {
       console.error("Navigation profile initialization error:", error);
-    }
-  }
-
-async loadUserData() {
-  try {
-    const authResponse = await fetch(`${API_BASE_URL}/api/auth-status`, {
-      credentials: 'include'
-    });
-    
-    if (!authResponse.ok) {
-      throw new Error('Not authenticated');
-    }
-    
-    const authData = await authResponse.json();
-
-    if (!authData.authenticated) {
       window.location.href = "../login/login.html";
-      return;
     }
-
-    if (authData.user) {
-      await this.loadProfilePicture();
-      this.updateProfileName(authData.user.personalInfo || authData.user);
-    }
-  } catch (error) {
-    console.error("Authentication check failed:", error);
-    window.location.href = "../login/login.html";
   }
-}
 
-  async loadProfilePicture() {
+  async loadUserData() {
     try {
-      const response = await fetch(`/api/profile-pic/${this.userId}`);
-      if (response.ok) {
-        const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        const navProfilePic = document.getElementById("nav-profile-pic");
-        if (navProfilePic) {
-          navProfilePic.src = imageUrl;
+      // Try both endpoints for backward compatibility
+      let response = await fetch(`${this.API_BASE_URL}/api/auth-status`, {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        response = await fetch(`${this.API_BASE_URL}/applicant/auth-status`, {
+          credentials: 'include'
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error('Not authenticated');
+      }
+      
+      const authData = await response.json();
+
+      if (!authData.authenticated) {
+        window.location.href = "../login/login.html";
+        return;
+      }
+
+      if (authData.user) {
+        await this.loadProfilePicture(authData.user);
+        this.updateProfileName(authData.user.personalInfo || authData.user);
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      window.location.href = "../login/login.html";
+    }
+  }
+
+  async loadProfilePicture(user) {
+    try {
+      const navProfilePic = document.getElementById("nav-profile-pic");
+      if (!navProfilePic) return;
+
+      if (user?.profilePicId) {
+        const response = await fetch(`${this.API_BASE_URL}/api/profile-pic/${this.userId}`);
+        if (response.ok) {
+          const blob = await response.blob();
+          navProfilePic.src = URL.createObjectURL(blob);
         }
+      } else {
+        // Set default profile picture if none exists
+        navProfilePic.src = "../assets/images/default-profile.png";
       }
     } catch (error) {
       console.error("Error loading profile picture:", error);
@@ -103,13 +116,22 @@ async loadUserData() {
     if (logoutBtn) {
       logoutBtn.addEventListener("click", async (e) => {
         e.preventDefault();
-        localStorage.clear();
         try {
-          await fetch("/applicant/logout", { method: "POST", credentials: "include" });
+          // Try both logout endpoints for compatibility
+          await fetch(`${this.API_BASE_URL}/applicant/logout`, {
+            method: "POST",
+            credentials: "include"
+          });
         } catch (err) {
-          console.warn("Logout failed or no session:", err);
+          console.warn("First logout attempt failed, trying alternative endpoint");
+          await fetch(`${this.API_BASE_URL}/api/logout`, {
+            method: "POST",
+            credentials: "include"
+          });
+        } finally {
+          localStorage.clear();
+          window.location.href = "../login/login.html";
         }
-        window.location.href = "../login/login.html";
       });
     }
   }
