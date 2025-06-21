@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './common/config.js';
+import { API_BASE_URL } from './config.js'
 
 class NavProfile {
   constructor() {
