@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../../../shared/js/common/config.js';
+import { API_BASE_URL } from '/shared/js/common/config.js';
 
 document.addEventListener("DOMContentLoaded", function () {
       
