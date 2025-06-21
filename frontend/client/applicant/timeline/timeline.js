@@ -80,24 +80,26 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // New Timeline Logic
-  async function fetchApplicantStatus() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth-status`);
-      const data = await response.json();
+async function fetchApplicantStatus() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth-status`, {
+      credentials: 'include' // 👈 This is crucial for sending cookies
+    });
+    
+    const data = await response.json();
 
-      if (data.authenticated && data.user) {
-        updateTimeline(data.user.status);
-        showNotification("Timeline updated successfully!", "success");
-      } else {
-        // Handle unauthenticated user without redirect
-        showNotification("Please login to view your application timeline", "warning");
-        console.warn("User not authenticated.");
-      }
-    } catch (error) {
-      console.error("Error fetching applicant status:", error);
-      showNotification("Failed to load timeline data", "error");
+    if (data.authenticated && data.user) { // 👈 Fixed typo here (was "authenticated")
+      updateTimeline(data.user.status);
+      showNotification("Timeline updated successfully!", "success");
+    } else {
+      showNotification("Please login to view your application timeline", "warning");
+      console.warn("Auth response:", data); // 👈 Better debugging
     }
+  } catch (error) {
+    console.error("Error fetching applicant status:", error);
+    showNotification("Failed to load timeline data", "error");
   }
+}
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
