@@ -133,86 +133,39 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-  document.getElementById("applicantLoginForm")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
-    const password = document.getElementById("applicantPassword").value;
-    
-    if (!email || !password) {
-      showNotification("Please enter both email and password", "error");
-      return;
-    }
+    document.getElementById("applicantLoginForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
+        const password = document.getElementById("applicantPassword").value;
+        if (!email || !password) return showNotification("Please enter both email and password", "error");
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Logging in...";
 
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Logging in...";
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/applicant/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include"
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || "Login failed");
-      }
-
-      showNotification("Login successful!", "success");
-      localStorage.setItem("userId", data.data.userId);
-      window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/timeline/timeline.html";
-    } catch (error) {
-      showNotification(`Login failed: ${error.message}`, "error");
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
-    }
-  });
-
-  // Similar updates for registration form
-document.getElementById("applicantLoginForm")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
-  const email = document.getElementById("applicantEmail").value.trim().toLowerCase();
-  const password = document.getElementById("applicantPassword").value;
-  
-  if (!email || !password) {
-    showNotification("Please enter both email and password", "error");
-    return;
-  }
-
-  const submitBtn = e.target.querySelector('button[type="submit"]');
-  const originalText = submitBtn.textContent;
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Logging in...";
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/applicant/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include" // Important for cookies
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+                credentials: "include"
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showNotification("Login successful!", "success");
+                localStorage.setItem("userId", data.data.userId);
+                localStorage.setItem("userEmail", data.data.email);
+                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/timeline/timeline.html";
+            } else {
+                throw new Error(data.error || "Login failed");
+            }
+        } catch (error) {
+            showNotification(`Login failed: ${error.message}`, "error");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+        }
     });
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.error || "Login failed");
-    }
-
-    showNotification("Login successful!", "success");
-    localStorage.setItem("userId", data.data.userId);
-    window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/timeline/timeline.html";
-  } catch (error) {
-    showNotification(`Login failed: ${error.message}`, "error");
-    console.error("Login error:", error);
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = originalText;
-  }
-});
+    // You can add similar login logic for adminLoginForm and assessorLoginForm if needed
 });
