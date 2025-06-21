@@ -38,28 +38,30 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Timeline Logic
-  async function fetchApplicantStatus() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/applicant/auth-status`, {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-
-      if (data.authenticated && data.user) {
-        updateTimeline(data.user.status);
-      } else {
-        window.location.href = "../login/login.html";
-      }
-    } catch (error) {
-      console.error("Error fetching applicant status:", error);
-      window.location.href = "../login/login.html";
+async function fetchApplicantStatus() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/applicant/auth-status`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      console.warn('Auth status check failed:', response.status, response.statusText);
+      return { authenticated: false, error: `HTTP error! status: ${response.status}` };
     }
+    
+    const data = await response.json();
+
+    if (data.authenticated && data.user) {
+      updateTimeline(data.user.status);
+      return { authenticated: true, user: data.user };
+    }
+    
+    return { authenticated: false, error: 'Not authenticated' };
+  } catch (error) {
+    console.error("Error fetching applicant status:", error);
+    return { authenticated: false, error: error.message };
   }
+}
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
