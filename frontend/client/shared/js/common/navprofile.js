@@ -13,9 +13,18 @@ class NavProfile {
     }
   }
 
-  async loadUserData() {
-    const authResponse = await fetch("/applicant/auth-status");
-    const authData = await authResponse.json();
+  // navprofile.js - Update the loadUserData method
+async loadUserData() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/applicant/auth-status`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const authData = await response.json();
 
     if (!authData.authenticated) {
       window.location.href = "../login/login.html";
@@ -26,7 +35,11 @@ class NavProfile {
       await this.loadProfilePicture();
       this.updateProfileName(authData.user.personalInfo || authData.user);
     }
+  } catch (error) {
+    console.error("Error loading user data:", error);
+    window.location.href = "../login/login.html";
   }
+}
 
   async loadProfilePicture() {
     try {
