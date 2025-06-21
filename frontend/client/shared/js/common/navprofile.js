@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+import { API_BASE_URL } from './common/config.js';
 
 class NavProfile {
   constructor() {
