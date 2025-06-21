@@ -20,14 +20,16 @@ async loadUserData() {
   const authData = await authResponse.json();
 
   if (!authData.authenticated) {
-    window.location.href = "../login/login.html";
+    console.warn("User not authenticated.");
     return;
   }
-    if (authData.user) {
-      await this.loadProfilePicture();
-      this.updateProfileName(authData.user.personalInfo || authData.user);
-    }
+
+  if (authData.user) {
+    await this.loadProfilePicture();
+    this.updateProfileName(authData.user.personalInfo || authData.user);
   }
+}
+
 
 async loadProfilePicture() {
   try {

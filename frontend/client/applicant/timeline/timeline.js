@@ -48,13 +48,15 @@ async function fetchApplicantStatus() {
     if (data.authenticated && data.user) {
       updateTimeline(data.user.status);
     } else {
-      // Handle unauthenticated user
-      window.location.href = "../login/login.html";
+      // Handle unauthenticated user without redirect
+      console.warn("User not authenticated.");
+      // Optional: call a function to show a login modal or notify user
     }
   } catch (error) {
     console.error("Error fetching applicant status:", error);
   }
 }
+
 
   function updateTimeline(status) {
     const steps = document.querySelectorAll("#progress-bar li");
