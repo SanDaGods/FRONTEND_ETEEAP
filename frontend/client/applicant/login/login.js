@@ -345,4 +345,18 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async f
         document.getElementById("adminEmail").value = savedAdminEmail;
         document.getElementById("rememberMe").checked = true;
     }
+
+    // Debug code to verify event listeners are working
+console.log("Debug Info:");
+console.log("Admin form:", document.getElementById("adminLoginForm"));
+console.log("Assessor form:", document.getElementById("assessorLoginForm"));
+console.log("Active tab:", document.querySelector('.role-tab.active')?.dataset.role);
+
+// Verify click handlers
+document.querySelectorAll('.role-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        console.log("Tab clicked:", this.dataset.role);
+    });
+});
+
 });
