@@ -250,13 +250,34 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
             showNotification(`Admin login failed: ${errorMsg}`, "error");
             throw new Error(errorMsg);
         }
-    } catch (error) {
-        console.error('Login Process Error:', error);
-        console.log('Error details:', {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-        });
+    } 
+    
+    catch (error) {
+    console.error('Login Process Error:', error);
+    console.log('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+    });
+    
+    showNotification(`Admin login failed: ${error.message}`, "error");
+    errorElement.textContent = error.message;
+    errorElement.style.display = "block";
+    
+    // Keep admin tab active without resetting
+    const adminTab = document.querySelector('.role-tab[data-role="admin"]');
+    const adminForm = document.querySelector('.login-form[data-role="admin"]');
+    
+    if (!adminTab.classList.contains('active')) {
+        roleTabs.forEach(tab => tab.classList.remove('active'));
+        adminTab.classList.add('active');
+    }
+    
+    if (!adminForm.classList.contains('active')) {
+        loginForms.forEach(form => form.classList.remove('active'));
+        adminForm.classList.add('active');
+    }
+
         
         showNotification(`Admin login failed: ${error.message}`, "error");
         errorElement.textContent = error.message;
@@ -348,28 +369,32 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
             throw new Error(errorMsg);
         }
     } catch (error) {
-        console.error('Login Process Error:', error);
-        console.log('Error details:', {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-        });
-        
-        showNotification(`Assessor login failed: ${error.message}`, "error");
-        errorElement.textContent = error.message;
-        errorElement.style.display = "block";
-        
-        // Force assessor tab to stay active
-        console.log('Resetting UI to assessor tab...');
-        document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelector('.role-tab[data-role="assessor"]').classList.add('active');
-        document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
-        document.querySelector('.login-form[data-role="assessor"]').classList.add('active');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalBtnText;
-        console.log('Login process completed');
-        console.groupEnd();
+    console.error('Login Process Error:', error);
+    console.log('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+    });
+    
+    showNotification(`Assessor login failed: ${error.message}`, "error");
+    errorElement.textContent = error.message;
+    errorElement.style.display = "block";
+    
+    // Keep assessor tab active without resetting
+    const assessorTab = document.querySelector('.role-tab[data-role="assessor"]');
+    const assessorForm = document.querySelector('.login-form[data-role="assessor"]');
+    
+    if (!assessorTab.classList.contains('active')) {
+        roleTabs.forEach(tab => tab.classList.remove('active'));
+        assessorTab.classList.add('active');
     }
+    
+    if (!assessorForm.classList.contains('active')) {
+        loginForms.forEach(form => form.classList.remove('active'));
+        assessorForm.classList.add('active');
+    }
+}
 });
+
+
 });
