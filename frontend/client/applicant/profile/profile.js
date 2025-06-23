@@ -3,7 +3,7 @@ const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 document.addEventListener("DOMContentLoaded", async function () {
   try {
     // Check authentication status
-    const authResponse = await fetch(`${API_BASE_URL}/applicant/auth-status`, {
+    const authResponse = await fetch(`${API_BASE_URL}/auth-status`, {
       credentials: 'include'
     });
     const authData = await authResponse.json();
