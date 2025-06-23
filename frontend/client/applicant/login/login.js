@@ -244,4 +244,77 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+
+document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("assessorEmail").value.trim();
+    const password = document.getElementById("assessorPassword").value;
+    
+    if (!email || !password) {
+        showNotification("Email and password are required", "error");
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+
+    try {
+        console.log("Sending assessor login request to:", `${API_BASE_URL}/assessor/login`);
+        const response = await fetch(`${API_BASE_URL}/assessor/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            credentials: "include"
+        });
+
+        const data = await response.json();
+        console.log("Assessor login response:", data);
+
+        if (response.ok) {
+            showNotification("Assessor login successful! Redirecting...", "success");
+            
+            // Store assessor data
+            if (data.data) {
+                sessionStorage.setItem("assessorData", JSON.stringify({
+                    assessorId: data.data.assessorId,
+                    email: data.data.email,
+                    fullName: data.data.fullName,
+                    expertise: data.data.expertise
+                }));
+                console.log("Assessor data stored in sessionStorage");
+            }
+            
+            // Use the path that matches your deployment structure
+            const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
+            
+            setTimeout(() => {
+                console.log("Redirecting to:", data.redirectTo || dashboardPath);
+                window.location.href = data.redirectTo || dashboardPath;
+            }, 1500);
+        } else {
+            throw new Error(data.error || "Assessor login failed");
+        }
+    } catch (error) {
+        console.error("Assessor login error:", error);
+        
+        let userErrorMessage = "Assessor login failed";
+        if (error.message.includes("credentials")) {
+            userErrorMessage = "Invalid email or password";
+        } else if (error.message.includes("network")) {
+            userErrorMessage = "Network error - please try again";
+        }
+        
+        showNotification(userErrorMessage, "error");
+        
+        // Highlight problematic fields
+        document.getElementById("assessorEmail").classList.toggle("error", error.message.includes("email"));
+        document.getElementById("assessorPassword").classList.toggle("error", error.message.includes("password"));
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
+});
+
 });
