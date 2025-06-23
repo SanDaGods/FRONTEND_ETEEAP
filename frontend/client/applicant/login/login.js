@@ -206,7 +206,7 @@ adminLoginForm?.addEventListener("submit", async (e) => {
             }
             
             // Correct redirect path - adjust based on your project structure
-            const dashboardPath = "/frontend/client/admin/dashboard/dashboard.html";
+            const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
             
             // Redirect after short delay to allow notification to be seen
             setTimeout(() => {
