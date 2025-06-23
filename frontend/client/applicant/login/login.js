@@ -198,15 +198,16 @@ adminLoginForm?.addEventListener("submit", async (e) => {
 
         if (response.ok) {
             showNotification("Admin login successful! Redirecting...", "success");
-
-            // Store admin data if needed
+            
+            // Store admin data
             if (data.data) {
                 localStorage.setItem("adminEmail", data.data.email);
                 localStorage.setItem("adminName", data.data.fullName);
             }
-
-            const dashboardPath = "https://frontendeteeap-production.up.railway.app/admin/dashboard/dashboard.html";
-
+            
+            // Use the path that matches your deployment structure
+            const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
+            
             setTimeout(() => {
                 window.location.href = data.redirectTo || dashboardPath;
             }, 1500);
@@ -226,7 +227,6 @@ adminLoginForm?.addEventListener("submit", async (e) => {
         submitBtn.textContent = originalBtnText;
     }
 });
-
 
 // Add this CSS for error highlighting
 const style = document.createElement('style');
