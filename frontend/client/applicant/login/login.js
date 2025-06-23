@@ -175,7 +175,7 @@ adminLoginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("adminEmail").value.trim();
     const password = document.getElementById("adminPassword").value;
-    
+
     if (!email || !password) {
         showNotification("Email and password are required", "error");
         return;
@@ -198,20 +198,18 @@ adminLoginForm?.addEventListener("submit", async (e) => {
 
         if (response.ok) {
             showNotification("Admin login successful! Redirecting...", "success");
-            
+
             // Store admin data if needed
             if (data.data) {
                 localStorage.setItem("adminEmail", data.data.email);
                 localStorage.setItem("adminName", data.data.fullName);
             }
-            
-            // Correct redirect path - adjust based on your project structure
+
             const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
 
             setTimeout(() => {
                 window.location.href = data.redirectTo || dashboardPath;
             }, 1500);
-
         } else {
             throw new Error(data.error || "Admin login failed");
         }
@@ -228,6 +226,7 @@ adminLoginForm?.addEventListener("submit", async (e) => {
         submitBtn.textContent = originalBtnText;
     }
 });
+
 
 // Add this CSS for error highlighting
 const style = document.createElement('style');
