@@ -2,9 +2,11 @@
 
 
 document.addEventListener("DOMContentLoaded", async function () {
+  const API_BASE_URL = "http://localhost:3000"; // Replace with your actual API base URL
+
   try {
     // Check authentication status
-    const authResponse = await fetch("/applicant/auth-status");
+    const authResponse = await fetch(`${API_BASE_URL}/auth-status`);
     const authData = await authResponse.json();
     const userId = localStorage.getItem("userId");
 
@@ -36,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   async function logoutUser() {
     try {
-      const response = await fetch("/applicant/logout", {
+      const response = await fetch(`${API_BASE_URL}/logout`, {
         method: "POST",
         credentials: "same-origin",
       });
@@ -228,7 +230,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
 
       const response = await fetchWithTimeout(
-        `/api/fetch-user-files/${userId}`,
+        `${API_BASE_URL}/api/fetch-user-files/${userId}`,
         {
           method: "GET",
           headers: {
