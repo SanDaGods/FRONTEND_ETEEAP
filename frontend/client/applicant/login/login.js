@@ -169,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
    
 // Admin Login - Updated
+// Admin Login - Final Update
 document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("adminEmail").value.trim();
@@ -179,6 +180,7 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
     errorElement.style.display = "none";
 
     if (!email || !password) {
+        showNotification("Email and password are required", "error");
         errorElement.textContent = "Email and password are required";
         errorElement.style.display = "block";
         return;
@@ -190,6 +192,7 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
     submitBtn.textContent = "Logging in...";
 
     try {
+        console.log("Attempting admin login..."); // Debug log
         const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -198,6 +201,7 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
         });
 
         const data = await response.json();
+        console.log("Admin login response:", data); // Debug log
 
         if (response.ok) {
             if (rememberMe) {
@@ -211,18 +215,23 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
                 email: data.data.email
             }));
 
-            // This will prevent any further execution
-            window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
-            return; // Explicit return to prevent any further execution
+            showNotification("Admin login successful! Redirecting...", "success");
+            setTimeout(() => {
+                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
+            }, 1500);
+            return;
         } else {
-            throw new Error(data.error || data.message || "Login failed");
+            const errorMsg = data.error || data.message || "Login failed";
+            showNotification(`Admin login failed: ${errorMsg}`, "error");
+            throw new Error(errorMsg);
         }
     } catch (error) {
-        // Only show error if we didn't redirect
+        console.error("Admin login error:", error); // Debug log
+        showNotification(`Admin login failed: ${error.message}`, "error");
         errorElement.textContent = error.message;
         errorElement.style.display = "block";
         
-        // Manually reactivate the admin tab
+        // Force admin tab to stay active
         document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
         document.querySelector('.role-tab[data-role="admin"]').classList.add('active');
         document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
@@ -233,7 +242,7 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
     }
 });
 
-// Assessor Login - Updated
+// Assessor Login - Final Update
 document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("assessorEmail").value.trim();
@@ -243,6 +252,7 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
     errorElement.style.display = "none";
 
     if (!email || !password) {
+        showNotification("Email and password are required", "error");
         errorElement.textContent = "Email and password are required";
         errorElement.style.display = "block";
         return;
@@ -254,6 +264,7 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
     submitBtn.textContent = "Logging in...";
 
     try {
+        console.log("Attempting assessor login..."); // Debug log
         const response = await fetch(`${API_BASE_URL}/api/assessor/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -262,6 +273,7 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
         });
 
         const data = await response.json();
+        console.log("Assessor login response:", data); // Debug log
 
         if (response.ok) {
             sessionStorage.setItem("assessorData", JSON.stringify({
@@ -270,16 +282,23 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
                 fullName: data.data.fullName
             }));
 
-            window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
-            return; // Explicit return
+            showNotification("Assessor login successful! Redirecting...", "success");
+            setTimeout(() => {
+                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
+            }, 1500);
+            return;
         } else {
-            throw new Error(data.error || data.message || "Login failed");
+            const errorMsg = data.error || data.message || "Login failed";
+            showNotification(`Assessor login failed: ${errorMsg}`, "error");
+            throw new Error(errorMsg);
         }
     } catch (error) {
+        console.error("Assessor login error:", error); // Debug log
+        showNotification(`Assessor login failed: ${error.message}`, "error");
         errorElement.textContent = error.message;
         errorElement.style.display = "block";
         
-        // Manually reactivate the assessor tab
+        // Force assessor tab to stay active
         document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
         document.querySelector('.role-tab[data-role="assessor"]').classList.add('active');
         document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
