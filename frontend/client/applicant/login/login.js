@@ -6,17 +6,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const roleTabs = document.querySelectorAll('.role-tab');
     const loginForms = document.querySelectorAll('.login-form');
 
-    function initForms() {
+    function initForms(keepCurrentTab = false) {
+    // Don't reset tabs if we want to keep the current one
+    if (!keepCurrentTab) {
         loginForms.forEach(form => form.classList.remove('active'));
         document.querySelector('.login-form[data-role="applicant"]').classList.add('active');
         roleTabs.forEach(tab => tab.classList.remove('active'));
         document.querySelector('.role-tab[data-role="applicant"]').classList.add('active');
-        document.querySelector('.register').style.display = 'none';
-        document.querySelector('.forgot').style.display = 'none';
-        document.getElementById('verificationForm').style.display = 'none';
-        document.getElementById('newPasswordForm').style.display = 'none';
-        wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
     }
+    
+    document.querySelector('.register').style.display = 'none';
+    document.querySelector('.forgot').style.display = 'none';
+    document.getElementById('verificationForm').style.display = 'none';
+    document.getElementById('newPasswordForm').style.display = 'none';
+    wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
+}
 
     initForms();
 
@@ -62,13 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
         wrapper.classList.add('active');
     });
 
-    document.querySelector(".login-link")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
-        loginContainer.style.display = 'block';
-        initForms();
-        wrapper.classList.remove('active');
-    });
+document.querySelector(".login-link")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
+    loginContainer.style.display = 'block';
+    initForms(true); // Pass true to keep current tab
+    wrapper.classList.remove('active');
+});
 
     document.querySelector(".forgot-link")?.addEventListener("click", (e) => {
         e.preventDefault();
