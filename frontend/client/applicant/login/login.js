@@ -205,7 +205,7 @@ adminLoginForm?.addEventListener("submit", async (e) => {
                 localStorage.setItem("adminName", data.data.fullName);
             }
 
-            const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
+            const dashboardPath = "https://frontendeteeap-production.up.railway.app/admin/dashboard/dashboard.html";
 
             setTimeout(() => {
                 window.location.href = data.redirectTo || dashboardPath;
