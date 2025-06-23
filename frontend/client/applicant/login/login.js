@@ -167,5 +167,49 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // You can add similar login logic for adminLoginForm and assessorLoginForm if needed
+// Add this with your other form selectors at the top
+const adminLoginForm = document.getElementById("adminLoginForm");
+
+// Add this with your other form event listeners
+adminLoginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    
+    if (!email || !password) {
+        showNotification("Email and password are required", "error");
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification("Admin login successful!", "success");
+            // Store any necessary admin data
+            window.location.href = data.redirectTo || "/client/admin/dashboard/dashboard.html";
+        } else {
+            throw new Error(data.error || "Admin login failed");
+        }
+    } catch (error) {
+        showNotification(`Admin login failed: ${error.message}`, "error");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
+});
+
+
 });
