@@ -6,26 +6,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const roleTabs = document.querySelectorAll('.role-tab');
     const loginForms = document.querySelectorAll('.login-form');
 
-    // Modified initForms without default tab selection
-function initForms(keepCurrentTab = false) {
-    // Don't reset tabs if we want to keep current
-    if (!keepCurrentTab) {
-        // If no tab is active, set first one as active
-        if (!document.querySelector('.role-tab.active')) {
-            document.querySelector('.role-tab').classList.add('active');
-            document.querySelector('.login-form').classList.add('active');
-        }
+    function initForms() {
+        loginForms.forEach(form => form.classList.remove('active'));
+        document.querySelector('.login-form[data-role="applicant"]').classList.add('active');
+        roleTabs.forEach(tab => tab.classList.remove('active'));
+        document.querySelector('.role-tab[data-role="applicant"]').classList.add('active');
+        document.querySelector('.register').style.display = 'none';
+        document.querySelector('.forgot').style.display = 'none';
+        document.getElementById('verificationForm').style.display = 'none';
+        document.getElementById('newPasswordForm').style.display = 'none';
+        wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
     }
-    
-    // Rest of your initForms code...
-    document.querySelector('.register').style.display = 'none';
-    document.querySelector('.forgot').style.display = 'none';
-    document.getElementById('verificationForm').style.display = 'none';
-    document.getElementById('newPasswordForm').style.display = 'none';
-    wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
-}
 
-    // Initialize forms
     initForms();
 
     roleTabs.forEach(tab => {
@@ -74,7 +66,7 @@ function initForms(keepCurrentTab = false) {
         e.preventDefault();
         document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
         loginContainer.style.display = 'block';
-        initForms(true); // Keep current tab active
+        initForms();
         wrapper.classList.remove('active');
     });
 
@@ -175,157 +167,5 @@ function initForms(keepCurrentTab = false) {
         }
     });
 
-    // Admin Login with persistent tab and enhanced logging
-// Admin Login Handler - Updated Version
-document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    console.log("Admin login attempt started");
-    
-    const email = document.getElementById("adminEmail").value.trim();
-    const password = document.getElementById("adminPassword").value;
-    const rememberMe = document.getElementById("rememberMe").checked;
-
-    try {
-        console.log("Sending admin login request");
-        const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email, password }),
-            credentials: "include" // Crucial for cookies
-        });
-
-        console.log("Received response, status:", response.status);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Login failed");
-        }
-
-        console.log("Login successful, data:", data);
-        
-        // Store admin data in sessionStorage
-        sessionStorage.setItem("adminData", JSON.stringify({
-            email: data.data.email,
-            fullName: data.data.fullName,
-            isSuperAdmin: data.data.isSuperAdmin
-        }));
-
-        // Redirect using backend-provided URL or fallback
-        const redirectUrl = data.redirectTo || "/client/admin/dashboard/dashboard.html";
-        console.log("Redirecting to:", redirectUrl);
-        window.location.href = redirectUrl;
-
-    } catch (error) {
-        console.error("Admin login error:", error);
-        showNotification(`Admin login failed: ${error.message}`, "error");
-        
-        // Force admin tab to stay active
-        document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelector('.role-tab[data-role="admin"]').classList.add('active');
-        document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
-        document.querySelector('.login-form[data-role="admin"]').classList.add('active');
-    }
-});
-
-    // Assessor Login with persistent tab and enhanced logging
-document.getElementById("assessorLoginForm")?.addEventListener("submit", async function(e) {
-    e.preventDefault(); // Must be first
-    e.stopPropagation(); // Add this
-    console.log("Assessor login submitted"); // Debug
-
-        const email = document.getElementById("assessorEmail").value.trim();
-        const password = document.getElementById("assessorPassword").value;
-        const errorElement = document.getElementById("assessor-error-message");
-
-        errorElement.style.display = "none";
-
-        if (!email || !password) {
-            const errorMsg = "Email and password are required";
-            console.error('Validation Error:', errorMsg);
-            showNotification(errorMsg, "error");
-            errorElement.textContent = errorMsg;
-            errorElement.style.display = "block";
-            console.groupEnd();
-            return;
-        }
-
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.textContent;
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Logging in...";
-
-        try {
-            console.log('Sending request to:', `${API_BASE_URL}/api/assessor/login`);
-            const startTime = performance.now();
-            
-            const response = await fetch(`${API_BASE_URL}/api/assessor/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-                credentials: "include"
-            });
-
-            const responseTime = performance.now() - startTime;
-            console.log(`Response received in ${responseTime.toFixed(2)}ms`);
-            console.log('HTTP Status:', response.status);
-
-            const data = await response.json();
-            console.log('Response Data:', data);
-
-            if (!response.ok) {
-                throw new Error(data.error || data.message || "Login failed");
-            }
-
-            // On success
-            sessionStorage.setItem("assessorData", JSON.stringify({
-                assessorId: data.data.assessorId,
-                email: data.data.email,
-                fullName: data.data.fullName
-            }));
-
-            showNotification("Assessor login successful! Redirecting...", "success");
-            setTimeout(() => {
-                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
-            }, 1000);
-
-        } catch (error) {
-            console.error('Login Error:', error);
-            showNotification(`Assessor login failed: ${error.message}`, "error");
-            errorElement.textContent = error.message;
-            errorElement.style.display = "block";
-            
-            // Keep assessor tab active
-            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector('.role-tab[data-role="assessor"]').classList.add('active');
-            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
-            document.querySelector('.login-form[data-role="assessor"]').classList.add('active');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-            console.groupEnd();
-        }
-    });
-
-    // Check if admin email is remembered
-    const savedAdminEmail = localStorage.getItem("adminEmail");
-    if (savedAdminEmail) {
-        document.getElementById("adminEmail").value = savedAdminEmail;
-        document.getElementById("rememberMe").checked = true;
-    }
-
-    // Debug code to verify event listeners are working
-console.log("Debug Info:");
-console.log("Admin form:", document.getElementById("adminLoginForm"));
-console.log("Assessor form:", document.getElementById("assessorLoginForm"));
-console.log("Active tab:", document.querySelector('.role-tab.active')?.dataset.role);
-
-// Verify click handlers
-document.querySelectorAll('.role-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-        console.log("Tab clicked:", this.dataset.role);
-    });
-});
-
+    // You can add similar login logic for adminLoginForm and assessorLoginForm if needed
 });
