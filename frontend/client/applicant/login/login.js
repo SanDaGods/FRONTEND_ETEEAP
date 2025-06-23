@@ -216,7 +216,7 @@ adminLoginForm?.addEventListener("submit", async (e) => {
             
             // Redirect after short delay to allow notification to be seen
             setTimeout(() => {
-                window.location.href = data.redirectTo || "/client/admin/dashboard/dashboard.html";
+                window.location.href = data.redirectTo || "frontend/client/admin/dashboard/dashboard.html";
             }, 1500);
         } else {
             const errorMsg = data.error || "Admin login failed";
