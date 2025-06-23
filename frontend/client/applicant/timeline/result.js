@@ -32,7 +32,7 @@ async function loadResults() {
         }
         
         // Get full applicant data including evaluations
-        const applicantResponse = await fetch(`${API_BASE_URL}/api/profile/${authData.user._id}`, {
+        const applicantResponse = await fetch(`${API_BASE_URL}/profile/${authData.user._id}`, {
             credentials: 'include'
         });
         
