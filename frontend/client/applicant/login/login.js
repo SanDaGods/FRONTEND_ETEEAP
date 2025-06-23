@@ -168,117 +168,125 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
    
-    // Admin Login - Fixed
-    document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("adminEmail").value.trim();
-        const password = document.getElementById("adminPassword").value;
-        const rememberMe = document.getElementById("rememberMe").checked;
-        const errorElement = document.getElementById("admin-error-message");
+// Admin Login - Updated
+document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const rememberMe = document.getElementById("rememberMe").checked;
+    const errorElement = document.getElementById("admin-error-message");
 
-        errorElement.style.display = "none";
+    errorElement.style.display = "none";
 
-        if (!email || !password) {
-            errorElement.textContent = "Email and password are required";
-            errorElement.style.display = "block";
-            return;
-        }
-
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.textContent;
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Logging in...";
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-                credentials: "include"
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                if (rememberMe) {
-                    localStorage.setItem("adminEmail", email);
-                } else {
-                    localStorage.removeItem("adminEmail");
-                }
-
-                // Store admin data in session storage
-                sessionStorage.setItem("adminData", JSON.stringify({
-                    adminId: data.data.adminId,
-                    email: data.data.email
-                }));
-
-                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
-            } else {
-                throw new Error(data.error || data.message || "Login failed");
-            }
-        } catch (error) {
-            errorElement.textContent = error.message;
-            errorElement.style.display = "block";
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-        }
-    });
-
-    // Assessor Login - Fixed
-    document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("assessorEmail").value.trim();
-        const password = document.getElementById("assessorPassword").value;
-        const errorElement = document.getElementById("assessor-error-message");
-
-        errorElement.style.display = "none";
-
-        if (!email || !password) {
-            errorElement.textContent = "Email and password are required";
-            errorElement.style.display = "block";
-            return;
-        }
-
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.textContent;
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Logging in...";
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/assessor/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-                credentials: "include"
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                sessionStorage.setItem("assessorData", JSON.stringify({
-                    assessorId: data.data.assessorId,
-                    email: data.data.email,
-                    fullName: data.data.fullName
-                }));
-
-                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
-            } else {
-                throw new Error(data.error || data.message || "Login failed");
-            }
-        } catch (error) {
-            errorElement.textContent = error.message;
-            errorElement.style.display = "block";
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalBtnText;
-        }
-    });
-
-    // Check if admin email is remembered
-    const savedAdminEmail = localStorage.getItem("adminEmail");
-    if (savedAdminEmail) {
-        document.getElementById("adminEmail").value = savedAdminEmail;
-        document.getElementById("rememberMe").checked = true;
+    if (!email || !password) {
+        errorElement.textContent = "Email and password are required";
+        errorElement.style.display = "block";
+        return;
     }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            if (rememberMe) {
+                localStorage.setItem("adminEmail", email);
+            } else {
+                localStorage.removeItem("adminEmail");
+            }
+
+            sessionStorage.setItem("adminData", JSON.stringify({
+                adminId: data.data.adminId,
+                email: data.data.email
+            }));
+
+            // This will prevent any further execution
+            window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
+            return; // Explicit return to prevent any further execution
+        } else {
+            throw new Error(data.error || data.message || "Login failed");
+        }
+    } catch (error) {
+        // Only show error if we didn't redirect
+        errorElement.textContent = error.message;
+        errorElement.style.display = "block";
+        
+        // Manually reactivate the admin tab
+        document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelector('.role-tab[data-role="admin"]').classList.add('active');
+        document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
+        document.querySelector('.login-form[data-role="admin"]').classList.add('active');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
+});
+
+// Assessor Login - Updated
+document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("assessorEmail").value.trim();
+    const password = document.getElementById("assessorPassword").value;
+    const errorElement = document.getElementById("assessor-error-message");
+
+    errorElement.style.display = "none";
+
+    if (!email || !password) {
+        errorElement.textContent = "Email and password are required";
+        errorElement.style.display = "block";
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/assessor/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+            credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            sessionStorage.setItem("assessorData", JSON.stringify({
+                assessorId: data.data.assessorId,
+                email: data.data.email,
+                fullName: data.data.fullName
+            }));
+
+            window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
+            return; // Explicit return
+        } else {
+            throw new Error(data.error || data.message || "Login failed");
+        }
+    } catch (error) {
+        errorElement.textContent = error.message;
+        errorElement.style.display = "block";
+        
+        // Manually reactivate the assessor tab
+        document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelector('.role-tab[data-role="assessor"]').classList.add('active');
+        document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
+        document.querySelector('.login-form[data-role="assessor"]').classList.add('active');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+    }
+});
 });
