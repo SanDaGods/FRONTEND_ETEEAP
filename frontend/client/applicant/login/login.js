@@ -6,22 +6,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const roleTabs = document.querySelectorAll('.role-tab');
     const loginForms = document.querySelectorAll('.login-form');
 
+    // Modified initForms without default tab selection
     function initForms(keepCurrentTab = false) {
-    // Don't reset tabs if we want to keep the current one
-    if (!keepCurrentTab) {
-        loginForms.forEach(form => form.classList.remove('active'));
-        document.querySelector('.login-form[data-role="applicant"]').classList.add('active');
-        roleTabs.forEach(tab => tab.classList.remove('active'));
-        document.querySelector('.role-tab[data-role="applicant"]').classList.add('active');
+        document.querySelector('.register').style.display = 'none';
+        document.querySelector('.forgot').style.display = 'none';
+        document.getElementById('verificationForm').style.display = 'none';
+        document.getElementById('newPasswordForm').style.display = 'none';
+        wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
+        
+        if (!keepCurrentTab && !document.querySelector('.role-tab.active')) {
+            // Set first tab as active if none is active
+            document.querySelector('.role-tab').classList.add('active');
+            document.querySelector('.login-form').classList.add('active');
+        }
     }
-    
-    document.querySelector('.register').style.display = 'none';
-    document.querySelector('.forgot').style.display = 'none';
-    document.getElementById('verificationForm').style.display = 'none';
-    document.getElementById('newPasswordForm').style.display = 'none';
-    wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
-}
 
+    // Initialize forms
     initForms();
 
     roleTabs.forEach(tab => {
@@ -66,13 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
         wrapper.classList.add('active');
     });
 
-document.querySelector(".login-link")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
-    loginContainer.style.display = 'block';
-    initForms(true); // Pass true to keep current tab
-    wrapper.classList.remove('active');
-});
+    document.querySelector(".login-link")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.form-box').forEach(form => form.style.display = 'none');
+        loginContainer.style.display = 'block';
+        initForms(true); // Keep current tab active
+        wrapper.classList.remove('active');
+    });
 
     document.querySelector(".forgot-link")?.addEventListener("click", (e) => {
         e.preventDefault();
@@ -171,230 +171,174 @@ document.querySelector(".login-link")?.addEventListener("click", (e) => {
         }
     });
 
-   
-// Admin Login with Enhanced Console Logging
-document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("adminEmail").value.trim();
-    const password = document.getElementById("adminPassword").value;
-    const rememberMe = document.getElementById("rememberMe").checked;
-    const errorElement = document.getElementById("admin-error-message");
+    // Admin Login with persistent tab and enhanced logging
+    document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        console.clear();
+        console.group('Admin Login Attempt');
 
-    console.groupCollapsed('Admin Login Attempt');
-    console.log('Email:', email);
-    console.log('Remember Me:', rememberMe);
-    
-    errorElement.style.display = "none";
+        const email = document.getElementById("adminEmail").value.trim();
+        const password = document.getElementById("adminPassword").value;
+        const rememberMe = document.getElementById("rememberMe").checked;
+        const errorElement = document.getElementById("admin-error-message");
 
-    if (!email || !password) {
-        const errorMsg = "Email and password are required";
-        console.error('Validation Error:', errorMsg);
-        showNotification(errorMsg, "error");
-        errorElement.textContent = errorMsg;
-        errorElement.style.display = "block";
-        console.groupEnd();
-        return;
-    }
+        errorElement.style.display = "none";
 
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Logging in...";
+        if (!email || !password) {
+            const errorMsg = "Email and password are required";
+            console.error('Validation Error:', errorMsg);
+            showNotification(errorMsg, "error");
+            errorElement.textContent = errorMsg;
+            errorElement.style.display = "block";
+            console.groupEnd();
+            return;
+        }
 
-    try {
-        console.log('Making API request to:', `${API_BASE_URL}/api/admin/login`);
-        const startTime = performance.now();
-        
-        const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-            credentials: "include"
-        });
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Logging in...";
 
-        const responseTime = performance.now() - startTime;
-        console.log(`Response received in ${responseTime.toFixed(2)}ms`);
-        console.log('HTTP Status:', response.status);
+        try {
+            console.log('Sending request to:', `${API_BASE_URL}/api/admin/login`);
+            const startTime = performance.now();
+            
+            const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+                credentials: "include"
+            });
 
-        const data = await response.json();
-        console.log('Response Data:', data);
+            const responseTime = performance.now() - startTime;
+            console.log(`Response received in ${responseTime.toFixed(2)}ms`);
+            console.log('HTTP Status:', response.status);
 
-        if (response.ok) {
-            console.log('Login successful, storing data...');
-            if (rememberMe) {
-                localStorage.setItem("adminEmail", email);
-                console.log('Email stored in localStorage for remember me');
-            } else {
-                localStorage.removeItem("adminEmail");
+            const data = await response.json();
+            console.log('Response Data:', data);
+
+            if (!response.ok) {
+                throw new Error(data.error || data.message || "Login failed");
             }
 
+            // On success
             sessionStorage.setItem("adminData", JSON.stringify({
                 adminId: data.data.adminId,
                 email: data.data.email
             }));
-            console.log('Admin data stored in sessionStorage:', {
-                adminId: data.data.adminId,
-                email: data.data.email
-            });
+            
+            if (rememberMe) {
+                localStorage.setItem("adminEmail", email);
+            } else {
+                localStorage.removeItem("adminEmail");
+            }
 
             showNotification("Admin login successful! Redirecting...", "success");
-            console.log('Redirecting to dashboard...');
             setTimeout(() => {
                 window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
-            }, 1500);
+            }, 1000);
+
+        } catch (error) {
+            console.error('Login Error:', error);
+            showNotification(`Admin login failed: ${error.message}`, "error");
+            errorElement.textContent = error.message;
+            errorElement.style.display = "block";
+            
+            // Keep admin tab active
+            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.role-tab[data-role="admin"]').classList.add('active');
+            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+            document.querySelector('.login-form[data-role="admin"]').classList.add('active');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+            console.groupEnd();
+        }
+    });
+
+    // Assessor Login with persistent tab and enhanced logging
+    document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        console.clear();
+        console.group('Assessor Login Attempt');
+
+        const email = document.getElementById("assessorEmail").value.trim();
+        const password = document.getElementById("assessorPassword").value;
+        const errorElement = document.getElementById("assessor-error-message");
+
+        errorElement.style.display = "none";
+
+        if (!email || !password) {
+            const errorMsg = "Email and password are required";
+            console.error('Validation Error:', errorMsg);
+            showNotification(errorMsg, "error");
+            errorElement.textContent = errorMsg;
+            errorElement.style.display = "block";
             console.groupEnd();
             return;
-        } else {
-            const errorMsg = data.error || data.message || "Login failed";
-            console.error('API Error:', errorMsg, 'Full response:', data);
-            showNotification(`Admin login failed: ${errorMsg}`, "error");
-            throw new Error(errorMsg);
         }
-    } 
-    
-    catch (error) {
-    console.error('Login Process Error:', error);
-    console.log('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-    });
-    
-    showNotification(`Admin login failed: ${error.message}`, "error");
-    errorElement.textContent = error.message;
-    errorElement.style.display = "block";
-    
-    // Keep admin tab active without resetting
-    const adminTab = document.querySelector('.role-tab[data-role="admin"]');
-    const adminForm = document.querySelector('.login-form[data-role="admin"]');
-    
-    if (!adminTab.classList.contains('active')) {
-        roleTabs.forEach(tab => tab.classList.remove('active'));
-        adminTab.classList.add('active');
-    }
-    
-    if (!adminForm.classList.contains('active')) {
-        loginForms.forEach(form => form.classList.remove('active'));
-        adminForm.classList.add('active');
-    }
 
-        
-        showNotification(`Admin login failed: ${error.message}`, "error");
-        errorElement.textContent = error.message;
-        errorElement.style.display = "block";
-        
-        // Force admin tab to stay active
-        console.log('Resetting UI to admin tab...');
-        document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelector('.role-tab[data-role="admin"]').classList.add('active');
-        document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
-        document.querySelector('.login-form[data-role="admin"]').classList.add('active');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalBtnText;
-        console.log('Login process completed');
-        console.groupEnd();
-    }
-});
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Logging in...";
 
-// Assessor Login with Enhanced Console Logging
-document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("assessorEmail").value.trim();
-    const password = document.getElementById("assessorPassword").value;
-    const errorElement = document.getElementById("assessor-error-message");
+        try {
+            console.log('Sending request to:', `${API_BASE_URL}/api/assessor/login`);
+            const startTime = performance.now();
+            
+            const response = await fetch(`${API_BASE_URL}/api/assessor/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+                credentials: "include"
+            });
 
-    console.groupCollapsed('Assessor Login Attempt');
-    console.log('Email:', email);
-    
-    errorElement.style.display = "none";
+            const responseTime = performance.now() - startTime;
+            console.log(`Response received in ${responseTime.toFixed(2)}ms`);
+            console.log('HTTP Status:', response.status);
 
-    if (!email || !password) {
-        const errorMsg = "Email and password are required";
-        console.error('Validation Error:', errorMsg);
-        showNotification(errorMsg, "error");
-        errorElement.textContent = errorMsg;
-        errorElement.style.display = "block";
-        console.groupEnd();
-        return;
-    }
+            const data = await response.json();
+            console.log('Response Data:', data);
 
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Logging in...";
+            if (!response.ok) {
+                throw new Error(data.error || data.message || "Login failed");
+            }
 
-    try {
-        console.log('Making API request to:', `${API_BASE_URL}/api/assessor/login`);
-        const startTime = performance.now();
-        
-        const response = await fetch(`${API_BASE_URL}/api/assessor/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-            credentials: "include"
-        });
-
-        const responseTime = performance.now() - startTime;
-        console.log(`Response received in ${responseTime.toFixed(2)}ms`);
-        console.log('HTTP Status:', response.status);
-
-        const data = await response.json();
-        console.log('Response Data:', data);
-
-        if (response.ok) {
-            console.log('Login successful, storing data...');
+            // On success
             sessionStorage.setItem("assessorData", JSON.stringify({
                 assessorId: data.data.assessorId,
                 email: data.data.email,
                 fullName: data.data.fullName
             }));
-            console.log('Assessor data stored in sessionStorage:', {
-                assessorId: data.data.assessorId,
-                email: data.data.email,
-                fullName: data.data.fullName
-            });
 
             showNotification("Assessor login successful! Redirecting...", "success");
-            console.log('Redirecting to dashboard...');
             setTimeout(() => {
                 window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
-            }, 1500);
+            }, 1000);
+
+        } catch (error) {
+            console.error('Login Error:', error);
+            showNotification(`Assessor login failed: ${error.message}`, "error");
+            errorElement.textContent = error.message;
+            errorElement.style.display = "block";
+            
+            // Keep assessor tab active
+            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.role-tab[data-role="assessor"]').classList.add('active');
+            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+            document.querySelector('.login-form[data-role="assessor"]').classList.add('active');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
             console.groupEnd();
-            return;
-        } else {
-            const errorMsg = data.error || data.message || "Login failed";
-            console.error('API Error:', errorMsg, 'Full response:', data);
-            showNotification(`Assessor login failed: ${errorMsg}`, "error");
-            throw new Error(errorMsg);
         }
-    } catch (error) {
-    console.error('Login Process Error:', error);
-    console.log('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
     });
-    
-    showNotification(`Assessor login failed: ${error.message}`, "error");
-    errorElement.textContent = error.message;
-    errorElement.style.display = "block";
-    
-    // Keep assessor tab active without resetting
-    const assessorTab = document.querySelector('.role-tab[data-role="assessor"]');
-    const assessorForm = document.querySelector('.login-form[data-role="assessor"]');
-    
-    if (!assessorTab.classList.contains('active')) {
-        roleTabs.forEach(tab => tab.classList.remove('active'));
-        assessorTab.classList.add('active');
-    }
-    
-    if (!assessorForm.classList.contains('active')) {
-        loginForms.forEach(form => form.classList.remove('active'));
-        assessorForm.classList.add('active');
-    }
-}
-});
 
-
+    // Check if admin email is remembered
+    const savedAdminEmail = localStorage.getItem("adminEmail");
+    if (savedAdminEmail) {
+        document.getElementById("adminEmail").value = savedAdminEmail;
+        document.getElementById("rememberMe").checked = true;
+    }
 });
