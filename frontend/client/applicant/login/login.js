@@ -206,7 +206,7 @@ adminLoginForm?.addEventListener("submit", async (e) => {
             }
             
             // Correct redirect path - adjust based on your project structure
-            const dashboardPath = "/client/admin/dashboard/dashboard.html";
+            const dashboardPath = "../../admin/dashboard/dashboard.html";
             
             // Redirect after short delay to allow notification to be seen
             setTimeout(() => {
