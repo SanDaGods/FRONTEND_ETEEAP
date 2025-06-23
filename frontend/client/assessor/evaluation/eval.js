@@ -1,5 +1,5 @@
 const DOCUMENTS_BASE_PATH = "/documents/";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://backendeteeap-production.up.railway.app";
+const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 let currentPdfUrl = '';
 let currentUser = null;
 let currentApplicant = null;
