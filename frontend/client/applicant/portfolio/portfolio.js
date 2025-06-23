@@ -2,7 +2,7 @@
 
 
 document.addEventListener("DOMContentLoaded", async function () {
-  const API_BASE_URL = "http://localhost:3000"; // Replace with your actual API base URL
+
 
   try {
     // Check authentication status
