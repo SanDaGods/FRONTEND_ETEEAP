@@ -18,7 +18,7 @@ async function loadResults() {
         showLoading();
         
         // First verify authentication
-        const authResponse = await fetch(`${API_BASE_URL}/applicant/auth-status`, {
+        const authResponse = await fetch(`${API_BASE_URL}/auth-status`, {
             credentials: 'include'
         });
         
@@ -51,7 +51,7 @@ async function loadResults() {
         showNotification(error.message || 'Failed to load results', 'error');
         // Still try to display what we can
         try {
-            const authResponse = await fetch(`${API_BASE_URL}/applicant/auth-status`, {
+            const authResponse = await fetch(`${API_BASE_URL}/auth-status`, {
                 credentials: 'include'
             });
             if (authResponse.ok) {
@@ -184,7 +184,7 @@ document.getElementById('logout')?.addEventListener('click', async (e) => {
     e.preventDefault();
     try {
         showLoading();
-        const response = await fetch(`${API_BASE_URL}/applicant/logout`, {
+        const response = await fetch(`${API_BASE_URL}/logout`, {
             method: 'POST',
             credentials: 'include'
         });
