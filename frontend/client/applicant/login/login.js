@@ -7,19 +7,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForms = document.querySelectorAll('.login-form');
 
     // Modified initForms without default tab selection
-    function initForms(keepCurrentTab = false) {
-        document.querySelector('.register').style.display = 'none';
-        document.querySelector('.forgot').style.display = 'none';
-        document.getElementById('verificationForm').style.display = 'none';
-        document.getElementById('newPasswordForm').style.display = 'none';
-        wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
-        
-        if (!keepCurrentTab && !document.querySelector('.role-tab.active')) {
-            // Set first tab as active if none is active
+function initForms(keepCurrentTab = false) {
+    // Don't reset tabs if we want to keep current
+    if (!keepCurrentTab) {
+        // If no tab is active, set first one as active
+        if (!document.querySelector('.role-tab.active')) {
             document.querySelector('.role-tab').classList.add('active');
             document.querySelector('.login-form').classList.add('active');
         }
     }
+    
+    // Rest of your initForms code...
+    document.querySelector('.register').style.display = 'none';
+    document.querySelector('.forgot').style.display = 'none';
+    document.getElementById('verificationForm').style.display = 'none';
+    document.getElementById('newPasswordForm').style.display = 'none';
+    wrapper.classList.remove('active', 'active-forgot', 'active-verification', 'active-new-password');
+}
 
     // Initialize forms
     initForms();
@@ -172,10 +176,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Admin Login with persistent tab and enhanced logging
-    document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        console.clear();
-        console.group('Admin Login Attempt');
+document.getElementById("adminLoginForm")?.addEventListener("submit", async function(e) {
+    e.preventDefault(); // Must be first
+    e.stopPropagation(); // Add this
+    console.log("Admin login submitted"); // Debug
 
         const email = document.getElementById("adminEmail").value.trim();
         const password = document.getElementById("adminPassword").value;
@@ -257,10 +261,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Assessor Login with persistent tab and enhanced logging
-    document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        console.clear();
-        console.group('Assessor Login Attempt');
+document.getElementById("assessorLoginForm")?.addEventListener("submit", async function(e) {
+    e.preventDefault(); // Must be first
+    e.stopPropagation(); // Add this
+    console.log("Assessor login submitted"); // Debug
 
         const email = document.getElementById("assessorEmail").value.trim();
         const password = document.getElementById("assessorPassword").value;
