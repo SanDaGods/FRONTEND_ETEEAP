@@ -1,7 +1,11 @@
+const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", async function () {
   try {
     // Check authentication status
-    const authResponse = await fetch("/applicant/auth-status");
+    const authResponse = await fetch(`${API_BASE_URL}/applicant/auth-status`, {
+      credentials: 'include'
+    });
     const authData = await authResponse.json();
 
     if (!authData.authenticated) {
@@ -188,9 +192,9 @@ function setupEventListeners() {
 
 async function logoutUser() {
   try {
-    const response = await fetch("/applicant/logout", {
+    const response = await fetch(`${API_BASE_URL}/applicant/logout`, {
       method: "POST",
-      credentials: "same-origin",
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -482,7 +486,7 @@ function toggleSectionEdit(button) {
 
 async function updateProfile(formData) {
   try {
-    const response = await fetch("/api/update-profile", {
+    const response = await fetch(`${API_BASE_URL}/api/update-profile`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -511,7 +515,9 @@ async function loadProfilePicture() {
   if (!userId) return;
 
   try {
-    const response = await fetch(`/api/profile-pic/${userId}`);
+    const response = await fetch(`${API_BASE_URL}/api/profile-pic/${userId}`, {
+      credentials: 'include'
+    });
     if (response.ok) {
       const blob = await response.blob();
       const imageUrl = URL.createObjectURL(blob);
