@@ -168,8 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
    
-// Admin Login - Updated
-// Admin Login - Final Update
+// Admin Login with Enhanced Console Logging
 document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("adminEmail").value.trim();
@@ -177,12 +176,19 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
     const rememberMe = document.getElementById("rememberMe").checked;
     const errorElement = document.getElementById("admin-error-message");
 
+    console.groupCollapsed('Admin Login Attempt');
+    console.log('Email:', email);
+    console.log('Remember Me:', rememberMe);
+    
     errorElement.style.display = "none";
 
     if (!email || !password) {
-        showNotification("Email and password are required", "error");
-        errorElement.textContent = "Email and password are required";
+        const errorMsg = "Email and password are required";
+        console.error('Validation Error:', errorMsg);
+        showNotification(errorMsg, "error");
+        errorElement.textContent = errorMsg;
         errorElement.style.display = "block";
+        console.groupEnd();
         return;
     }
 
@@ -192,7 +198,9 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
     submitBtn.textContent = "Logging in...";
 
     try {
-        console.log("Attempting admin login..."); // Debug log
+        console.log('Making API request to:', `${API_BASE_URL}/api/admin/login`);
+        const startTime = performance.now();
+        
         const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -200,12 +208,18 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
             credentials: "include"
         });
 
+        const responseTime = performance.now() - startTime;
+        console.log(`Response received in ${responseTime.toFixed(2)}ms`);
+        console.log('HTTP Status:', response.status);
+
         const data = await response.json();
-        console.log("Admin login response:", data); // Debug log
+        console.log('Response Data:', data);
 
         if (response.ok) {
+            console.log('Login successful, storing data...');
             if (rememberMe) {
                 localStorage.setItem("adminEmail", email);
+                console.log('Email stored in localStorage for remember me');
             } else {
                 localStorage.removeItem("adminEmail");
             }
@@ -214,24 +228,38 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
                 adminId: data.data.adminId,
                 email: data.data.email
             }));
+            console.log('Admin data stored in sessionStorage:', {
+                adminId: data.data.adminId,
+                email: data.data.email
+            });
 
             showNotification("Admin login successful! Redirecting...", "success");
+            console.log('Redirecting to dashboard...');
             setTimeout(() => {
                 window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
             }, 1500);
+            console.groupEnd();
             return;
         } else {
             const errorMsg = data.error || data.message || "Login failed";
+            console.error('API Error:', errorMsg, 'Full response:', data);
             showNotification(`Admin login failed: ${errorMsg}`, "error");
             throw new Error(errorMsg);
         }
     } catch (error) {
-        console.error("Admin login error:", error); // Debug log
+        console.error('Login Process Error:', error);
+        console.log('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        
         showNotification(`Admin login failed: ${error.message}`, "error");
         errorElement.textContent = error.message;
         errorElement.style.display = "block";
         
         // Force admin tab to stay active
+        console.log('Resetting UI to admin tab...');
         document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
         document.querySelector('.role-tab[data-role="admin"]').classList.add('active');
         document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
@@ -239,22 +267,30 @@ document.getElementById("adminLoginForm")?.addEventListener("submit", async (e) 
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalBtnText;
+        console.log('Login process completed');
+        console.groupEnd();
     }
 });
 
-// Assessor Login - Final Update
+// Assessor Login with Enhanced Console Logging
 document.getElementById("assessorLoginForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("assessorEmail").value.trim();
     const password = document.getElementById("assessorPassword").value;
     const errorElement = document.getElementById("assessor-error-message");
 
+    console.groupCollapsed('Assessor Login Attempt');
+    console.log('Email:', email);
+    
     errorElement.style.display = "none";
 
     if (!email || !password) {
-        showNotification("Email and password are required", "error");
-        errorElement.textContent = "Email and password are required";
+        const errorMsg = "Email and password are required";
+        console.error('Validation Error:', errorMsg);
+        showNotification(errorMsg, "error");
+        errorElement.textContent = errorMsg;
         errorElement.style.display = "block";
+        console.groupEnd();
         return;
     }
 
@@ -264,7 +300,9 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
     submitBtn.textContent = "Logging in...";
 
     try {
-        console.log("Attempting assessor login..."); // Debug log
+        console.log('Making API request to:', `${API_BASE_URL}/api/assessor/login`);
+        const startTime = performance.now();
+        
         const response = await fetch(`${API_BASE_URL}/api/assessor/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -272,33 +310,53 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
             credentials: "include"
         });
 
+        const responseTime = performance.now() - startTime;
+        console.log(`Response received in ${responseTime.toFixed(2)}ms`);
+        console.log('HTTP Status:', response.status);
+
         const data = await response.json();
-        console.log("Assessor login response:", data); // Debug log
+        console.log('Response Data:', data);
 
         if (response.ok) {
+            console.log('Login successful, storing data...');
             sessionStorage.setItem("assessorData", JSON.stringify({
                 assessorId: data.data.assessorId,
                 email: data.data.email,
                 fullName: data.data.fullName
             }));
+            console.log('Assessor data stored in sessionStorage:', {
+                assessorId: data.data.assessorId,
+                email: data.data.email,
+                fullName: data.data.fullName
+            });
 
             showNotification("Assessor login successful! Redirecting...", "success");
+            console.log('Redirecting to dashboard...');
             setTimeout(() => {
                 window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
             }, 1500);
+            console.groupEnd();
             return;
         } else {
             const errorMsg = data.error || data.message || "Login failed";
+            console.error('API Error:', errorMsg, 'Full response:', data);
             showNotification(`Assessor login failed: ${errorMsg}`, "error");
             throw new Error(errorMsg);
         }
     } catch (error) {
-        console.error("Assessor login error:", error); // Debug log
+        console.error('Login Process Error:', error);
+        console.log('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        
         showNotification(`Assessor login failed: ${error.message}`, "error");
         errorElement.textContent = error.message;
         errorElement.style.display = "block";
         
         // Force assessor tab to stay active
+        console.log('Resetting UI to assessor tab...');
         document.querySelectorAll('.role-tab').forEach(tab => tab.classList.remove('active'));
         document.querySelector('.role-tab[data-role="assessor"]').classList.add('active');
         document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
@@ -306,6 +364,8 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalBtnText;
+        console.log('Login process completed');
+        console.groupEnd();
     }
 });
 });
