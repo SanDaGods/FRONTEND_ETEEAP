@@ -206,12 +206,12 @@ adminLoginForm?.addEventListener("submit", async (e) => {
             }
             
             // Correct redirect path - adjust based on your project structure
-            const dashboardPath = "../../admin/dashboard/dashboard.html";
-            
-            // Redirect after short delay to allow notification to be seen
+            const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
+
             setTimeout(() => {
                 window.location.href = data.redirectTo || dashboardPath;
             }, 1500);
+
         } else {
             throw new Error(data.error || "Admin login failed");
         }
