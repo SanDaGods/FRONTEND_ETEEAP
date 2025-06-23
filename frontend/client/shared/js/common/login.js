@@ -5,7 +5,7 @@ async function handleLogin(event, role) {
     const password = document.getElementById(`${role}-password`).value;
 
     try {
-        const response = await fetch("http://localhost:3000/login", {
+        const response = await fetch(`${API_BASE_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),

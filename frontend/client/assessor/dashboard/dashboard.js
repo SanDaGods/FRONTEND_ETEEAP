@@ -1,4 +1,5 @@
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+
 let students = [];
 let courses = [];
 let currentSection = "dashboard";
@@ -422,7 +423,7 @@ async function handleLogout() {
     showLoading();
     try {
         // First check if we're actually logged in
-        const authCheck = await fetch('http://localhost:3000/assessor/auth-status', {
+        const authCheck = await fetch(`${API_BASE_URL}/assessor/auth-status`, {
             credentials: 'include'
         });
         
@@ -434,7 +435,7 @@ async function handleLogout() {
         }
 
         // If authenticated, proceed with logout
-        const response = await fetch('http://localhost:3000/assessor/logout', {
+        const response = await fetch(`${API_BASE_URL}/assessor/logout`, {
             method: 'POST',
             credentials: 'include'
         });
@@ -465,7 +466,7 @@ async function handleLogout() {
 // Add this function to fetch and display user info
 async function loadAssessorInfo() {
     try {
-        const response = await fetch('http://localhost:3000/assessor/auth-status', {
+        const response = await fetch(`${API_BASE_URL}/assessor/auth-status`, {
             credentials: 'include'
         });
         

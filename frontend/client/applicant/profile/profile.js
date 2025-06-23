@@ -192,7 +192,7 @@ function setupEventListeners() {
 
 async function logoutUser() {
   try {
-    const response = await fetch(`${API_BASE_URL}/logout`, {
+    const response = await fetch(`${API_BASE_URL}/applicant/logout`, {
       method: "POST",
       credentials: "include",
     });

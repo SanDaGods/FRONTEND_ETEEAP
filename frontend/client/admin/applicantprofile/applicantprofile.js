@@ -637,7 +637,7 @@ async function showAssignAssessorModal() {
 
 function updateStatus() {
   const status = document.getElementById("status").value;
-  fetch(`http://localhost:3000/api/progress`, {
+  fetch(`${API_BASE_URL}/api/progress`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status })

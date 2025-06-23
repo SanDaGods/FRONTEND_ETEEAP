@@ -330,7 +330,7 @@ function initializeLogout() {
 
 async function loadAdminInfo() {
   try {
-    const response = await fetch('http://localhost:3000/admin/auth-status', {
+    const response = await fetch(`${API_BASE_URL}/admin/auth-status`, {
       credentials: 'include'
     });
     
@@ -373,7 +373,7 @@ function updateUserDisplay(user) {
 async function handleLogout() {
   showLoading();
   try {
-    const authCheck = await fetch('http://localhost:3000/admin/auth-status', {
+    const authCheck = await fetch(`${API_BASE_URL}/admin/auth-status`, {
       credentials: 'include'
     });
     
@@ -383,7 +383,7 @@ async function handleLogout() {
       return;
     }
 
-    const response = await fetch('http://localhost:3000/admin/logout', {
+    const response = await fetch(`${API_BASE_URL}/admin/logout`, {
       method: 'POST',
       credentials: 'include'
     });
