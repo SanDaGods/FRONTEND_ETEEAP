@@ -176,12 +176,8 @@ adminLoginForm?.addEventListener("submit", async (e) => {
     const email = document.getElementById("adminEmail").value.trim();
     const password = document.getElementById("adminPassword").value;
     
-    console.log("Admin login attempt with:", { email }); // Log email (without password for security)
-    
     if (!email || !password) {
-        const errorMsg = "Email and password are required";
-        console.error("Validation error:", errorMsg);
-        showNotification(errorMsg, "error");
+        showNotification("Email and password are required", "error");
         return;
     }
 
@@ -191,7 +187,6 @@ adminLoginForm?.addEventListener("submit", async (e) => {
     submitBtn.textContent = "Logging in...";
 
     try {
-        console.log("Sending request to:", `${API_BASE_URL}/admin/login`);
         const response = await fetch(`${API_BASE_URL}/admin/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -200,52 +195,37 @@ adminLoginForm?.addEventListener("submit", async (e) => {
         });
 
         const data = await response.json();
-        console.log("Response received:", { status: response.status, data });
 
         if (response.ok) {
-            const successMsg = "Admin login successful! Redirecting...";
-            console.log(successMsg);
-            showNotification(successMsg, "success");
+            showNotification("Admin login successful! Redirecting...", "success");
             
             // Store admin data if needed
             if (data.data) {
                 localStorage.setItem("adminEmail", data.data.email);
                 localStorage.setItem("adminName", data.data.fullName);
-                console.log("Admin data stored in localStorage");
             }
+            
+            // Correct redirect path - adjust based on your project structure
+            const dashboardPath = "/frontend/client/admin/dashboard/dashboard.html";
             
             // Redirect after short delay to allow notification to be seen
             setTimeout(() => {
-                window.location.href = data.redirectTo || "frontend/client/admin/dashboard/dashboard.html";
+                window.location.href = data.redirectTo || dashboardPath;
             }, 1500);
         } else {
-            const errorMsg = data.error || "Admin login failed";
-            console.error("Login failed:", errorMsg);
-            throw new Error(errorMsg);
+            throw new Error(data.error || "Admin login failed");
         }
     } catch (error) {
-        console.error("Login error:", error);
-        
         let userErrorMessage = "Admin login failed";
         if (error.message.includes("credentials")) {
             userErrorMessage = "Invalid email or password";
         } else if (error.message.includes("network")) {
             userErrorMessage = "Network error - please try again";
         }
-        
         showNotification(userErrorMessage, "error");
-        
-        // Highlight problematic fields
-        if (error.message.includes("email")) {
-            document.getElementById("adminEmail").classList.add("error");
-        }
-        if (error.message.includes("password")) {
-            document.getElementById("adminPassword").classList.add("error");
-        }
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalBtnText;
-        console.log("Login attempt completed");
     }
 });
 
