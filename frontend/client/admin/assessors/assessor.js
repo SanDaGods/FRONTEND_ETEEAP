@@ -349,7 +349,7 @@ assessorsToRender.forEach((assessor) => {
       <td>${capitalizeFirstLetter(assessor.assessorType)}</td>
       <td>${assessor.applicantsCount || 0}</td>
       <td class="action-buttons">
-        <button class="action-btn view-btn" onclick="window.location.href='/client/admin/assessors/assessorprofile.html?id=${assessor._id}'">
+        <button class="action-btn view-btn" onclick="window.location.href='/frontend/client/admin/assessors/assessorprofile.html?id=${assessor._id}'">
           <i class="fas fa-eye"></i> View
         </button>
         <button class="action-btn edit-btn" onclick="editAssessor('${assessor._id}')">
