@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     fetchApplicantData(applicantId).then(() => {
                         if (currentApplicant) {
-                            window.location.href = `/client/assessor/scoring/scoring.html?id=${applicantId}&applicantId=${currentApplicant.applicantId}`;
+                            window.location.href = `/frontend/client/assessor/scoring/scoring.html?id=${applicantId}&applicantId=${currentApplicant.applicantId}`;
                         }
                     });
                 };
@@ -560,7 +560,7 @@ document.querySelector('.evaluate-button')?.addEventListener('click', function(e
     }
     
     // Use the real applicantId from the currentApplicant object
-    window.location.href = `/client/assessor/scoring/scoring.html?id=${currentApplicant._id}&applicantId=${currentApplicant.applicantId}`;
+    window.location.href = `/frontend/client/assessor/scoring/scoring.html?id=${currentApplicant._id}&applicantId=${currentApplicant.applicantId}`;
 });
 
 
