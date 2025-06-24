@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function fetchApplicants() {
   showLoading();
   try {
-    const response = await fetch('/api/admin/applicants', {
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants`, {
       credentials: 'include'
     });
     
@@ -141,7 +141,7 @@ async function rejectApplicant(applicantId) {
   
   showLoading();
   try {
-    const response = await fetch(`/api/admin/applicants/${applicantId}/reject`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/reject`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -240,7 +240,7 @@ async function handleSearch(e) {
     }
     
     // If no local results, try server search
-    const response = await fetch(`/api/admin/applicants/search?term=${encodeURIComponent(searchTerm)}`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/search?term=${encodeURIComponent(searchTerm)}`, {
       credentials: 'include'
     });
     
