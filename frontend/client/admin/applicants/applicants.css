@@ -15,7 +15,7 @@
 
   /* Main Content Styles */
   body {
-    background-image: url('frontend/images/background.png');
+    background-image: url("/frontend/images/background.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
