@@ -15,7 +15,7 @@
 
           /* Main Content Styles */
         body {
-			background: linear-gradient(to top, #532989, #dfd9ece5), url('/frontend/ApplicantSide/img/background.jpg') no-repeat right fixed;
+			background-image: url("/frontend/images/background.png");
 			background-size: cover;
 			background-position: center;
 			background-attachment: fixed;
