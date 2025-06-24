@@ -218,7 +218,7 @@ function formatExpertise(expertise) {
 async function viewadmin(id) {
   showLoading();
   try {
-    const response = await fetch(`/api/admin/admins/:id`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/admins/:id`, {
       credentials: 'include'
     });
     
@@ -321,7 +321,7 @@ function renderadminTable(adminsToRender) {
 
 async function loadadmins() {
   try {
-      const response = await fetch(`/api/admin/admins`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
       credentials: 'include'
     });
     
@@ -383,7 +383,7 @@ async function deleteadmin(id) {
 async function confirmDelete() {
   showLoading();
   try {
-    const response = await fetch(`/api/admin/admins/:id`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/admins/:id`, {
       method: "DELETE",
       credentials: 'include'
     });
