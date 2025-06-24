@@ -179,7 +179,7 @@ async function handleLogout() {
 }
 
 function redirectToLogin() {
-  window.location.href = '/login/login.html';
+  window.location.href = '/frontend/client/applicant/login/login.html';
 }
 
 function clearAuthData() {

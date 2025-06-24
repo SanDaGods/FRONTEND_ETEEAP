@@ -361,7 +361,7 @@ function updateUserDisplay(user) {
 }
 
 function redirectToLogin() {
-    window.location.href = 'login/login.html';
+    window.location.href = '/frontend/client/applicant/login/login.html';
 }
 
 // ========================
@@ -431,7 +431,7 @@ async function handleLogout() {
             showNotification('Logout successful! Redirecting...', 'success');
             sessionStorage.removeItem('assessorData');
             setTimeout(() => {
-                window.location.href = 'login/login.html';
+                window.location.href = '/frontend/client/applicant/login/login.html';
             }, 1500);
         } else {
             showNotification('Logout failed. Please try again.', 'error');

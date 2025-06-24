@@ -132,7 +132,7 @@ function viewApplicantDetails(applicantId) {
   sessionStorage.setItem('currentApplicantId', applicantId);
   
   // Redirect to the profile page with the ID in the URL
-  window.location.href = `https://frontendeteeap-production.up.railway.app/frontend/client/admin/applicantprofile/applicantprofile.html?id=${applicantId}`;
+  window.location.href = `/frontend/client/admin/applicantprofile/applicantprofile.html?id=${applicantId}`;
 }
 
 // Reject applicant
@@ -407,7 +407,7 @@ async function handleLogout() {
 }
 
 function redirectToLogin() {
-  window.location.href = 'https://frontendeteeap-production.up.railway.app/frontend/client/applicant/login/login.html';
+  window.location.href = '/frontend/client/applicant/login/login.html';
 }
 
 function clearAuthData() {

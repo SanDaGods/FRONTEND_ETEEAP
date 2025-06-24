@@ -430,7 +430,7 @@ async function handleLogout() {
         if (!authCheck.ok) {
             // If not authenticated, just redirect
             sessionStorage.removeItem('assessorData');
-            window.location.href = '/login/login.html';
+            window.location.href = '/frontend/client/applicant/login/login.html';
             return;
         }
 
@@ -450,7 +450,7 @@ async function handleLogout() {
             
             // Wait a moment so user can see the notification
             setTimeout(() => {
-                window.location.href = data.redirectTo || '/login/login.html';
+                window.location.href = data.redirectTo || '/frontend/client/applicant/login/login.html';
             }, 1500);
         } else {
             showNotification('Logout failed. Please try again.', 'error');
@@ -482,7 +482,7 @@ async function loadAssessorInfo() {
             sessionStorage.setItem('assessorData', JSON.stringify(data.user));
         } else {
             // If not authenticated, redirect to login
-            window.location.href = '/login/login.html';
+            window.location.href = '/frontend/client/applicant/login/login.html';
         }
     } catch (error) {
         console.error('Error loading assessor info:', error);
@@ -492,7 +492,7 @@ async function loadAssessorInfo() {
             updateUserDisplay(JSON.parse(storedData));
         } else {
             // If no stored data and can't fetch, redirect to login
-            window.location.href = '/login/login.html';
+            window.location.href = '/frontend/client/applicant/login/login.html';
         }
     }
 }
@@ -510,7 +510,7 @@ async function handleLogout() {
         if (!authCheck.ok) {
             // If not authenticated, just redirect
             sessionStorage.removeItem('assessorData');
-            window.location.href = '/login/login.html';
+            window.location.href = '/frontend/client/applicant/login/login.html';
             return;
         }
 
@@ -530,7 +530,7 @@ async function handleLogout() {
             
             // Wait a moment so user can see the notification
             setTimeout(() => {
-                window.location.href = data.redirectTo || '/login/login.html';
+                window.location.href = data.redirectTo || '/frontend/client/applicant/login/login.html';
             }, 1500);
         } else {
             showNotification('Logout failed. Please try again.', 'error');
@@ -780,7 +780,7 @@ async function rejectStudent(applicantId) {
 function viewStudent(applicantId) {
     // Find the student in our local data to get the applicantId
     const student = students.find(s => s._id === applicantId);
-    const url = `https://frontendeteeap-production.up.railway.app/frontend/client/assessor/evaluation/evaluation.html?id=${applicantId}`;
+    const url = `/frontend/client/assessor/evaluation/evaluation.html?id=${applicantId}`;
     
     if (student && student.applicantId) {
         // If we have the formatted ID, we can add it to the URL

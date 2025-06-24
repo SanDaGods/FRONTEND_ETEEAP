@@ -165,7 +165,7 @@ function updateUserDisplay(user) {
 }
 
 function redirectToLogin() {
-    window.location.href = '/frontend/assessor/login/login.html';
+    window.location.href = '/frontend/client/applicant/login/login.html';
 }
 
 // Logout functionality
@@ -180,7 +180,7 @@ async function handleLogout() {
         if (!authCheck.ok) {
             // If not authenticated, just redirect
             sessionStorage.removeItem('assessorData');
-            window.location.href = '/frontend/assessor/login/login.html';
+            window.location.href = '/frontend/client/applicant/login/login.html';
             return;
         }
 
@@ -200,7 +200,7 @@ async function handleLogout() {
             
             // Wait a moment so user can see the notification
             setTimeout(() => {
-                window.location.href = data.redirectTo || '/frontend/assessor/login/login.html';
+                window.location.href = data.redirectTo || '/frontend/client/applicant/login/login.html';
             }, 1500);
         } else {
             showNotification('Logout failed. Please try again.', 'error');

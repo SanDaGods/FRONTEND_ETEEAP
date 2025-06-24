@@ -97,7 +97,7 @@ async function loadApplicantData() {
     });
     
     if (!authResponse.ok) {
-      window.location.href = '/login/login.html';
+      window.location.href = '/frontend/client/applicant/login/login.html';
       return;
     }
     
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
       method: 'POST',
       credentials: 'include'
     }).then(() => {
-      window.location.href = '/login/login.html';
+      window.location.href = '/frontend/client/applicant/login/login.html';
     });
   });
 });
@@ -629,7 +629,7 @@ async function showAssignAssessorModal() {
       method: 'POST',
       credentials: 'include'
     }).then(() => {
-      window.location.href = '/login/login.html';
+      window.location.href = '/frontend/client/applicant/login/login.html';
     });
   });
 });

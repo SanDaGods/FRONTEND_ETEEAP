@@ -549,7 +549,7 @@ function updateUserDisplay(user) {
 }
 
 function redirectToLogin() {
-    window.location.href = 'login/login.html';
+    window.location.href = '/frontend/client/applicant/login/login.html';
 }
 
 async function handleLogout() {
@@ -629,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function redirectToLogin() {
-  window.location.href = 'login/login.html';
+  window.location.href = '/frontend/client/applicant/login/login.html';
 }
 
 function redirectToAppList() {
