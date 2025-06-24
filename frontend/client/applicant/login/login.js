@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             showNotification("Registration successful! Please fill out your personal information.", "success");
             localStorage.setItem("userId", data.data.userId);
             localStorage.setItem("applicantId", data.data.applicantId);
-            window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/info/information.html";
+            window.location.href = "/frontend/client/applicant/info/information.html";
         } catch (error) {
             showNotification(`Registration failed: ${error.message}`, "error");
         } finally {
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 showNotification("Login successful!", "success");
                 localStorage.setItem("userId", data.data.userId);
                 localStorage.setItem("userEmail", data.data.email);
-                window.location.href = "https://frontendeteeap-production.up.railway.app/frontend/client/applicant/timeline/timeline.html";
+                window.location.href = "/frontend/client/applicant/timeline/timeline.html";
             } else {
                 throw new Error(data.error || "Login failed");
             }
@@ -206,7 +206,7 @@ adminLoginForm?.addEventListener("submit", async (e) => {
             }
             
             // Use the path that matches your deployment structure
-            const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/admin/dashboard/dashboard.html";
+            const dashboardPath = "/frontend/client/admin/dashboard/dashboard.html";
             
             setTimeout(() => {
                 window.location.href = data.redirectTo || dashboardPath;
@@ -287,7 +287,7 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
             }
             
             // Use the path that matches your deployment structure
-            const dashboardPath = "https://frontendeteeap-production.up.railway.app/frontend/client/assessor/dashboard/dashboard.html";
+            const dashboardPath = "/frontend/client/assessor/dashboard/dashboard.html";
             
             setTimeout(() => {
                 console.log("Redirecting to:", data.redirectTo || dashboardPath);
