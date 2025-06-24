@@ -210,7 +210,7 @@ function renderApplicantTable(applicantsToRender) {
 
 function viewApplicant(applicantId) {
   const applicant = applicants.find((a) => a._id === applicantId);
-  const url = `/client/assessor/evaluation/evaluation.html?id=${applicantId}`;
+  const url = `https://frontendeteeap-production.up.railway.app/frontend/client/assessor/evaluation/evaluation.html?id=${applicantId}`;
 
   if (applicant && applicant.applicantId) {
     window.location.href = `${url}&applicantId=${applicant.applicantId}`;
