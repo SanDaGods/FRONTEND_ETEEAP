@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const authData = await authResponse.json();
 
     if (!authData.authenticated) {
-      window.location.href = "/login/login.html";
+      window.location.href = "/applicant/login/login.html";
       return;
     }
 
@@ -203,7 +203,7 @@ async function logoutUser() {
       localStorage.clear();
 
       // Redirect to login page
-      window.location.href = "/login/login.html";
+      window.location.href = "/applicant/login/login.html";
     } else {
       throw new Error("Logout failed");
     }
