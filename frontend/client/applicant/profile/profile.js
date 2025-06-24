@@ -192,7 +192,7 @@ function setupEventListeners() {
 
 async function logoutUser() {
   try {
-    const response = await fetch(`${API_BASE_URL}/applicant/logout`, {
+    const response = await fetch(`${API_BASE_URL}/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -203,7 +203,7 @@ async function logoutUser() {
       localStorage.clear();
 
       // Redirect to login page
-      window.location.href = "/applicant/login/login.html";
+      window.location.href = "../login/login.html";
     } else {
       throw new Error("Logout failed");
     }
