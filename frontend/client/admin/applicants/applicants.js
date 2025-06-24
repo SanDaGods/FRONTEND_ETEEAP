@@ -1,3 +1,5 @@
+const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
+
 // DOM Elements
 const loadingSpinner = document.getElementById("loadingSpinner");
 const allStudentsTableBody = document.getElementById("allStudentsTableBody");
