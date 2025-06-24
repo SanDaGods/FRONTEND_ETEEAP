@@ -132,7 +132,7 @@ function viewApplicantDetails(applicantId) {
   sessionStorage.setItem('currentApplicantId', applicantId);
   
   // Redirect to the profile page with the ID in the URL
-  window.location.href = `/client/admin/applicantprofile/applicantprofile.html?id=${applicantId}`;
+  window.location.href = `frontend/client/admin/applicantprofile/applicantprofile.html?id=${applicantId}`;
 }
 
 // Reject applicant
