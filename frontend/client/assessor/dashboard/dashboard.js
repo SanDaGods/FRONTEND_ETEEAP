@@ -780,7 +780,7 @@ async function rejectStudent(applicantId) {
 function viewStudent(applicantId) {
     // Find the student in our local data to get the applicantId
     const student = students.find(s => s._id === applicantId);
-    const url = `/client/assessor/evaluation/evaluation.html?id=${applicantId}`;
+    const url = `https://frontendeteeap-production.up.railway.app/frontend/client/assessor/evaluation/evaluation.html?id=${applicantId}`;
     
     if (student && student.applicantId) {
         // If we have the formatted ID, we can add it to the URL
