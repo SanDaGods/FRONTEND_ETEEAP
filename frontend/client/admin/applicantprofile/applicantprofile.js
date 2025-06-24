@@ -123,7 +123,7 @@ async function loadApplicantData() {
     console.error('Error loading applicant data:', error);
     showNotification(error.message, 'error');
     setTimeout(() => {
-      window.location.href = '/client/admin/applicants/applicants.html';
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
     }, 2000);
   } finally {
     hideLoading();
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setupAssessorAssignment();
   
   document.getElementById('backButton')?.addEventListener('click', () => {
-      window.location.href = '/client/admin/applicants/applicants.html';
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
   });
   
   
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Set up event listeners
   document.getElementById('backButton')?.addEventListener('click', () => {
-    window.location.href = '/client/admin/applicants/applicants.html';
+    window.location.href = '/frontend/client/admin/applicants/applicants.html';
   });
   
   document.getElementById('approveBtn')?.addEventListener('click', async () => {
