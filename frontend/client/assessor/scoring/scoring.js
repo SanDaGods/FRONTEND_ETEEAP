@@ -346,7 +346,7 @@ async function finalizeEvaluation() {
             showNotification('Evaluation finalized successfully!', 'success');
             // Redirect back to applicant list after 2 seconds
             setTimeout(() => {
-                window.location.href = '/client/assessor/applicants/applicants.html';
+                window.location.href = '/fronend/client/assessor/applicants/applicants.html';
             }, 2000);
         } else {
             showNotification(data.error || 'Failed to finalize evaluation', 'error');
@@ -633,7 +633,7 @@ function redirectToLogin() {
 }
 
 function redirectToAppList() {
-  window.location.href = '/client/assessor/applicants/applicants.html';
+  window.location.href = '/frontend/client/assessor/applicants/applicants.html';
 }
 
 function validateApplicantId(id) {
