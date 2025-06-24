@@ -38,7 +38,7 @@ function getApplicantId() {
   if (!id) {
     showNotification('No applicant ID provided. Redirecting...', 'error');
     setTimeout(() => {
-      window.location.href = '/client/admin/applicants/applicants.html';
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
     }, 2000);
     return null;
   }
