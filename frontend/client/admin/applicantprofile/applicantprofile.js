@@ -200,27 +200,33 @@ async function fetchAndDisplayDocuments() {
   if (grid) grid.style.display = 'none';
   
   try {
+    console.log('Fetching documents for applicant:', applicantId); // Debug log
+    
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include'
     });
     
+    console.log('Documents response status:', response.status); // Debug log
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.error || 
-        errorData.message || 
-        `Failed to fetch documents: ${response.status}`
-      );
+      const errorMsg = errorData.error || 
+                      errorData.message || 
+                      `Failed to fetch documents: ${response.status}`;
+      console.error('Error fetching documents:', errorMsg); // Debug log
+      throw new Error(errorMsg);
     }
     
     const data = await response.json();
+    console.log('Documents data:', data); // Debug log
     
     if (!data.success) {
       throw new Error(data.error || 'Failed to load documents');
     }
     
     // Store files for viewer navigation
-    currentFiles = data.files || [];
+    currentFiles = Array.isArray(data.files) ? data.files : [];
+    console.log('Current files:', currentFiles); // Debug log
     
     // Display documents
     displayDocuments(currentFiles);
@@ -232,8 +238,10 @@ async function fetchAndDisplayDocuments() {
     // Show empty state if error occurs
     if (loading) loading.style.display = 'none';
     if (noDocuments) noDocuments.style.display = 'flex';
+    if (grid) grid.style.display = 'none';
   }
 }
+
 
 // Display documents in the UI
 function displayDocuments(documents) {
@@ -246,7 +254,8 @@ function displayDocuments(documents) {
   // Hide loading state
   loading.style.display = 'none';
 
-  if (!documents || documents.length === 0) {
+  // Check if documents is an array and not empty
+  if (!Array.isArray(documents) || documents.length === 0) {
     noDocuments.style.display = 'flex';
     grid.style.display = 'none';
     return;
@@ -262,6 +271,9 @@ function displayDocuments(documents) {
 
   // Add each document to the grid
   Object.entries(groupedDocs).forEach(([type, files]) => {
+    // Skip if no files for this type
+    if (!files || files.length === 0) return;
+
     const sectionHeader = document.createElement('h4');
     sectionHeader.textContent = getSectionTitle(type);
     sectionHeader.style.gridColumn = '1 / -1';
@@ -271,6 +283,7 @@ function displayDocuments(documents) {
     grid.appendChild(sectionHeader);
 
     files.forEach(file => {
+      if (!file || !file._id || !file.filename) return; // Skip invalid files
       const card = createDocumentCard(file);
       grid.appendChild(card);
     });
@@ -343,13 +356,17 @@ function createDocumentCard(file) {
 // View file in modal
 async function viewFile(fileId) {
   try {
+    console.log('Attempting to view file:', fileId); // Debug log
+    
     // Find the file in currentFiles
     currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
     if (currentFileIndex === -1) {
-      throw new Error('File not found');
+      throw new Error('File not found in current files list');
     }
 
     const file = currentFiles[currentFileIndex];
+    console.log('File to view:', file); // Debug log
+    
     const modal = document.getElementById('fileModal');
     const fileViewer = document.getElementById('fileViewer');
     const imageViewer = document.getElementById('imageViewer');
@@ -359,7 +376,7 @@ async function viewFile(fileId) {
     const nextBtn = document.querySelector('.next-btn');
 
     if (!modal || !fileViewer || !imageViewer || !currentFileText || !fileName) {
-      throw new Error('File viewer elements not found');
+      throw new Error('File viewer elements not found in DOM');
     }
 
     // Update UI
@@ -380,6 +397,8 @@ async function viewFile(fileId) {
       credentials: 'include'
     });
     
+    console.log('File view response status:', response.status); // Debug log
+    
     if (!response.ok) {
       throw new Error(`Failed to load file: ${response.status}`);
     }
@@ -389,11 +408,16 @@ async function viewFile(fileId) {
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
 
+    console.log('File content type:', contentType); // Debug log
+
     if (contentType.startsWith('image/')) {
       // For images
       imageViewer.onload = () => {
         imageViewer.style.display = 'block';
         fileName.textContent = file.filename;
+      };
+      imageViewer.onerror = () => {
+        throw new Error('Failed to load image');
       };
       imageViewer.src = url;
     } else if (contentType === 'application/pdf') {
@@ -402,12 +426,16 @@ async function viewFile(fileId) {
         fileViewer.style.display = 'block';
         fileName.textContent = file.filename;
       };
+      fileViewer.onerror = () => {
+        throw new Error('Failed to load PDF');
+      };
       fileViewer.src = url;
     } else {
       // For other files, offer download
       fileViewer.style.display = 'block';
       fileViewer.src = url;
       fileName.textContent = file.filename;
+      showNotification('This file type can only be downloaded', 'info');
     }
 
     // Show modal
@@ -604,4 +632,56 @@ function formatExpertise(expertise) {
     "other": "Other"
   };
   return expertiseMap[expertise] || expertise;
+}
+
+async function loadApplicantData() {
+  showLoading();
+  
+  try {
+    console.log('Loading applicant data for:', applicantId); // Debug log
+    
+    // Verify admin is authenticated first
+    const authResponse = await fetch(`${API_BASE_URL}/admin/auth-status`, {
+      credentials: 'include'
+    });
+    
+    console.log('Auth status:', authResponse.status); // Debug log
+    
+    if (!authResponse.ok) {
+      throw new Error('Admin not authenticated');
+    }
+    
+    // Fetch applicant data
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
+      credentials: 'include'
+    });
+    
+    console.log('Applicant response status:', response.status); // Debug log
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch applicant: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Applicant data:', data); // Debug log
+    
+    if (!data.success || !data.data) {
+      throw new Error(data.error || 'Failed to load applicant data');
+    }
+    
+    currentApplicant = data.data;
+    displayApplicantData(data.data);
+    
+    // Fetch documents separately
+    await fetchAndDisplayDocuments();
+    
+  } catch (error) {
+    console.error('Error loading applicant data:', error);
+    showNotification(error.message, 'error');
+    setTimeout(() => {
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
+    }, 2000);
+  } finally {
+    hideLoading();
+  }
 }
