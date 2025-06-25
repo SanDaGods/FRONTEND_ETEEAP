@@ -138,7 +138,7 @@ async function loadApplicantData() {
 async function fetchAndDisplayDocuments() {
   try {
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
-      credentials: 'include' // This sends the admin's session cookie
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -151,7 +151,15 @@ async function fetchAndDisplayDocuments() {
       throw new Error(data.error || 'Failed to load documents');
     }
     
-    displayDocuments(data.data || []);
+    // Transform the data into a flat array of documents
+    const allDocuments = [];
+    Object.values(data.files || {}).forEach(docs => {
+      if (Array.isArray(docs)) {
+        allDocuments.push(...docs);
+      }
+    });
+    
+    displayDocuments(allDocuments);
     
   } catch (error) {
     console.error('Error fetching documents:', error);
@@ -236,13 +244,14 @@ function displayDocuments(documents) {
   documentsGrid.className = 'documents-grid';
   
   documents.forEach(doc => {
-    const fileName = doc.split('/').pop() || 'Document';
+    const fileName = doc.filename || 'Document';
     const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
     let iconClass = 'fa-file';
     
     if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
     else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
     else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+    else if (['xls', 'xlsx'].includes(fileExt)) iconClass = 'fa-file-excel';
     
     const documentCard = document.createElement('div');
     documentCard.className = 'document-card';
@@ -251,17 +260,24 @@ function displayDocuments(documents) {
         <i class="fas ${iconClass}"></i>
       </div>
       <div class="document-info">
-        <p class="document-name">${fileName}</p>
-        <div class="document-actions">
-          <a href="${API_BASE_URL}/${doc}" target="_blank" class="btn view-btn">
-            <i class="fas fa-eye"></i> View
-          </a>
-          <a href="${API_BASE_URL}/${doc}" download class="btn download-btn">
-            <i class="fas fa-download"></i> Download
-          </a>
-        </div>
+        <p class="document-name" title="${fileName}">${fileName}</p>
+        <p class="document-date">${new Date(doc.uploadDate).toLocaleDateString()}</p>
+      </div>
+      <div class="document-actions">
+        <button class="view-btn" data-file-id="${doc._id}">
+          <i class="fas fa-eye"></i> View
+        </button>
+        <a href="${API_BASE_URL}/api/admin/view-file/${doc._id}" download="${fileName}" class="btn download-btn">
+          <i class="fas fa-download"></i> Download
+        </a>
       </div>
     `;
+    
+    // Add click handler for view button
+    documentCard.querySelector('.view-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      viewFile(doc._id, documents);
+    });
     
     documentsGrid.appendChild(documentCard);
   });
@@ -741,7 +757,7 @@ async function showFile(index) {
     // Show loading state
     fileName.textContent = `Loading ${file.filename}...`;
 
-    // Fetch the file
+    // Fetch the file using admin endpoint
     const response = await fetch(`${API_BASE_URL}/api/admin/view-file/${file._id}`, {
       credentials: 'include'
     });
@@ -753,7 +769,7 @@ async function showFile(index) {
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
 
-    // Get content type from response headers if not available in file object
+    // Get content type from response headers
     const contentType = response.headers.get('content-type') || file.contentType;
 
     // Hide both viewers first
