@@ -119,6 +119,9 @@ async function loadApplicantData() {
     currentApplicant = data.data;
     displayApplicantData(data.data);
     
+    // Fetch documents separately
+    await fetchAndDisplayDocuments();
+    
   } catch (error) {
     console.error('Error loading applicant data:', error);
     showNotification(error.message, 'error');
@@ -127,6 +130,37 @@ async function loadApplicantData() {
     }, 2000);
   } finally {
     hideLoading();
+  }
+}
+
+
+async function fetchAndDisplayDocuments() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/fetch-user-files/${applicantId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch documents: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load documents');
+    }
+    
+    // Transform the data into a flat array of documents
+    const allDocuments = [];
+    Object.values(data.files || {}).forEach(docs => {
+      allDocuments.push(...docs);
+    });
+    
+    displayDocuments(allDocuments);
+    
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    showNotification(`Error loading documents: ${error.message}`, 'error');
   }
 }
 
@@ -643,4 +677,249 @@ function updateStatus() {
     body: JSON.stringify({ status })
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
+}
+
+
+// File Viewer State
+let currentFiles = [];
+let currentFileIndex = 0;
+
+// Initialize file viewer when DOM loads
+document.addEventListener('DOMContentLoaded', function() {
+  initializeFileViewer();
+});
+
+function initializeFileViewer() {
+  const modal = document.getElementById('fileModal');
+  if (!modal) return;
+
+  const closeBtn = modal.querySelector('.close-modal');
+  const prevBtn = modal.querySelector('.prev-btn');
+  const nextBtn = modal.querySelector('.next-btn');
+
+  function closeModal() {
+    modal.style.display = 'none';
+    document.getElementById('fileViewer').style.display = 'none';
+    document.getElementById('imageViewer').style.display = 'none';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => e.target === modal && closeModal());
+
+  prevBtn.addEventListener('click', () => {
+    if (currentFileIndex > 0) showFile(currentFileIndex - 1);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (modal.style.display === 'block') {
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowLeft' && currentFileIndex > 0) showFile(currentFileIndex - 1);
+      if (e.key === 'ArrowRight' && currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
+    }
+  });
+}
+
+async function showFile(index) {
+  try {
+    const file = currentFiles[index];
+    currentFileIndex = index;
+
+    const modal = document.getElementById('fileModal');
+    const fileViewer = document.getElementById('fileViewer');
+    const imageViewer = document.getElementById('imageViewer');
+    const currentFileText = document.getElementById('currentFileText');
+    const fileName = document.getElementById('fileName');
+    const prevBtn = modal.querySelector('.prev-btn');
+    const nextBtn = modal.querySelector('.next-btn');
+
+    // Update UI
+    currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
+    fileName.textContent = file.filename;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === currentFiles.length - 1;
+
+    // Show loading state
+    fileName.textContent = `Loading ${file.filename}...`;
+
+    // Fetch the file
+    const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${file._id}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to load file: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    // Get content type from response headers if not available in file object
+    const contentType = response.headers.get('content-type') || file.contentType;
+
+    // Hide both viewers first
+    fileViewer.style.display = 'none';
+    imageViewer.style.display = 'none';
+
+    // Show appropriate viewer based on file type
+    if (contentType.startsWith('image/')) {
+      imageViewer.onload = () => {
+        imageViewer.style.display = 'block';
+        fileName.textContent = file.filename;
+      };
+      imageViewer.src = url;
+    } else {
+      fileViewer.onload = () => {
+        fileViewer.style.display = 'block';
+        fileName.textContent = file.filename;
+      };
+      fileViewer.src = url;
+    }
+
+    // Show modal
+    modal.style.display = 'block';
+
+    // Clean up URL when modal closes
+    const cleanup = () => {
+      URL.revokeObjectURL(url);
+      modal.removeEventListener('click', cleanup);
+    };
+    modal.addEventListener('click', cleanup, { once: true });
+
+  } catch (error) {
+    console.error('Error showing file:', error);
+    showNotification(`Error: Could not display file (${error.message})`, 'error');
+  }
+}
+
+// Update the displayDocuments function
+function displayDocuments(documents) {
+  const container = document.getElementById('documents-container');
+  const loading = document.getElementById('documents-loading');
+  const noDocuments = document.getElementById('no-documents');
+  const grid = document.getElementById('documents-grid');
+  
+  if (!container) return;
+
+  // Hide loading state
+  loading.style.display = 'none';
+
+  if (!documents || documents.length === 0) {
+    noDocuments.style.display = 'flex';
+    grid.style.display = 'none';
+    return;
+  }
+
+  // Store files for viewer navigation
+  currentFiles = documents;
+
+  // Clear existing documents
+  grid.innerHTML = '';
+  grid.style.display = 'grid';
+  noDocuments.style.display = 'none';
+
+  // Group documents by type
+  const groupedDocs = groupDocumentsByType(documents);
+
+  // Add each document to the grid
+  Object.entries(groupedDocs).forEach(([type, files]) => {
+    const sectionHeader = document.createElement('h4');
+    sectionHeader.textContent = getSectionTitle(type);
+    sectionHeader.style.gridColumn = '1 / -1';
+    sectionHeader.style.marginTop = '20px';
+    sectionHeader.style.marginBottom = '10px';
+    sectionHeader.style.color = 'var(--primary-color)';
+    grid.appendChild(sectionHeader);
+
+    files.forEach(file => {
+      const card = createDocumentCard(file);
+      grid.appendChild(card);
+    });
+  });
+}
+
+function groupDocumentsByType(documents) {
+  return documents.reduce((groups, file) => {
+    const type = file.label || 'others';
+    if (!groups[type]) {
+      groups[type] = [];
+    }
+    groups[type].push(file);
+    return groups;
+  }, {});
+}
+
+function getSectionTitle(type) {
+  const titles = {
+    'initial-submission': 'Initial Submissions',
+    'resume': 'Resume/CV',
+    'training': 'Training Certificates',
+    'awards': 'Awards',
+    'interview': 'Interview Documents',
+    'others': 'Other Documents'
+  };
+  return titles[type] || type;
+}
+
+function createDocumentCard(file) {
+  const card = document.createElement('div');
+  card.className = 'document-card';
+  
+  // Determine icon based on file type
+  const ext = file.filename.split('.').pop().toLowerCase();
+  let iconClass = 'fa-file';
+  
+  if (ext === 'pdf') iconClass = 'fa-file-pdf';
+  else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) iconClass = 'fa-file-image';
+  else if (['doc', 'docx'].includes(ext)) iconClass = 'fa-file-word';
+  else if (['xls', 'xlsx'].includes(ext)) iconClass = 'fa-file-excel';
+
+  card.innerHTML = `
+    <div class="document-icon">
+      <i class="fas ${iconClass}"></i>
+    </div>
+    <div class="document-info">
+      <p class="document-name" title="${file.filename}">${file.filename}</p>
+      <p class="document-date">${new Date(file.uploadDate).toLocaleDateString()}</p>
+    </div>
+    <div class="document-actions">
+      <button class="view-btn" data-file-id="${file._id}">
+        <i class="fas fa-eye"></i> View
+      </button>
+      <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+  `;
+
+  // Add click handler for view button
+  card.querySelector('.view-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    viewFile(file._id, currentFiles);
+  });
+
+  return card;
+}
+
+async function viewFile(fileId, files) {
+  try {
+    currentFiles = files;
+    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
+    
+    if (currentFileIndex === -1) {
+      throw new Error('File not found in this section');
+    }
+
+    const modal = document.getElementById('fileModal');
+    modal.style.display = 'block';
+    
+    await showFile(currentFileIndex);
+  } catch (error) {
+    console.error('Error viewing file:', error);
+    showNotification(`Error viewing file: ${error.message}`, 'error');
+  }
 }

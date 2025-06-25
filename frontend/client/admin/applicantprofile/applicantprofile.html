@@ -215,24 +215,38 @@
 <div class="info-section full-width">
   <h3><i class="fas fa-file"></i> Submitted Documents</h3>
   <div id="documents-container" class="documents-container">
-    <!-- Template for document items -->
-    <template id="document-template">
-      <div class="document-item">
-        <i class="fas fa-file-pdf document-icon"></i>
-        <div class="document-info">
-          <span class="document-name"></span>
-          <span class="document-date"></span>
-        </div>
-        <button class="btn btn-secondary document-download">
-          <i class="fas fa-download"></i> Download
-        </button>
-      </div>
-    </template>
+    <!-- Loading state -->
+    <div id="documents-loading" class="no-documents">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading documents...</p>
+    </div>
     
-    <!-- Fallback content -->
-    <div class="no-documents">
+    <!-- Empty state (will be shown if no documents) -->
+    <div id="no-documents" class="no-documents" style="display: none;">
       <i class="fas fa-folder-open"></i>
       <p>No documents submitted yet</p>
+    </div>
+    
+    <!-- Documents will be inserted here -->
+    <div id="documents-grid" class="documents-grid" style="display: none;"></div>
+  </div>
+</div>
+
+<!-- Add this modal at the bottom of your HTML, before the scripts -->
+<div id="fileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div class="file-info">
+      <span id="currentFileText"></span>
+      <span id="fileName"></span>
+    </div>
+    <div class="file-viewer-container">
+      <iframe id="fileViewer" style="display:none; width:100%; height:80vh; border:none;"></iframe>
+      <img id="imageViewer" style="display:none; max-width:100%; max-height:80vh;">
+    </div>
+    <div class="modal-nav">
+      <button class="prev-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+      <button class="next-btn">Next <i class="fas fa-chevron-right"></i></button>
     </div>
   </div>
 </div>
