@@ -939,11 +939,60 @@ async function viewFile(fileId, files) {
     }
 
     const modal = document.getElementById('fileModal');
-    modal.style.display = 'block';
+    const fileViewer = document.getElementById('fileViewer');
+    const imageViewer = document.getElementById('imageViewer');
+    const pdfViewer = document.getElementById('pdfViewer');
+    const currentFileText = document.getElementById('currentFileText');
+    const fileName = document.getElementById('fileName');
     
-    await showFile(currentFileIndex);
+    // Show loading state
+    modal.style.display = 'block';
+    fileViewer.style.display = 'none';
+    imageViewer.style.display = 'none';
+    pdfViewer.style.display = 'none';
+    fileName.textContent = 'Loading file...';
+    
+    // Get the file
+    const file = currentFiles[currentFileIndex];
+    currentFileText.textContent = `File ${currentFileIndex + 1} of ${currentFiles.length}`;
+    
+    // Fetch the file
+    const response = await fetch(`${API_BASE_URL}/api/admin/view-file/${fileId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to load file: ${response.status}`);
+    }
+    
+    // Handle different file types
+    const contentType = response.headers.get('content-type');
+    const blob = await response.blob();
+    
+    if (contentType.includes('pdf')) {
+      // For PDFs, use object URL
+      const url = URL.createObjectURL(blob);
+      pdfViewer.data = url;
+      pdfViewer.style.display = 'block';
+    } else if (contentType.includes('image')) {
+      // For images, use object URL
+      const url = URL.createObjectURL(blob);
+      imageViewer.src = url;
+      imageViewer.style.display = 'block';
+    } else {
+      // For other files, offer download
+      const url = URL.createObjectURL(blob);
+      fileViewer.href = url;
+      fileViewer.download = file.filename;
+      fileViewer.textContent = `Download ${file.filename}`;
+      fileViewer.style.display = 'block';
+    }
+    
+    fileName.textContent = file.filename;
+    
   } catch (error) {
     console.error('Error viewing file:', error);
     showNotification(`Error viewing file: ${error.message}`, 'error');
+    closeModal();
   }
 }
