@@ -22,7 +22,7 @@ async function protectPage() {
   }
 }
 
-/**
+/***
  * Handles logout functionality
  */
 async function handleLogout() {
