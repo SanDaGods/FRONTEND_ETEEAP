@@ -86,6 +86,61 @@ function setTextContent(elementId, text) {
   }
 }
 
+function displayApplicantData(applicant) {
+  if (!applicant) return;
+  
+  // Basic info
+  setTextContent('applicantId', applicant.applicantId);
+  setTextContent('email', applicant.email);
+  updateStatusBadge(applicant.status);
+  setTextContent('createdAt', formatDate(applicant.createdAt));
+  
+  // Personal info section
+  if (applicant.personalInfo) {
+    const info = applicant.personalInfo;
+    
+    // Profile header
+    const nameElement = document.getElementById('profile-name');
+    if (nameElement) {
+      nameElement.textContent = 
+        `${info.firstname || ''} ${info.middlename || ''} ${info.lastname || ''} ${info.suffix || ''}`.trim() || 'N/A';
+    }
+    
+    const occupationElement = document.getElementById('profile-occupation');
+    if (occupationElement) {
+      occupationElement.textContent = info.occupation || 'Not specified';
+    }
+    
+    // Contact Information
+    setTextContent('profile-email', info.emailAddress || applicant.email);
+    setTextContent('profile-phone', info.mobileNumber);
+    setTextContent('profile-telephone', info.telephoneNumber);
+    
+    // Personal Details
+    setTextContent('profile-gender', info.gender);
+    setTextContent('profile-age', info.age);
+    setTextContent('profile-nationality', info.nationality);
+    setTextContent('profile-civil-status', info.civilstatus);
+    setTextContent('profile-birthdate', formatDate(info.birthDate));
+    setTextContent('profile-birthplace', info.birthplace);
+    
+    // Address Information
+    setTextContent('profile-country', info.country);
+    setTextContent('profile-province', info.province);
+    setTextContent('profile-city', info.city);
+    setTextContent('profile-street', info.street);
+    setTextContent('profile-zip', info.zipCode);
+    
+    // Course Priorities
+    setTextContent('profile-first-priority', info.firstPriorityCourse);
+    setTextContent('profile-second-priority', info.secondPriorityCourse);
+    setTextContent('profile-third-priority', info.thirdPriorityCourse);
+  }
+  
+  // Documents
+  displayDocuments(applicant.files || []);
+}
+
 // Load applicant data from server
 async function loadApplicantData() {
   showLoading();
