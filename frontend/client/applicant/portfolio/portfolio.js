@@ -72,38 +72,57 @@ async function showFile(index) {
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === currentFiles.length - 1;
 
-    // Fetch the file
-    const response = await fetch(`${API_BASE_URL}/api/view-file/${file._id}`, {
+    // Show loading state
+    fileName.textContent = `Loading ${file.filename}...`;
+
+    // Fetch the file - UPDATED TO USE CORRECT ENDPOINT
+    const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${file._id}`, {
       credentials: 'include'
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
+    if (!response.ok) {
+      throw new Error(`Failed to load file: ${response.status} ${response.statusText}`);
+    }
+
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
+
+    // Get content type from response headers if not available in file object
+    const contentType = response.headers.get('content-type') || file.contentType;
 
     // Hide both viewers first
     fileViewer.style.display = "none";
     imageViewer.style.display = "none";
 
     // Show appropriate viewer based on file type
-    if (file.contentType.startsWith("image/")) {
+    if (contentType.startsWith("image/")) {
+      imageViewer.onload = () => {
+        imageViewer.style.display = "block";
+        fileName.textContent = file.filename;
+      };
       imageViewer.src = url;
-      imageViewer.style.display = "block";
     } else {
+      fileViewer.onload = () => {
+        fileViewer.style.display = "block";
+        fileName.textContent = file.filename;
+      };
       fileViewer.src = url;
-      fileViewer.style.display = "block";
     }
 
     // Clean up URL when modal closes
-    modal.addEventListener("click", function cleanup() {
+    const cleanup = () => {
       URL.revokeObjectURL(url);
       modal.removeEventListener("click", cleanup);
-    }, { once: true });
+    };
+    modal.addEventListener("click", cleanup, { once: true });
 
   } catch (error) {
     console.error("Error showing file:", error);
-    showNotification(`Error displaying file: ${error.message}`, "error");
+    showNotification(`Error: Could not display file (${error.message})`, "error");
+    
+    // Close modal on error
+    const modal = document.getElementById("fileModal");
+    if (modal) modal.style.display = "none";
   }
 }
 
