@@ -13,13 +13,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (!userId) {
       showAlert("Session expired. Please login again.", "error");
       setTimeout(() => {
-        window.location.href = "/frontend/client/Applicant/Login/login.html";
+        window.location.href = "/frontend/client/applicant/login/login.html";
       }, 2000);
       return;
     }
 
     if (!authData.authenticated) {
-      window.location.href = "/frontend/client/Applicant/Login/login.html";
+      window.location.href = "/frontend/client/applicant/login/login.html";
       return;
     }
 
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         localStorage.clear();
 
         // Redirect to login page
-        window.location.href = "/frontend/client/Applicant/Login/login.html";
+        window.location.href = "/frontend/client/applicant/login/login.html";
       } else {
         throw new Error("Logout failed");
       }
@@ -221,7 +221,7 @@ async function fetchAndDisplayFiles() {
     if (!userId) {
       showNotification("User session not found. Please login again.", "error");
       setTimeout(() => {
-        window.location.href = "/frontend/client/Applicant/Login/login.html";
+        window.location.href = "/frontend/client/applicant/login/login.html";
       }, 2000);
       return;
     }
