@@ -304,9 +304,9 @@ function renderadminTable(adminsToRender) {
       <td>${admin.createdAt || 'N/A'}</td>
       <td>${"" || 'N/A'}</td>
       <td class="action-buttons">
-        <button class="action-btn view-btn" onclick="viewadmin('${admin._id}')">
+        <a href="/frontend/client/admin/admins/adminprofile.html?id=${admin._id}" class="action-btn view-btn">
           <i class="fas fa-eye"></i> View
-        </button>
+        </a>
         <button class="action-btn edit-btn" onclick="editadmin('${admin._id}')">
           <i class="fas fa-edit"></i> Edit
         </button>
