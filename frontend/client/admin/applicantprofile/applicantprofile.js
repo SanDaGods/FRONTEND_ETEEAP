@@ -136,13 +136,19 @@ async function loadApplicantData() {
 
 // applicantprofile.js
 async function fetchAndDisplayDocuments() {
+  showLoading();
   try {
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include'
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch documents: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.error || 
+        errorData.message || 
+        `Failed to fetch documents: ${response.status}`
+      );
     }
     
     const data = await response.json();
@@ -153,17 +159,24 @@ async function fetchAndDisplayDocuments() {
     
     // Transform the data into a flat array of documents
     const allDocuments = [];
-    Object.values(data.files || {}).forEach(docs => {
-      if (Array.isArray(docs)) {
-        allDocuments.push(...docs);
-      }
-    });
+    if (data.files) {
+      Object.values(data.files).forEach(docs => {
+        if (Array.isArray(docs)) {
+          allDocuments.push(...docs);
+        }
+      });
+    }
     
     displayDocuments(allDocuments);
     
   } catch (error) {
     console.error('Error fetching documents:', error);
-    showNotification(`Error loading documents: ${error.message}`, 'error');
+    showNotification(
+      `Error loading documents: ${error.message}`, 
+      'error'
+    );
+  } finally {
+    hideLoading();
   }
 }
 
