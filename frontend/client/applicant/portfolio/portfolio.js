@@ -1,4 +1,4 @@
-  const API_BASE_URL = "https://updated-backend-production-ff82.up.railway.app";
+const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -214,31 +214,29 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
-  async function fetchAndDisplayFiles() {
-    try {
-      const userId = localStorage.getItem("userId");
+async function fetchAndDisplayFiles() {
+  try {
+    const userId = localStorage.getItem("userId");
 
-      if (!userId) {
-        showNotification(
-          "User session not found. Please login again.",
-          "error"
-        );
-        setTimeout(() => {
-          window.location.href = "../Login/login.html";
-        }, 2000);
-        return;
+    if (!userId) {
+      showNotification("User session not found. Please login again.", "error");
+      setTimeout(() => {
+        window.location.href = "../Login/login.html";
+      }, 2000);
+      return;
+    }
+
+    // Add headers with credentials
+    const response = await fetchWithTimeout(
+      `${API_BASE_URL}/api/fetch-user-files/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include" // Important for cookies/sessions
       }
-
-      const response = await fetchWithTimeout(
-        `${API_BASE_URL}/api/fetch-user-files/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            credentials: "same-origin",
-          },
-        }
-      );
+    );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -320,13 +318,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
       });
     } catch (error) {
-      console.error("Error fetching files:", error);
-      showNotification(
-        `Failed to load files: ${error.message}. Please try again.`,
-        "error"
-      );
-    }
+    console.error("Error fetching files:", error);
+    showNotification(
+      `Failed to load files: ${error.message}. Please try again.`,
+      "error"
+    );
   }
+}
 
   function showNotification(message, type = "info") {
     const existingNotifications = document.querySelectorAll(".notification");
