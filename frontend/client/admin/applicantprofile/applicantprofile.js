@@ -134,10 +134,11 @@ async function loadApplicantData() {
 }
 
 
+// applicantprofile.js
 async function fetchAndDisplayDocuments() {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/fetch-user-files/${applicantId}`, {
-      credentials: 'include'
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
+      credentials: 'include' // This sends the admin's session cookie
     });
     
     if (!response.ok) {
@@ -150,13 +151,7 @@ async function fetchAndDisplayDocuments() {
       throw new Error(data.error || 'Failed to load documents');
     }
     
-    // Transform the data into a flat array of documents
-    const allDocuments = [];
-    Object.values(data.files || {}).forEach(docs => {
-      allDocuments.push(...docs);
-    });
-    
-    displayDocuments(allDocuments);
+    displayDocuments(data.data || []);
     
   } catch (error) {
     console.error('Error fetching documents:', error);
@@ -747,7 +742,7 @@ async function showFile(index) {
     fileName.textContent = `Loading ${file.filename}...`;
 
     // Fetch the file
-    const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${file._id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/view-file/${file._id}`, {
       credentials: 'include'
     });
     
