@@ -75,13 +75,6 @@ function showPreviewError(message) {
 function closePdfModal() {
     const modal = document.getElementById('pdfViewerModal');
     const frame = document.getElementById('pdfViewerFrame');
-    
-    // Clean up the URL object
-    if (currentPdfUrl) {
-        URL.revokeObjectURL(currentPdfUrl);
-        currentPdfUrl = '';
-    }
-    
     frame.src = '';
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
@@ -89,12 +82,7 @@ function closePdfModal() {
 
 function downloadCurrentPdf() {
     if (currentPdfUrl) {
-        const a = document.createElement('a');
-        a.href = currentPdfUrl;
-        a.download = 'document.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        downloadDocument(currentPdfUrl.split('/').pop());
     }
 }
 
@@ -105,7 +93,7 @@ function downloadCurrentPdf() {
 async function fetchApplicantData(applicantId) {
     try {
         showLoading();
-        const endpoint = `${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`;
+        const endpoint = `${API_BASE_URL}/api/assessor/applicants/${applicantId}`;
         
         const response = await fetch(endpoint, {
             credentials: 'include'
@@ -118,13 +106,17 @@ async function fetchApplicantData(applicantId) {
         
         const data = await response.json();
         
-        if (data.success && data.documents) {
-            currentApplicant = data.applicant || {};
-            currentApplicant.files = data.documents;
+        if (data.success && data.data) {
+            currentApplicant = data.data;
+            
+            // Ensure we use the real applicantId from the server response
+            if (!currentApplicant.applicantId) {
+                // If for some reason it's missing, fall back to the formatted _id
+                currentApplicant.applicantId = `APP${currentApplicant._id.toString().substring(0, 8).toUpperCase()}`;
+            }
             
             updateApplicantProfile(currentApplicant);
             updateDocumentTables(currentApplicant.files);
-            updateTotalFileCount(currentApplicant.files);
         } else {
             throw new Error(data.error || 'Failed to load applicant data');
         }
@@ -133,13 +125,6 @@ async function fetchApplicantData(applicantId) {
         showNotification(`Error loading applicant data: ${error.message}`, 'error');
     } finally {
         hideLoading();
-    }
-}
-
-function updateTotalFileCount(files = []) {
-    const fileCountElement = document.querySelector('.file-count .count-number');
-    if (fileCountElement) {
-        fileCountElement.textContent = files.length;
     }
 }
 
@@ -221,73 +206,69 @@ function formatDate(dateString) {
 function updateDocumentTables(files = []) {
     // Group files by category
     const filesByCategory = {
-        'initial-submissions': files.filter(file => file.label === 'initial-submission'),
-        'resume-cv': files.filter(file => file.label === 'resume'),
-        'training-certs': files.filter(file => file.label === 'training'),
-        'awards': files.filter(file => file.label === 'awards'),
-        'interview': files.filter(file => file.label === 'interview'),
-        'others': files.filter(file => !file.label || !['initial-submission', 'resume', 'training', 'awards', 'interview'].includes(file.label))
+        'initial-submissions': files.filter(file => file.category === 'initial'),
+        'resume-cv': files.filter(file => file.category === 'resume'),
+        'training-certs': files.filter(file => file.category === 'training'),
+        'awards': files.filter(file => file.category === 'awards'),
+        'interview': files.filter(file => file.category === 'interview'),
+        'others': files.filter(file => !file.category || !['initial', 'resume', 'training', 'awards', 'interview'].includes(file.category))
     };
 
     // Update each category table
     for (const [categoryId, categoryFiles] of Object.entries(filesByCategory)) {
         const tableBody = document.querySelector(`#${categoryId} tbody`);
-        const categoryHeader = document.querySelector(`.category-header[onclick*="${categoryId}"]`);
-        
         if (tableBody) {
-            tableBody.innerHTML = categoryFiles.length > 0 ? '' : '<tr><td colspan="4">No documents found</td></tr>';
+            tableBody.innerHTML = '';
             
             categoryFiles.forEach(file => {
-                const row = document.createElement('tr');
-                const fileName = file.filename || 'Untitled Document';
-                const uploadDate = file.uploadDate ? new Date(file.uploadDate).toLocaleDateString() : 'N/A';
-                const status = file.status || 'pending';
+                const fileName = file.filename || file.path?.split('/').pop() || 'Unknown';
+                const uploadDate = file.uploadDate || file.createdAt || 'N/A';
+                const statusClass = getStatusClass(file.status || 'pending');
                 
+                // Create a new row element
+                const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
                         <i class="fas ${getFileIcon(fileName)}"></i>
                         ${fileName}
                     </td>
-                    <td><span class="status-badge ${getStatusClass(status)}">${formatStatus(status)}</span></td>
+                    <td><span class="status-badge ${statusClass}">${file.status || 'Pending Review'}</span></td>
                     <td>${uploadDate}</td>
                     <td>
-                        <button class="action-btn view-btn" title="View" data-file-id="${file._id}">
+                        <button class="action-btn view-btn" title="View" data-filepath="${file.path || file.filename}">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="action-btn download-btn" title="Download" data-file-id="${file._id}">
+                        <button class="action-btn download-btn" title="Download" data-filepath="${file.path || file.filename}">
                             <i class="fas fa-download"></i>
                         </button>
                     </td>
                 `;
                 tableBody.appendChild(row);
             });
-        }
 
-        // Update file count in category header
-        if (categoryHeader) {
-            const countElement = categoryHeader.querySelector('.file-count');
-            if (countElement) {
-                countElement.textContent = `${categoryFiles.length} file${categoryFiles.length !== 1 ? 's' : ''}`;
+            // Update file count in category header
+            const categoryHeader = document.querySelector(`.category-header[onclick*="${categoryId}"]`);
+            if (categoryHeader) {
+                const countElement = categoryHeader.querySelector('.file-count');
+                if (countElement) {
+                    countElement.textContent = `${categoryFiles.length} file${categoryFiles.length !== 1 ? 's' : ''}`;
+                }
             }
         }
     }
 
-    // Attach event listeners to view/download buttons
-    attachDocumentActionListeners();
-}
-
-function attachDocumentActionListeners() {
+    // Reattach event listeners
     document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const fileId = e.currentTarget.getAttribute('data-file-id');
-            await viewDocumentById(fileId);
+        btn.addEventListener('click', (e) => {
+            const filePath = e.currentTarget.getAttribute('data-filepath');
+            viewDocument(filePath);
         });
     });
 
     document.querySelectorAll('.download-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const fileId = e.currentTarget.getAttribute('data-file-id');
-            await downloadDocumentById(fileId);
+        btn.addEventListener('click', (e) => {
+            const filePath = e.currentTarget.getAttribute('data-filepath');
+            downloadDocument(filePath);
         });
     });
 }
@@ -509,40 +490,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize components
     initializeProfileDropdown();
     setupDocumentSearch();
-    initializePdfViewer();
 
     // Load user info and applicant data
     loadAssessorInfo().then(() => {
         const applicantId = getApplicantIdFromUrl();
         if (applicantId) {
             fetchApplicantData(applicantId);
+            
+            // Update the evaluate button to include both IDs
+            const evaluateBtn = document.querySelector('.evaluate-button');
+            if (evaluateBtn) {
+                evaluateBtn.onclick = function(e) {
+                    e.preventDefault();
+                    fetchApplicantData(applicantId).then(() => {
+                        if (currentApplicant) {
+                            window.location.href = `/frontend/client/assessor/scoring/scoring.html?id=${applicantId}&applicantId=${currentApplicant.applicantId}`;
+                        }
+                    });
+                };
+            }
         } else {
             showNotification('No applicant ID found in URL', 'error');
         }
     });
 });
-
-function initializePdfViewer() {
-    const modal = document.getElementById('pdfViewerModal');
-    if (modal) {
-        const closeBtn = modal.querySelector('.pdf-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closePdfModal);
-        }
-        
-        const downloadBtn = modal.querySelector('.pdf-download-btn');
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', downloadCurrentPdf);
-        }
-        
-        // Close modal when clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closePdfModal();
-            }
-        });
-    }
-}
 
 
 // In eval.js - Add this to the initialization section
@@ -615,118 +586,6 @@ function goToScoring(applicantId) {
     
     return id;
   }
-
-  async function viewDocumentById(fileId) {
-    try {
-        showLoading();
-        const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${fileId}`, {
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch document: ${response.statusText}`);
-        }
-        
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const contentType = response.headers.get('content-type') || 'application/octet-stream';
-        
-        // Open the document in a new tab or viewer
-        if (contentType.includes('pdf')) {
-            // For PDFs, use the modal viewer
-            currentPdfUrl = url;
-            const modal = document.getElementById('pdfViewerModal');
-            const frame = document.getElementById('pdfViewerFrame');
-            frame.src = url;
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        } else if (contentType.includes('image')) {
-            // For images, open in a new tab
-            window.open(url, '_blank');
-        } else {
-            // For other types, force download
-            const a = document.createElement('a');
-            a.href = url;
-            a.target = '_blank';
-            a.click();
-        }
-    } catch (error) {
-        console.error('Error viewing document:', error);
-        showNotification(`Failed to view document: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-async function downloadDocumentById(fileId) {
-    try {
-        showLoading();
-        const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${fileId}`, {
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch document: ${response.statusText}`);
-        }
-        
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const contentDisposition = response.headers.get('content-disposition');
-        let filename = 'document';
-        
-        // Extract filename from content-disposition header if available
-        if (contentDisposition) {
-            const filenameMatch = contentDisposition.match(/filename="?(.+?)"?(;|$)/);
-            if (filenameMatch && filenameMatch[1]) {
-                filename = filenameMatch[1];
-            }
-        }
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        // Clean up
-        setTimeout(() => URL.revokeObjectURL(url), 100);
-    } catch (error) {
-        console.error('Error downloading document:', error);
-        showNotification(`Failed to download document: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-function formatStatus(status) {
-    if (!status) return 'Pending Review';
-    return status.split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-}
-
-function getStatusClass(status) {
-    const statusMap = {
-        'approved': 'status-approved',
-        'rejected': 'status-rejected',
-        'reviewed': 'status-viewed',
-        'pending-review': 'status-pending',
-        'pending': 'status-pending'
-    };
-    return statusMap[status.toLowerCase()] || 'status-pending';
-}
-
-function getFileIcon(filename) {
-    const extension = filename.split('.').pop().toLowerCase();
-    switch(extension) {
-        case 'pdf': return 'fa-file-pdf';
-        case 'doc': case 'docx': return 'fa-file-word';
-        case 'xls': case 'xlsx': return 'fa-file-excel';
-        case 'jpg': case 'jpeg': case 'png': case 'gif': return 'fa-file-image';
-        default: return 'fa-file';
-    }
-}
 
 // Make functions available globally
 window.toggleCategory = toggleCategory;
