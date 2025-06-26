@@ -813,24 +813,28 @@ async function fetchAndDisplayDocuments() {
     noDocumentsElement.style.display = 'none';
     documentsGrid.style.display = 'none';
 
+    // Add debug log
+    console.log(`Fetching documents for applicant: ${applicantId}`);
+    
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
 
+    console.log('Response status:', response.status); // Debug log
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch documents: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    if (!data.success) throw new Error(data.error || 'Failed to fetch documents');
+    console.log('Response data:', data); // Debug log
 
-    // Flatten all files from all sections
-    const allFiles = Object.values(data.files).flat();
-
-    if (allFiles.length === 0) {
-      loadingElement.style.display = 'none';
-      noDocumentsElement.style.display = 'flex';
-      return;
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch documents');
     }
 
     // Clear existing documents
@@ -880,7 +884,10 @@ async function fetchAndDisplayDocuments() {
     documentsGrid.style.display = 'grid';
 
   } catch (error) {
-    console.error('Error loading documents:', error);
+    console.error('Error loading documents:', {
+      error: error.message,
+      stack: error.stack
+    });
     showNotification(`Failed to load documents: ${error.message}`, 'error');
     document.getElementById('documents-loading').style.display = 'none';
     document.getElementById('no-documents').style.display = 'flex';
