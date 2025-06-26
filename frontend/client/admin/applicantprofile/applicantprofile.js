@@ -13,14 +13,19 @@ function hideLoading() {
   if (spinner) spinner.style.display = 'none';
 }
 
-function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
+// Notification system
+function showNotification(message, type = "info") {
+  const existingNotifications = document.querySelectorAll(".notification");
+  existingNotifications.forEach(notification => notification.remove());
+
+  const notification = document.createElement("div");
   notification.className = `notification ${type}`;
   notification.textContent = message;
   document.body.appendChild(notification);
 
   setTimeout(() => {
-    notification.remove();
+    notification.style.opacity = "0";
+    setTimeout(() => notification.remove(), 500);
   }, 3000);
 }
 
@@ -247,8 +252,12 @@ document.addEventListener('DOMContentLoaded', function() {
   applicantId = getApplicantId();
   if (!applicantId) return;
   
-  // Load applicant data
+  // Initialize file viewer
+  initializeFileViewer();
+  
+  // Load applicant data and documents
   loadApplicantData();
+  fetchAndDisplayDocuments();
   
   // Set up event listeners
   setupModalControls();
@@ -643,4 +652,239 @@ function updateStatus() {
     body: JSON.stringify({ status })
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
+}
+
+// Add these constants at the top
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
+const ALLOWED_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+];
+
+// File viewer state
+let currentFiles = [];
+let currentFileIndex = 0;
+
+// Initialize the file viewer modal
+function initializeFileViewer() {
+  const modal = document.getElementById('fileModal');
+  if (!modal) return;
+
+  const closeBtn = modal.querySelector('.close-modal');
+  const prevBtn = modal.querySelector('.prev-btn');
+  const nextBtn = modal.querySelector('.next-btn');
+
+  function closeModal() {
+    modal.style.display = 'none';
+    document.getElementById('fileViewer').style.display = 'none';
+    document.getElementById('imageViewer').style.display = 'none';
+    currentFiles = [];
+    currentFileIndex = 0;
+  }
+
+  // Event listeners
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => e.target === modal && closeModal());
+
+  prevBtn.addEventListener('click', () => {
+    if (currentFileIndex > 0) showFile(currentFileIndex - 1);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (modal.style.display === 'block') {
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowLeft' && currentFileIndex > 0) showFile(currentFileIndex - 1);
+      if (e.key === 'ArrowRight' && currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
+    }
+  });
+}
+
+// Show file in viewer
+async function showFile(index) {
+  try {
+    const file = currentFiles[index];
+    currentFileIndex = index;
+
+    const modal = document.getElementById('fileModal');
+    const fileViewer = document.getElementById('fileViewer');
+    const imageViewer = document.getElementById('imageViewer');
+    const currentFileText = document.getElementById('currentFileText');
+    const fileName = document.getElementById('fileName');
+    const prevBtn = modal.querySelector('.prev-btn');
+    const nextBtn = modal.querySelector('.next-btn');
+
+    // Update UI
+    currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
+    fileName.textContent = file.filename;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === currentFiles.length - 1;
+
+    // Show loading state
+    fileName.textContent = `Loading ${file.filename}...`;
+
+    // Fetch the file
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/files/${file._id}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to load file: ${response.status} ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    // Get content type from response headers if not available in file object
+    const contentType = response.headers.get('content-type') || file.contentType;
+
+    // Hide both viewers first
+    fileViewer.style.display = 'none';
+    imageViewer.style.display = 'none';
+
+    // Show appropriate viewer based on file type
+    if (contentType.startsWith('image/')) {
+      imageViewer.onload = () => {
+        imageViewer.style.display = 'block';
+        fileName.textContent = file.filename;
+      };
+      imageViewer.src = url;
+    } else {
+      fileViewer.onload = () => {
+        fileViewer.style.display = 'block';
+        fileName.textContent = file.filename;
+      };
+      fileViewer.src = url;
+    }
+
+    // Clean up URL when modal closes
+    const cleanup = () => {
+      URL.revokeObjectURL(url);
+      modal.removeEventListener('click', cleanup);
+    };
+    modal.addEventListener('click', cleanup, { once: true });
+
+  } catch (error) {
+    console.error('Error showing file:', error);
+    showNotification(`Error: Could not display file (${error.message})`, 'error');
+    
+    // Close modal on error
+    const modal = document.getElementById('fileModal');
+    if (modal) modal.style.display = 'none';
+  }
+}
+
+// View a specific file
+async function viewFile(fileId, sectionFiles) {
+  try {
+    currentFiles = sectionFiles;
+    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
+    
+    if (currentFileIndex === -1) {
+      throw new Error('File not found in this section');
+    }
+
+    const modal = document.getElementById('fileModal');
+    modal.style.display = 'block';
+    
+    await showFile(currentFileIndex);
+  } catch (error) {
+    console.error('Error viewing file:', error);
+    showNotification(`Error viewing file: ${error.message}`, 'error');
+  }
+}
+
+// Fetch and display applicant's documents
+async function fetchAndDisplayDocuments() {
+  try {
+    showLoading();
+    const loadingElement = document.getElementById('documents-loading');
+    const noDocumentsElement = document.getElementById('no-documents');
+    const documentsGrid = document.getElementById('documents-grid');
+
+    loadingElement.style.display = 'flex';
+    noDocumentsElement.style.display = 'none';
+    documentsGrid.style.display = 'none';
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch documents: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.success) throw new Error(data.error || 'Failed to fetch documents');
+
+    // Flatten all files from all sections
+    const allFiles = Object.values(data.files).flat();
+
+    if (allFiles.length === 0) {
+      loadingElement.style.display = 'none';
+      noDocumentsElement.style.display = 'flex';
+      return;
+    }
+
+    // Clear existing documents
+    documentsGrid.innerHTML = '';
+
+    // Create document cards
+    allFiles.forEach(file => {
+      const fileExt = file.filename.split('.').pop()?.toLowerCase() || '';
+      let iconClass = 'fa-file';
+      
+      if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+      else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
+      else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+
+      const documentCard = document.createElement('div');
+      documentCard.className = 'document-card';
+      documentCard.innerHTML = `
+        <div class="document-icon">
+          <i class="fas ${iconClass}"></i>
+        </div>
+        <div class="document-info">
+          <p class="document-name">${file.filename}</p>
+          <div class="document-actions">
+            <button class="btn view-btn" data-file-id="${file._id}">
+              <i class="fas fa-eye"></i> View
+            </button>
+            <a href="${API_BASE_URL}/api/admin/applicants/files/${file._id}" download class="btn download-btn">
+              <i class="fas fa-download"></i> Download
+            </a>
+          </div>
+        </div>
+      `;
+      
+      documentsGrid.appendChild(documentCard);
+    });
+
+    // Set up event listeners for view buttons
+    documentsGrid.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const fileId = btn.getAttribute('data-file-id');
+        viewFile(fileId, allFiles);
+      });
+    });
+
+    loadingElement.style.display = 'none';
+    documentsGrid.style.display = 'grid';
+
+  } catch (error) {
+    console.error('Error loading documents:', error);
+    showNotification(`Failed to load documents: ${error.message}`, 'error');
+    document.getElementById('documents-loading').style.display = 'none';
+    document.getElementById('no-documents').style.display = 'flex';
+  } finally {
+    hideLoading();
+  }
 }
