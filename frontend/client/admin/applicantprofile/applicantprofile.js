@@ -183,7 +183,7 @@ function displayApplicantData(applicant) {
   }
   
   // Documents
-  displayDocuments(applicant.files || []);
+
 }
 
 // Display uploaded documents
