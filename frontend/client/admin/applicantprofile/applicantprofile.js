@@ -224,13 +224,13 @@ async function fetchAndDisplayDocuments() {
       throw new Error(data.error || 'Failed to load documents');
     }
     
-    // Ensure files is an array and has required fields
+    // Process files - ensure all required fields exist
     currentFiles = Array.isArray(data.files) ? data.files.map(file => ({
       _id: file._id,
       filename: file.filename,
       label: file.label || 'others',
-      uploadDate: file.uploadDate,
-      contentType: file.contentType
+      uploadDate: file.uploadDate || new Date().toISOString(),
+      contentType: file.contentType || 'application/octet-stream'
     })) : [];
     
     console.log('Processed files:', currentFiles);
@@ -261,8 +261,13 @@ function displayDocuments(documents) {
   // Hide loading state
   loading.style.display = 'none';
 
-  // Check if documents is an array and not empty
-  if (!Array.isArray(documents) || documents.length === 0) {
+  // Check if we have valid documents
+  if (!Array.isArray(documents)) {  // Added missing parenthesis here
+    console.error('Documents is not an array:', documents);
+    documents = [];
+  }
+
+  if (documents.length === 0) {
     noDocuments.style.display = 'flex';
     grid.style.display = 'none';
     return;
@@ -278,7 +283,6 @@ function displayDocuments(documents) {
 
   // Add each document to the grid
   Object.entries(groupedDocs).forEach(([type, files]) => {
-    // Skip if no files for this type
     if (!files || files.length === 0) return;
 
     const sectionHeader = document.createElement('h4');
@@ -290,7 +294,11 @@ function displayDocuments(documents) {
     grid.appendChild(sectionHeader);
 
     files.forEach(file => {
-      if (!file || !file._id || !file.filename) return; // Skip invalid files
+      if (!file || !file._id || !file.filename) {
+        console.warn('Invalid file skipped:', file);
+        return;
+      }
+      
       const card = createDocumentCard(file);
       grid.appendChild(card);
     });
