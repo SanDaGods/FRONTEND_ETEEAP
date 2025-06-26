@@ -665,4 +665,14 @@ async function loadApplicantFiles(applicantId) {
   }
 }
 
+if (!id) {
+  showNotification('No applicant ID provided.', 'error');
+  console.warn('No applicant ID found. Check URL or sessionStorage.');
+  return null;
+}
 
+const noDocsEl = document.getElementById('no-documents');
+if (noDocsEl) noDocsEl.style.display = 'block';
+
+const loadingEl = document.getElementById('documents-loading');
+if (loadingEl) loadingEl.style.display = 'none';
