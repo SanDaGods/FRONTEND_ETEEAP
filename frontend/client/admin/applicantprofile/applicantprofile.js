@@ -118,6 +118,7 @@ async function loadApplicantData() {
     
     currentApplicant = data.data;
     displayApplicantData(data.data);
+    await loadApplicantFiles(applicantId);
     
   } catch (error) {
     console.error('Error loading applicant data:', error);
@@ -128,6 +129,8 @@ async function loadApplicantData() {
   } finally {
     hideLoading();
   }
+
+  
 }
 
 // Display applicant data in the UI
@@ -655,20 +658,35 @@ function updateStatus() {
 
 async function loadApplicantFiles(applicantId) {
   try {
-    const response = await fetch(`${API_BASE_URL}/admin/applicant-files/${applicantId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include',
     });
 
-    const result = await response.json();
+    const data = await response.json();
 
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || 'Unable to load applicant files.');
+    if (!data.success || !Array.isArray(data.data)) {
+      throw new Error(data.error || 'No files found');
     }
 
-    const groupedFiles = result.files || {};
+    const files = data.data;
+    const groupedFiles = files.reduce((acc, file) => {
+      const category = file.documentCategory || 'Uncategorized';
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(file);
+      return acc;
+    }, {});
+
     displayGroupedDocuments(groupedFiles);
-  } catch (error) {
-    console.error("Error loading applicant files:", error);
-    showNotification(error.message, 'error');
+  } catch (err) {
+    console.error('Error loading files:', err);
+    document.getElementById('no-documents').style.display = 'block';
+  } finally {
+    document.getElementById('documents-loading').style.display = 'none';
   }
+}
+
+if (!id) {
+  showNotification('No applicant ID provided.', 'error');
+  console.warn('No applicant ID found. Check URL or sessionStorage.');
+  return null;
 }
