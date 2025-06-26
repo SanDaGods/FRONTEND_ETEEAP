@@ -3,14 +3,10 @@ let currentApplicant = null;
 let applicantId = null;
 
 // Utility Functions
-function showLoading() {
-  const spinner = document.getElementById('loadingSpinner');
-  if (spinner) spinner.style.display = 'flex';
-}
 
-function hideLoading() {
-  const spinner = document.getElementById('loadingSpinner');
-  if (spinner) spinner.style.display = 'none';
+function getApplicantId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id'); // URL must include ?id=123...
 }
 
 function showNotification(message, type = 'info') {
@@ -68,7 +64,7 @@ function setTextContent(elementId, text) {
 
 // Load applicant data from server
 async function loadApplicantData() {
-  showLoading();
+
   
   try {
     // Verify admin is authenticated first
@@ -107,7 +103,7 @@ async function loadApplicantData() {
       window.location.href = '/frontend/client/admin/applicants/applicants.html';
     }, 2000);
   } finally {
-    hideLoading();
+    
   }
 
   
@@ -231,28 +227,43 @@ function displayGroupedDocuments(groupedFiles) {
   });
 }
 
+
+
 // Initialize the page
 // Update the DOMContentLoaded event listener in ApplicantProfile.js
-document.addEventListener('DOMContentLoaded', function() {
-  // Get applicant ID
+document.addEventListener('DOMContentLoaded', function () {
+  // Get applicant ID from URL
   applicantId = getApplicantId();
-  if (!applicantId) return;
-  
+
+  if (!applicantId) {
+    alert('Applicant ID is missing from the URL');
+    return;
+  }
+
+
   // Load applicant data
   loadApplicantData();
-  
-  // Set up event listeners
+
+  // Setup other UI interactions
   setupModalControls();
   setupAssessorSelection();
   setupAssessorAssignment();
-  
+
   document.getElementById('backButton')?.addEventListener('click', () => {
-      window.location.href = '/frontend/client/admin/applicants/applicants.html';
+    window.location.href = '/frontend/client/admin/applicants/applicants.html';
   });
-  
-  
-  // Admin logout
-  document.getElementById('logoutLink')?.addEventListener('click', function(e) {
+
+  document.getElementById('approveBtn')?.addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to approve this application?')) return;
+    await showAssignAssessorModal();
+  });
+
+  document.getElementById('rejectBtn')?.addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to reject this application?')) return;
+    // ... rejection logic
+  });
+
+  document.getElementById('logoutLink')?.addEventListener('click', function (e) {
     e.preventDefault();
     fetch(`${API_BASE_URL}/admin/logout`, {
       method: 'POST',
@@ -273,7 +284,7 @@ async function showAssignAssessorModal() {
   
   if (!modal || !assessorSelect) return;
   
-  showLoading();
+
   try {
     // Fetch available assessors
     const response = await fetch(`${API_BASE_URL}/api/admin/available-assessors`, {
@@ -306,7 +317,7 @@ async function showAssignAssessorModal() {
     console.error('Error loading assessors:', error);
     showNotification(error.message, 'error');
   } finally {
-    hideLoading();
+   
   }
 }
 
@@ -341,7 +352,7 @@ function setupAssessorSelection() {
       return;
     }
     
-    showLoading();
+
     try {
       const response = await fetch(`${API_BASE_URL}/assessor/${assessorId}`, {
         credentials: 'include'
@@ -364,7 +375,7 @@ function setupAssessorSelection() {
       console.error('Error fetching assessor details:', error);
       assessorDetails.style.display = 'none';
     } finally {
-      hideLoading();
+      
     }
   });
 }
@@ -383,7 +394,7 @@ function setupAssessorAssignment() {
       return;
     }
     
-    showLoading();
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/assign-assessor`, {
         method: 'POST',
@@ -423,7 +434,7 @@ function setupAssessorAssignment() {
       console.error('Error assigning assessor:', error);
       showNotification(error.message, 'error');
     } finally {
-      hideLoading();
+      
     }
   });
 }
@@ -458,7 +469,7 @@ async function showAssignAssessorModal() {
   
   if (!modal || !assessorSelect) return;
   
-  showLoading();
+
   try {
     // First approve the application
     const approveResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/approve`, {
@@ -504,7 +515,7 @@ async function showAssignAssessorModal() {
     showNotification(error.message, 'error');
     closeModal();
   } finally {
-    hideLoading();
+    
   }
 }
 
@@ -537,7 +548,7 @@ async function showAssignAssessorModal() {
         return;
     }
     
-    showLoading();
+
     try {
         // First approve the application
         const approveResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/approve`, {
@@ -582,14 +593,14 @@ async function showAssignAssessorModal() {
         console.error('Error loading assessors:', error);
         showNotification(error.message, 'error');
     } finally {
-        hideLoading();
+     
     }
 }
   
   document.getElementById('rejectBtn')?.addEventListener('click', async () => {
     if (!confirm('Are you sure you want to reject this application?')) return;
     
-    showLoading();
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/reject`, {
         method: 'POST',
@@ -609,7 +620,7 @@ async function showAssignAssessorModal() {
       console.error('Error rejecting application:', error);
       showNotification(error.message, 'error');
     } finally {
-      hideLoading();
+    
     }
   });
   
@@ -665,14 +676,4 @@ async function loadApplicantFiles(applicantId) {
   }
 }
 
-if (!id) {
-  showNotification('No applicant ID provided.', 'error');
-  console.warn('No applicant ID found. Check URL or sessionStorage.');
-  return null;
-}
 
-const noDocsEl = document.getElementById('no-documents');
-if (noDocsEl) noDocsEl.style.display = 'block';
-
-const loadingEl = document.getElementById('documents-loading');
-if (loadingEl) loadingEl.style.display = 'none';
