@@ -205,26 +205,27 @@ async function displayDocuments() {
   gridElement.innerHTML = '';
 
   try {
-    // Fetch files from the API - Updated URL
+    // Fetch files from the API
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include'
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch documents: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
 
-    if (!data.success || !data.files) {
-      throw new Error(data.error || 'No documents found');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load documents');
     }
 
     // Hide loading state
     loadingElement.style.display = 'none';
 
     // Check if we have any files
-    const files = data.files;
+    const files = data.files || {};
     const fileGroups = Object.keys(files);
 
     if (fileGroups.length === 0) {
@@ -269,6 +270,19 @@ async function displayDocuments() {
   }
 }
 
+// Add this helper function
+function formatLabelName(label) {
+  const labelMap = {
+    'transcript': 'Transcript of Records',
+    'diploma': 'Diploma',
+    'certificate': 'Certificates',
+    'resume': 'Resume/CV',
+    'id': 'Identification',
+    'others': 'Other Documents'
+  };
+  return labelMap[label] || label.charAt(0).toUpperCase() + label.slice(1);
+}
+
 
 function createDocumentCard(file) {
   const documentCard = document.createElement('div');
@@ -305,6 +319,12 @@ function createDocumentCard(file) {
 
 // Update the showFileInModal function
 function showFileInModal(fileId, fileName, label = '') {
+  const modal = document.getElementById('fileModal');
+  const fileViewer = document.getElementById('fileViewer');
+  const imageViewer = document.getElementById('imageViewer');
+  const fileNameElement = document.getElementById('fileName');
+  const currentFileText = document.getElementById('currentFileText');
+
   modal.style.display = 'flex';
   fileNameElement.textContent = fileName;
   currentFileText.textContent = label ? `${label}: ` : '';
@@ -322,6 +342,9 @@ function showFileInModal(fileId, fileName, label = '') {
     fileViewer.style.display = 'none';
     imageViewer.style.display = 'block';
     imageViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}`;
+    imageViewer.onerror = () => {
+      imageViewer.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f0f0f0"/><text x="50" y="50" font-family="Arial" font-size="10" text-anchor="middle" fill="%23666">Image not available</text></svg>';
+    };
   } else {
     // Display PDF or other files in iframe
     imageViewer.style.display = 'none';
@@ -335,10 +358,6 @@ function showFileInModal(fileId, fileName, label = '') {
       fileViewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(`${API_BASE_URL}/api/admin/applicants/files/${fileId}`)}&embedded=true`;
     }
   }
-  
-  // Update navigation buttons state
-  prevBtn.disabled = allFiles.length <= 1;
-  nextBtn.disabled = allFiles.length <= 1;
 }
 
 // Initialize the page
