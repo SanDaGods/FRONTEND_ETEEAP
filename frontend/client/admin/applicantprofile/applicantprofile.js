@@ -205,7 +205,7 @@ async function displayDocuments() {
   gridElement.innerHTML = '';
 
   try {
-    // Fetch files from the API
+    // Updated fetch URL
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include'
     });
@@ -337,24 +337,12 @@ function showFileInModal(fileId, fileName, label = '') {
   const fileExt = fileName.split('.').pop().toLowerCase();
   const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExt);
   
-  if (isImage) {
-    // Display image
-    fileViewer.style.display = 'none';
-    imageViewer.style.display = 'block';
+    if (isImage) {
     imageViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}`;
-    imageViewer.onerror = () => {
-      imageViewer.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f0f0f0"/><text x="50" y="50" font-family="Arial" font-size="10" text-anchor="middle" fill="%23666">Image not available</text></svg>';
-    };
   } else {
-    // Display PDF or other files in iframe
-    imageViewer.style.display = 'none';
-    fileViewer.style.display = 'block';
-    
-    // For PDFs
     if (fileExt === 'pdf') {
       fileViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}#toolbar=0`;
     } else {
-      // For other file types, use Google Docs viewer
       fileViewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(`${API_BASE_URL}/api/admin/applicants/files/${fileId}`)}&embedded=true`;
     }
   }
