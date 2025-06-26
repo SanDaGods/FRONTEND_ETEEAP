@@ -24,27 +24,7 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
-// Get applicant ID from URL or sessionStorage
-function getApplicantId() {
-  // First try to get from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  let id = urlParams.get('id');
 
-  // If not in URL, try sessionStorage
-  if (!id) {
-    id = sessionStorage.getItem('currentApplicantId');
-  }
-
-  if (!id) {
-    showNotification('No applicant ID provided. Redirecting...', 'error');
-    setTimeout(() => {
-      window.location.href = '/frontend/client/admin/applicants/applicants.html';
-    }, 2000);
-    return null;
-  }
-
-  return id;
-}
 
 // Format date for display
 function formatDate(dateString) {
@@ -685,21 +665,14 @@ async function loadApplicantFiles(applicantId) {
   }
 }
 
-function getApplicantId() {
-  // First try to get from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  let id = urlParams.get('id');
-
-  // If not in URL, try sessionStorage
-  if (!id) {
-    id = sessionStorage.getItem('currentApplicantId');
-  }
-
-  if (!id) {
-    showNotification('No applicant ID provided.', 'error');
-    console.warn('No applicant ID found. Check URL or sessionStorage.');
-    return null;
-  }
-
-  return id;
+if (!id) {
+  showNotification('No applicant ID provided.', 'error');
+  console.warn('No applicant ID found. Check URL or sessionStorage.');
+  return null;
 }
+
+const noDocsEl = document.getElementById('no-documents');
+if (noDocsEl) noDocsEl.style.display = 'block';
+
+const loadingEl = document.getElementById('documents-loading');
+if (loadingEl) loadingEl.style.display = 'none';
