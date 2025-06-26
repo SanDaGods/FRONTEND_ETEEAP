@@ -379,6 +379,7 @@ function setupAssessorSelection() {
 }
 
 // Handle assessor assignment
+// Handle assessor assignment
 function setupAssessorAssignment() {
   const confirmAssignBtn = document.getElementById('confirmAssignBtn');
   const assessorSelect = document.getElementById('assessorSelect');
@@ -401,7 +402,7 @@ function setupAssessorAssignment() {
         },
         body: JSON.stringify({
           assessorId: assessorId,
-          applicantId: applicantId // Explicitly include both IDs
+          applicantId: applicantId
         }),
         credentials: 'include'
       });
@@ -460,7 +461,7 @@ function closeModal() {
   if (modal) modal.style.display = 'none';
 }
 
-// Update the approve button click handler to show the assessor modal
+// Show modal for assigning assessor
 async function showAssignAssessorModal() {
   const modal = document.getElementById('assignAssessorModal');
   const assessorSelect = document.getElementById('assessorSelect');
@@ -515,6 +516,23 @@ async function showAssignAssessorModal() {
   } finally {
     hideLoading();
   }
+}
+
+// Format expertise for display
+function formatExpertise(expertise) {
+  const expertiseMap = {
+    "engineering": "Engineering",
+    "education": "Education",
+    "business": "Business",
+    "information_technology": "IT",
+    "health_sciences": "Health Sciences",
+    "arts_sciences": "Arts & Sciences",
+    "architecture": "Architecture",
+    "industrial_technology": "Industrial Technology",
+    "hospitality_management": "Hospitality Management",
+    "other": "Other"
+  };
+  return expertiseMap[expertise] || expertise;
 }
 
 // Add this to the DOMContentLoaded event listener
