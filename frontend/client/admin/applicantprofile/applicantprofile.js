@@ -189,6 +189,7 @@ async function loadApplicantData() {
 }
 
 // Fetch and display documents
+// Update the fetchAndDisplayDocuments function
 async function fetchAndDisplayDocuments() {
   const loading = document.getElementById('documents-loading');
   const noDocuments = document.getElementById('no-documents');
@@ -200,33 +201,39 @@ async function fetchAndDisplayDocuments() {
   if (grid) grid.style.display = 'none';
   
   try {
-    console.log('Fetching documents for applicant:', applicantId); // Debug log
+    console.log('Fetching documents for applicant:', applicantId);
     
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include'
     });
     
-    console.log('Documents response status:', response.status); // Debug log
+    console.log('Documents response status:', response.status);
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMsg = errorData.error || 
                       errorData.message || 
                       `Failed to fetch documents: ${response.status}`;
-      console.error('Error fetching documents:', errorMsg); // Debug log
       throw new Error(errorMsg);
     }
     
     const data = await response.json();
-    console.log('Documents data:', data); // Debug log
+    console.log('Documents data:', data);
     
     if (!data.success) {
       throw new Error(data.error || 'Failed to load documents');
     }
     
-    // Store files for viewer navigation
-    currentFiles = Array.isArray(data.files) ? data.files : [];
-    console.log('Current files:', currentFiles); // Debug log
+    // Ensure files is an array and has required fields
+    currentFiles = Array.isArray(data.files) ? data.files.map(file => ({
+      _id: file._id,
+      filename: file.filename,
+      label: file.label || 'others',
+      uploadDate: file.uploadDate,
+      contentType: file.contentType
+    })) : [];
+    
+    console.log('Processed files:', currentFiles);
     
     // Display documents
     displayDocuments(currentFiles);
