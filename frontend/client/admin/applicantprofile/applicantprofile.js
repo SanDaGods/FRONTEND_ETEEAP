@@ -187,13 +187,14 @@ function displayApplicantData(applicant) {
 }
 
 // Display uploaded documents
-function displayDocuments(documents) {
+function displayGroupedDocuments(groupedFiles) {
   const container = document.getElementById('documents-container');
   if (!container) return;
-  
+
   container.innerHTML = '';
-  
-  if (!documents || documents.length === 0) {
+
+  const labels = Object.keys(groupedFiles);
+  if (labels.length === 0) {
     container.innerHTML = `
       <div class="no-documents">
         <i class="fas fa-folder-open"></i>
@@ -202,42 +203,49 @@ function displayDocuments(documents) {
     `;
     return;
   }
-  
-  const documentsGrid = document.createElement('div');
-  documentsGrid.className = 'documents-grid';
-  
-  documents.forEach(doc => {
-    const fileName = doc.split('/').pop() || 'Document';
-    const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
-    let iconClass = 'fa-file';
-    
-    if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
-    else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
-    else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
-    
-    const documentCard = document.createElement('div');
-    documentCard.className = 'document-card';
-    documentCard.innerHTML = `
-      <div class="document-icon">
-        <i class="fas ${iconClass}"></i>
-      </div>
-      <div class="document-info">
-        <p class="document-name">${fileName}</p>
-        <div class="document-actions">
-          <a href="${API_BASE_URL}/${doc}" target="_blank" class="btn view-btn">
-            <i class="fas fa-eye"></i> View
-          </a>
-          <a href="${API_BASE_URL}/${doc}" download class="btn download-btn">
-            <i class="fas fa-download"></i> Download
-          </a>
+
+  labels.forEach(label => {
+    const section = document.createElement('div');
+    section.className = 'document-section';
+
+    const header = document.createElement('h3');
+    header.textContent = label.replace(/_/g, ' ').toUpperCase();
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'documents-grid';
+
+    groupedFiles[label].forEach(file => {
+      const ext = file.filename.split('.').pop()?.toLowerCase() || '';
+      let iconClass = 'fa-file';
+      if (ext === 'pdf') iconClass = 'fa-file-pdf';
+      else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) iconClass = 'fa-file-image';
+      else if (['doc', 'docx'].includes(ext)) iconClass = 'fa-file-word';
+
+      const card = document.createElement('div');
+      card.className = 'document-card';
+      card.innerHTML = `
+        <div class="document-icon">
+          <i class="fas ${iconClass}"></i>
         </div>
-      </div>
-    `;
-    
-    documentsGrid.appendChild(documentCard);
+        <div class="document-info">
+          <p class="document-name">${file.filename}</p>
+          <div class="document-actions">
+            <a href="${API_BASE_URL}/admin/file/${file._id}" target="_blank" class="btn view-btn">
+              <i class="fas fa-eye"></i> View
+            </a>
+            <a href="${API_BASE_URL}/admin/file/${file._id}" download class="btn download-btn">
+              <i class="fas fa-download"></i> Download
+            </a>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
   });
-  
-  container.appendChild(documentsGrid);
 }
 
 // Initialize the page
@@ -643,4 +651,24 @@ function updateStatus() {
     body: JSON.stringify({ status })
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
+}
+
+async function loadApplicantFiles(applicantId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/applicant-files/${applicantId}`, {
+      credentials: 'include',
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || 'Unable to load applicant files.');
+    }
+
+    const groupedFiles = result.files || {};
+    displayGroupedDocuments(groupedFiles);
+  } catch (error) {
+    console.error("Error loading applicant files:", error);
+    showNotification(error.message, 'error');
+  }
 }
