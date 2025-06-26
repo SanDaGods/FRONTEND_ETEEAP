@@ -1,8 +1,6 @@
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 let currentApplicant = null;
 let applicantId = null;
-let currentFiles = [];
-let currentFileIndex = 0;
 
 // Utility Functions
 function showLoading() {
@@ -28,9 +26,11 @@ function showNotification(message, type = 'info') {
 
 // Get applicant ID from URL or sessionStorage
 function getApplicantId() {
+  // First try to get from URL
   const urlParams = new URLSearchParams(window.location.search);
   let id = urlParams.get('id');
 
+  // If not in URL, try sessionStorage
   if (!id) {
     id = sessionStorage.getItem('currentApplicantId');
   }
@@ -86,6 +86,51 @@ function setTextContent(elementId, text) {
   }
 }
 
+// Load applicant data from server
+async function loadApplicantData() {
+  showLoading();
+  
+  try {
+    // Verify admin is authenticated first
+    const authResponse = await fetch(`${API_BASE_URL}/admin/auth-status`, {
+      credentials: 'include'
+    });
+    
+    if (!authResponse.ok) {
+      window.location.href = '/frontend/client/applicant/login/login.html';
+      return;
+    }
+    
+    // Fetch applicant data
+    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch applicant: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success || !data.data) {
+      throw new Error(data.error || 'Failed to load applicant data');
+    }
+    
+    currentApplicant = data.data;
+    displayApplicantData(data.data);
+    
+  } catch (error) {
+    console.error('Error loading applicant data:', error);
+    showNotification(error.message, 'error');
+    setTimeout(() => {
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
+    }, 2000);
+  } finally {
+    hideLoading();
+  }
+}
+
+// Display applicant data in the UI
 function displayApplicantData(applicant) {
   if (!applicant) return;
   
@@ -141,399 +186,415 @@ function displayApplicantData(applicant) {
   displayDocuments(applicant.files || []);
 }
 
-// Load applicant data from server
-async function loadApplicantData() {
-  showLoading();
-  
-  try {
-    // Verify admin is authenticated first
-    const authResponse = await fetch(`${API_BASE_URL}/admin/auth-status`, {
-      credentials: 'include'
-    });
-    
-    if (!authResponse.ok) {
-      window.location.href = '/frontend/client/applicant/login/login.html';
-      return;
-    }
-    
-    // Fetch applicant data
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch applicant: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success || !data.data) {
-      throw new Error(data.error || 'Failed to load applicant data');
-    }
-    
-    currentApplicant = data.data;
-    displayApplicantData(data.data);
-    
-    // Fetch documents separately
-    await fetchAndDisplayDocuments();
-    
-  } catch (error) {
-    console.error('Error loading applicant data:', error);
-    showNotification(error.message, 'error');
-    setTimeout(() => {
-      window.location.href = '/frontend/client/admin/applicants/applicants.html';
-    }, 2000);
-  } finally {
-    hideLoading();
-  }
-}
-
-// Fetch and display documents
-// Update the fetchAndDisplayDocuments function
-async function fetchAndDisplayDocuments() {
-  const loading = document.getElementById('documents-loading');
-  const noDocuments = document.getElementById('no-documents');
-  const grid = document.getElementById('documents-grid');
-  
-  // Show loading state
-  if (loading) loading.style.display = 'flex';
-  if (noDocuments) noDocuments.style.display = 'none';
-  if (grid) grid.style.display = 'none';
-  
-  try {
-    console.log('Fetching documents for applicant:', applicantId);
-    
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
-      credentials: 'include'
-    });
-    
-    console.log('Documents response status:', response.status);
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMsg = errorData.error || 
-                      errorData.message || 
-                      `Failed to fetch documents: ${response.status}`;
-      throw new Error(errorMsg);
-    }
-    
-    const data = await response.json();
-    console.log('Documents data:', data);
-    
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to load documents');
-    }
-    
-    // Process files - ensure all required fields exist
-    currentFiles = Array.isArray(data.files) ? data.files.map(file => ({
-      _id: file._id,
-      filename: file.filename,
-      label: file.label || 'others',
-      uploadDate: file.uploadDate || new Date().toISOString(),
-      contentType: file.contentType || 'application/octet-stream'
-    })) : [];
-    
-    console.log('Processed files:', currentFiles);
-    
-    // Display documents
-    displayDocuments(currentFiles);
-    
-  } catch (error) {
-    console.error('Error fetching documents:', error);
-    showNotification(`Error loading documents: ${error.message}`, 'error');
-    
-    // Show empty state if error occurs
-    if (loading) loading.style.display = 'none';
-    if (noDocuments) noDocuments.style.display = 'flex';
-    if (grid) grid.style.display = 'none';
-  }
-}
-
-
-// Display documents in the UI
+// Display uploaded documents
 function displayDocuments(documents) {
-  const loading = document.getElementById('documents-loading');
-  const noDocuments = document.getElementById('no-documents');
-  const grid = document.getElementById('documents-grid');
+  const container = document.getElementById('documents-container');
+  if (!container) return;
   
-  if (!loading || !noDocuments || !grid) return;
-
-  // Hide loading state
-  loading.style.display = 'none';
-
-  // Check if we have valid documents
-  if (!Array.isArray(documents)) {  // Added missing parenthesis here
-    console.error('Documents is not an array:', documents);
-    documents = [];
-  }
-
-  if (documents.length === 0) {
-    noDocuments.style.display = 'flex';
-    grid.style.display = 'none';
+  container.innerHTML = '';
+  
+  if (!documents || documents.length === 0) {
+    container.innerHTML = `
+      <div class="no-documents">
+        <i class="fas fa-folder-open"></i>
+        <p>No documents submitted yet</p>
+      </div>
+    `;
     return;
   }
-
-  // Show documents grid
-  noDocuments.style.display = 'none';
-  grid.style.display = 'grid';
-  grid.innerHTML = '';
-
-  // Group documents by type
-  const groupedDocs = groupDocumentsByType(documents);
-
-  // Add each document to the grid
-  Object.entries(groupedDocs).forEach(([type, files]) => {
-    if (!files || files.length === 0) return;
-
-    const sectionHeader = document.createElement('h4');
-    sectionHeader.textContent = getSectionTitle(type);
-    sectionHeader.style.gridColumn = '1 / -1';
-    sectionHeader.style.marginTop = '20px';
-    sectionHeader.style.marginBottom = '10px';
-    sectionHeader.style.color = 'var(--primary-color)';
-    grid.appendChild(sectionHeader);
-
-    files.forEach(file => {
-      if (!file || !file._id || !file.filename) {
-        console.warn('Invalid file skipped:', file);
-        return;
-      }
-      
-      const card = createDocumentCard(file);
-      grid.appendChild(card);
-    });
-  });
-}
-
-function groupDocumentsByType(documents) {
-  return documents.reduce((groups, file) => {
-    const type = file.label || 'others';
-    if (!groups[type]) {
-      groups[type] = [];
-    }
-    groups[type].push(file);
-    return groups;
-  }, {});
-}
-
-function getSectionTitle(type) {
-  const titles = {
-    'initial-submission': 'Initial Submissions',
-    'resume': 'Resume/CV',
-    'training': 'Training Certificates',
-    'awards': 'Awards',
-    'interview': 'Interview Documents',
-    'others': 'Other Documents'
-  };
-  return titles[type] || type;
-}
-
-function createDocumentCard(file) {
-  const card = document.createElement('div');
-  card.className = 'document-card';
   
-  // Determine icon based on file type
-  const ext = file.filename.split('.').pop().toLowerCase();
-  let iconClass = 'fa-file';
+  const documentsGrid = document.createElement('div');
+  documentsGrid.className = 'documents-grid';
   
-  if (ext === 'pdf') iconClass = 'fa-file-pdf';
-  else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) iconClass = 'fa-file-image';
-  else if (['doc', 'docx'].includes(ext)) iconClass = 'fa-file-word';
-  else if (['xls', 'xlsx'].includes(ext)) iconClass = 'fa-file-excel';
-
-  card.innerHTML = `
-    <div class="document-icon">
-      <i class="fas ${iconClass}"></i>
-    </div>
-    <div class="document-info">
-      <p class="document-name" title="${file.filename}">${file.filename}</p>
-      <p class="document-date">${formatDate(file.uploadDate)}</p>
-    </div>
-    <div class="document-actions">
-      <button class="view-btn" data-file-id="${file._id}">
-        <i class="fas fa-eye"></i> View
-      </button>
-      <a href="${API_BASE_URL}/api/admin/view-file/${file._id}" download="${file.filename}" class="btn download-btn">
-        <i class="fas fa-download"></i> Download
-      </a>
-    </div>
-  `;
-
-  // Add click handler for view button
-  card.querySelector('.view-btn').addEventListener('click', (e) => {
-    e.preventDefault();
-    viewFile(file._id);
-  });
-
-  return card;
-}
-
-// View file in modal
-async function viewFile(fileId) {
-  try {
-    console.log('Attempting to view file:', fileId); // Debug log
+  documents.forEach(doc => {
+    const fileName = doc.split('/').pop() || 'Document';
+    const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
+    let iconClass = 'fa-file';
     
-    // Find the file in currentFiles
-    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
-    if (currentFileIndex === -1) {
-      throw new Error('File not found in current files list');
-    }
-
-    const file = currentFiles[currentFileIndex];
-    console.log('File to view:', file); // Debug log
+    if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+    else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
+    else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
     
-    const modal = document.getElementById('fileModal');
-    const fileViewer = document.getElementById('fileViewer');
-    const imageViewer = document.getElementById('imageViewer');
-    const currentFileText = document.getElementById('currentFileText');
-    const fileName = document.getElementById('fileName');
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
-
-    if (!modal || !fileViewer || !imageViewer || !currentFileText || !fileName) {
-      throw new Error('File viewer elements not found in DOM');
-    }
-
-    // Update UI
-    currentFileText.textContent = `File ${currentFileIndex + 1} of ${currentFiles.length}`;
-    fileName.textContent = file.filename;
+    const documentCard = document.createElement('div');
+    documentCard.className = 'document-card';
+    documentCard.innerHTML = `
+      <div class="document-icon">
+        <i class="fas ${iconClass}"></i>
+      </div>
+      <div class="document-info">
+        <p class="document-name">${fileName}</p>
+        <div class="document-actions">
+          <a href="${API_BASE_URL}/${doc}" target="_blank" class="btn view-btn">
+            <i class="fas fa-eye"></i> View
+          </a>
+          <a href="${API_BASE_URL}/${doc}" download class="btn download-btn">
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+      </div>
+    `;
     
-    // Disable/enable navigation buttons
-    if (prevBtn) prevBtn.disabled = currentFileIndex === 0;
-    if (nextBtn) nextBtn.disabled = currentFileIndex === currentFiles.length - 1;
-
-    // Show loading state
-    fileName.textContent = `Loading ${file.filename}...`;
-    fileViewer.style.display = 'none';
-    imageViewer.style.display = 'none';
-
-    // Fetch the file
-    const response = await fetch(`${API_BASE_URL}/api/admin/view-file/${fileId}`, {
-      credentials: 'include'
-    });
-    
-    console.log('File view response status:', response.status); // Debug log
-    
-    if (!response.ok) {
-      throw new Error(`Failed to load file: ${response.status}`);
-    }
-
-    // Handle different file types
-    const contentType = response.headers.get('content-type') || 'application/octet-stream';
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-
-    console.log('File content type:', contentType); // Debug log
-
-    if (contentType.startsWith('image/')) {
-      // For images
-      imageViewer.onload = () => {
-        imageViewer.style.display = 'block';
-        fileName.textContent = file.filename;
-      };
-      imageViewer.onerror = () => {
-        throw new Error('Failed to load image');
-      };
-      imageViewer.src = url;
-    } else if (contentType === 'application/pdf') {
-      // For PDFs
-      fileViewer.onload = () => {
-        fileViewer.style.display = 'block';
-        fileName.textContent = file.filename;
-      };
-      fileViewer.onerror = () => {
-        throw new Error('Failed to load PDF');
-      };
-      fileViewer.src = url;
-    } else {
-      // For other files, offer download
-      fileViewer.style.display = 'block';
-      fileViewer.src = url;
-      fileName.textContent = file.filename;
-      showNotification('This file type can only be downloaded', 'info');
-    }
-
-    // Show modal
-    modal.style.display = 'flex';
-
-    // Clean up URL when modal closes
-    const cleanup = () => {
-      URL.revokeObjectURL(url);
-    };
-    modal.addEventListener('click', cleanup, { once: true });
-
-  } catch (error) {
-    console.error('Error viewing file:', error);
-    showNotification(`Error viewing file: ${error.message}`, 'error');
-  }
-}
-
-// Initialize file viewer controls
-function initializeFileViewer() {
-  const modal = document.getElementById('fileModal');
-  if (!modal) return;
-
-  const closeBtn = modal.querySelector('.close-modal');
-  const prevBtn = modal.querySelector('.prev-btn');
-  const nextBtn = modal.querySelector('.next-btn');
-
-  function closeModal() {
-    modal.style.display = 'none';
-    document.getElementById('fileViewer').style.display = 'none';
-    document.getElementById('imageViewer').style.display = 'none';
-  }
-
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
+    documentsGrid.appendChild(documentCard);
   });
-
-  if (prevBtn) prevBtn.addEventListener('click', () => {
-    if (currentFileIndex > 0) viewFile(currentFiles[currentFileIndex - 1]._id);
-  });
-
-  if (nextBtn) nextBtn.addEventListener('click', () => {
-    if (currentFileIndex < currentFiles.length - 1) viewFile(currentFiles[currentFileIndex + 1]._id);
-  });
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (modal.style.display === 'flex') {
-      if (e.key === 'Escape') closeModal();
-      if (e.key === 'ArrowLeft' && currentFileIndex > 0) {
-        viewFile(currentFiles[currentFileIndex - 1]._id);
-      }
-      if (e.key === 'ArrowRight' && currentFileIndex < currentFiles.length - 1) {
-        viewFile(currentFiles[currentFileIndex + 1]._id);
-      }
-    }
-  });
+  
+  container.appendChild(documentsGrid);
 }
 
 // Initialize the page
+// Update the DOMContentLoaded event listener in ApplicantProfile.js
 document.addEventListener('DOMContentLoaded', function() {
   // Get applicant ID
   applicantId = getApplicantId();
   if (!applicantId) return;
   
-  // Initialize file viewer
-  initializeFileViewer();
+  // Load applicant data
+  loadApplicantData();
+  
+  // Set up event listeners
+  setupModalControls();
+  setupAssessorSelection();
+  setupAssessorAssignment();
+  
+  document.getElementById('backButton')?.addEventListener('click', () => {
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
+  });
+  
+  
+  // Admin logout
+  document.getElementById('logoutLink')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    fetch(`${API_BASE_URL}/admin/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    }).then(() => {
+      window.location.href = '/frontend/client/applicant/login/login.html';
+    });
+  });
+});
+
+
+// Add these functions to ApplicantProfile.js
+
+// Show modal for assigning assessor
+async function showAssignAssessorModal() {
+  const modal = document.getElementById('assignAssessorModal');
+  const assessorSelect = document.getElementById('assessorSelect');
+  
+  if (!modal || !assessorSelect) return;
+  
+  showLoading();
+  try {
+    // Fetch available assessors
+    const response = await fetch(`${API_BASE_URL}/api/admin/available-assessors`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch assessors');
+    }
+    
+    const data = await response.json();
+    
+    if (!data.success || !data.data) {
+      throw new Error(data.error || 'No assessors available');
+    }
+    
+    // Populate assessor dropdown
+    assessorSelect.innerHTML = '<option value="" disabled selected>Select an assessor</option>';
+    data.data.forEach(assessor => {
+      const option = document.createElement('option');
+      option.value = assessor._id;
+      option.textContent = `${assessor.fullName} (${assessor.assessorId}) - ${formatExpertise(assessor.expertise)}`;
+      assessorSelect.appendChild(option);
+    });
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+  } catch (error) {
+    console.error('Error loading assessors:', error);
+    showNotification(error.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Format expertise for display
+function formatExpertise(expertise) {
+  const expertiseMap = {
+    "engineering": "Engineering",
+    "education": "Education",
+    "business": "Business",
+    "information_technology": "IT",
+    "health_sciences": "Health Sciences",
+    "arts_sciences": "Arts & Sciences",
+    "architecture": "Architecture",
+    "industrial_technology": "Industrial Technology",
+    "hospitality_management": "Hospitality Management",
+    "other": "Other"
+  };
+  return expertiseMap[expertise] || expertise;
+}
+
+// Handle assessor selection
+function setupAssessorSelection() {
+  const assessorSelect = document.getElementById('assessorSelect');
+  const assessorDetails = document.getElementById('assessorDetails');
+  
+  if (!assessorSelect || !assessorDetails) return;
+  
+  assessorSelect.addEventListener('change', async function() {
+    const assessorId = this.value;
+    if (!assessorId) {
+      assessorDetails.style.display = 'none';
+      return;
+    }
+    
+    showLoading();
+    try {
+      const response = await fetch(`${API_BASE_URL}/assessor/${assessorId}`, {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch assessor details');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        const assessor = data.data;
+        document.getElementById('assessorIdDisplay').textContent = assessor.assessorId;
+        document.getElementById('assessorTypeDisplay').textContent = assessor.assessorType === 'internal' ? 'Internal' : 'External';
+        document.getElementById('assessorExpertiseDisplay').textContent = formatExpertise(assessor.expertise);
+        assessorDetails.style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error fetching assessor details:', error);
+      assessorDetails.style.display = 'none';
+    } finally {
+      hideLoading();
+    }
+  });
+}
+
+// Handle assessor assignment
+function setupAssessorAssignment() {
+  const confirmAssignBtn = document.getElementById('confirmAssignBtn');
+  const assessorSelect = document.getElementById('assessorSelect');
+  
+  if (!confirmAssignBtn || !assessorSelect) return;
+  
+  confirmAssignBtn.addEventListener('click', async function() {
+    const assessorId = assessorSelect.value;
+    if (!assessorId) {
+      showNotification('Please select an assessor', 'error');
+      return;
+    }
+    
+    showLoading();
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/assign-assessor`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assessorId: assessorId,
+          applicantId: applicantId // Explicitly include both IDs
+        }),
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to assign assessor');
+      }
+      
+      if (data.success) {
+        showNotification('Assessor assigned successfully!', 'success');
+        updateStatusBadge('Under Assessment');
+        if (currentApplicant) {
+          currentApplicant.status = 'Under Assessment';
+          currentApplicant.assignedAssessor = assessorId;
+        }
+        closeModal();
+        
+        // Refresh the assessor dashboard data
+        if (typeof refreshAssessorDashboard === 'function') {
+          refreshAssessorDashboard();
+        }
+      } else {
+        throw new Error(data.error || 'Failed to assign assessor');
+      }
+    } catch (error) {
+      console.error('Error assigning assessor:', error);
+      showNotification(error.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  });
+}
+
+// Modal control functions
+function setupModalControls() {
+  const modal = document.getElementById('assignAssessorModal');
+  if (!modal) return;
+  
+  // Close modal when clicking X or cancel button
+  document.querySelectorAll('.close-modal').forEach(btn => {
+    btn.addEventListener('click', closeModal);
+  });
+  
+  // Close modal when clicking outside content
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+}
+
+function closeModal() {
+  const modal = document.getElementById('assignAssessorModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// Update the approve button click handler to show the assessor modal
+async function showAssignAssessorModal() {
+  const modal = document.getElementById('assignAssessorModal');
+  const assessorSelect = document.getElementById('assessorSelect');
+  
+  if (!modal || !assessorSelect) return;
+  
+  showLoading();
+  try {
+    // First approve the application
+    const approveResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/approve`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    
+    const approveData = await approveResponse.json();
+    
+    if (!approveData.success) {
+      throw new Error(approveData.error || 'Failed to approve application');
+    }
+
+    // Then fetch available assessors
+    const assessorsResponse = await fetch(`${API_BASE_URL}/api/admin/available-assessors`, {
+      credentials: 'include'
+    });
+    
+    if (!assessorsResponse.ok) {
+      throw new Error('Failed to fetch assessors');
+    }
+    
+    const assessorsData = await assessorsResponse.json();
+    
+    if (!assessorsData.success || !assessorsData.data) {
+      throw new Error(assessorsData.error || 'No assessors available');
+    }
+    
+    // Populate assessor dropdown
+    assessorSelect.innerHTML = '<option value="" disabled selected>Select an assessor</option>';
+    assessorsData.data.forEach(assessor => {
+      const option = document.createElement('option');
+      option.value = assessor._id;
+      option.textContent = `${assessor.fullName} (${assessor.assessorId}) - ${formatExpertise(assessor.expertise)}`;
+      assessorSelect.appendChild(option);
+    });
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+  } catch (error) {
+    console.error('Error loading assessors:', error);
+    showNotification(error.message, 'error');
+    closeModal();
+  } finally {
+    hideLoading();
+  }
+}
+
+// Add this to the DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+  // Get applicant ID
+  applicantId = getApplicantId();
+  if (!applicantId) return;
   
   // Load applicant data
   loadApplicantData();
   
-  // Set up back button
+  // Set up event listeners
   document.getElementById('backButton')?.addEventListener('click', () => {
     window.location.href = '/frontend/client/admin/applicants/applicants.html';
   });
   
-  // Set up approve button
   document.getElementById('approveBtn')?.addEventListener('click', async () => {
     if (!confirm('Are you sure you want to approve this application?')) return;
     await showAssignAssessorModal();
-  });
+});
+
+// Update the showAssignAssessorModal function
+async function showAssignAssessorModal() {
+    const modal = document.getElementById('assignAssessorModal');
+    const assessorSelect = document.getElementById('assessorSelect');
+    
+    if (!modal || !assessorSelect) {
+        showNotification('Modal elements not found', 'error');
+        return;
+    }
+    
+    showLoading();
+    try {
+        // First approve the application
+        const approveResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/approve`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        const approveData = await approveResponse.json();
+        
+        if (!approveData.success) {
+            throw new Error(approveData.error || 'Failed to approve application');
+        }
+
+        // Then fetch available assessors
+        const assessorsResponse = await fetch(`${API_BASE_URL}/api/admin/available-assessors`, {
+            credentials: 'include'
+        });
+        
+        if (!assessorsResponse.ok) {
+            throw new Error('Failed to fetch assessors');
+        }
+        
+        const assessorsData = await assessorsResponse.json();
+        
+        if (!assessorsData.success || !assessorsData.data) {
+            throw new Error(assessorsData.error || 'No assessors available');
+        }
+        
+        // Clear and populate assessor dropdown
+        assessorSelect.innerHTML = '<option value="" disabled selected>Select an assessor</option>';
+        assessorsData.data.forEach(assessor => {
+            const option = document.createElement('option');
+            option.value = assessor._id;
+            option.textContent = `${assessor.fullName} (${assessor.assessorId}) - ${formatExpertise(assessor.expertise)}`;
+            assessorSelect.appendChild(option);
+        });
+        
+        // Show modal
+        modal.style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error loading assessors:', error);
+        showNotification(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
   
-  // Set up reject button
   document.getElementById('rejectBtn')?.addEventListener('click', async () => {
     if (!confirm('Are you sure you want to reject this application?')) return;
     
@@ -573,130 +634,13 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Show modal for assigning assessor
-async function showAssignAssessorModal() {
-  const modal = document.getElementById('assignAssessorModal');
-  const assessorSelect = document.getElementById('assessorSelect');
-  
-  if (!modal || !assessorSelect) {
-    showNotification('Modal elements not found', 'error');
-    return;
-  }
-  
-  showLoading();
-  try {
-    // First approve the application
-    const approveResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/approve`, {
-      method: 'POST',
-      credentials: 'include'
-    });
-    
-    const approveData = await approveResponse.json();
-    
-    if (!approveData.success) {
-      throw new Error(approveData.error || 'Failed to approve application');
-    }
 
-    // Then fetch available assessors
-    const assessorsResponse = await fetch(`${API_BASE_URL}/api/admin/available-assessors`, {
-      credentials: 'include'
-    });
-    
-    if (!assessorsResponse.ok) {
-      throw new Error('Failed to fetch assessors');
-    }
-    
-    const assessorsData = await assessorsResponse.json();
-    
-    if (!assessorsData.success || !assessorsData.data) {
-      throw new Error(assessorsData.error || 'No assessors available');
-    }
-    
-    // Clear and populate assessor dropdown
-    assessorSelect.innerHTML = '<option value="" disabled selected>Select an assessor</option>';
-    assessorsData.data.forEach(assessor => {
-      const option = document.createElement('option');
-      option.value = assessor._id;
-      option.textContent = `${assessor.fullName} (${assessor.assessorId}) - ${formatExpertise(assessor.expertise)}`;
-      assessorSelect.appendChild(option);
-    });
-    
-    // Show modal
-    modal.style.display = 'flex';
-    
-  } catch (error) {
-    console.error('Error loading assessors:', error);
-    showNotification(error.message, 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Format expertise for display
-function formatExpertise(expertise) {
-  const expertiseMap = {
-    "engineering": "Engineering",
-    "education": "Education",
-    "business": "Business",
-    "information_technology": "IT",
-    "health_sciences": "Health Sciences",
-    "arts_sciences": "Arts & Sciences",
-    "architecture": "Architecture",
-    "industrial_technology": "Industrial Technology",
-    "hospitality_management": "Hospitality Management",
-    "other": "Other"
-  };
-  return expertiseMap[expertise] || expertise;
-}
-
-async function loadApplicantData() {
-  showLoading();
-  
-  try {
-    console.log('Loading applicant data for:', applicantId); // Debug log
-    
-    // Verify admin is authenticated first
-    const authResponse = await fetch(`${API_BASE_URL}/admin/auth-status`, {
-      credentials: 'include'
-    });
-    
-    console.log('Auth status:', authResponse.status); // Debug log
-    
-    if (!authResponse.ok) {
-      throw new Error('Admin not authenticated');
-    }
-    
-    // Fetch applicant data
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
-      credentials: 'include'
-    });
-    
-    console.log('Applicant response status:', response.status); // Debug log
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch applicant: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('Applicant data:', data); // Debug log
-    
-    if (!data.success || !data.data) {
-      throw new Error(data.error || 'Failed to load applicant data');
-    }
-    
-    currentApplicant = data.data;
-    displayApplicantData(data.data);
-    
-    // Fetch documents separately
-    await fetchAndDisplayDocuments();
-    
-  } catch (error) {
-    console.error('Error loading applicant data:', error);
-    showNotification(error.message, 'error');
-    setTimeout(() => {
-      window.location.href = '/frontend/client/admin/applicants/applicants.html';
-    }, 2000);
-  } finally {
-    hideLoading();
-  }
+function updateStatus() {
+  const status = document.getElementById("status").value;
+  fetch(`${API_BASE_URL}/api/progress`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  }).then(res => res.json())
+    .then(data => alert('Status updated to ' + data.status));
 }
