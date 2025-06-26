@@ -205,13 +205,13 @@ async function displayDocuments() {
   gridElement.innerHTML = '';
 
   try {
-    // Fetch files from the API
+    // Fetch files from the API - Updated URL
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include'
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch documents');
+      throw new Error(`Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
@@ -264,10 +264,11 @@ async function displayDocuments() {
     emptyElement.style.display = 'flex';
     emptyElement.innerHTML = `
       <i class="fas fa-exclamation-triangle"></i>
-      <p>Error loading documents</p>
+      <p>${error.message}</p>
     `;
   }
 }
+
 
 function createDocumentCard(file) {
   const documentCard = document.createElement('div');
@@ -292,7 +293,7 @@ function createDocumentCard(file) {
         <button class="btn view-btn" data-file-id="${file._id}">
           <i class="fas fa-eye"></i> View
         </button>
-        <a href="${API_BASE_URL}/api/applicant/files/${file._id}" download="${file.filename}" class="btn download-btn">
+        <a href="${API_BASE_URL}/api/admin/applicants/files/${file._id}" download="${file.filename}" class="btn download-btn">
           <i class="fas fa-download"></i> Download
         </a>
       </div>
@@ -302,137 +303,42 @@ function createDocumentCard(file) {
   return documentCard;
 }
 
-
-// Get appropriate icon class based on file type
-function getFileIconClass(contentType) {
-  if (!contentType) return 'fa-file';
+// Update the showFileInModal function
+function showFileInModal(fileId, fileName, label = '') {
+  modal.style.display = 'flex';
+  fileNameElement.textContent = fileName;
+  currentFileText.textContent = label ? `${label}: ` : '';
   
-  if (contentType.includes('pdf')) return 'fa-file-pdf';
-  if (contentType.includes('image')) return 'fa-file-image';
-  if (contentType.includes('word')) return 'fa-file-word';
-  if (contentType.includes('excel')) return 'fa-file-excel';
-  if (contentType.includes('powerpoint')) return 'fa-file-powerpoint';
-  if (contentType.includes('zip') || contentType.includes('compressed')) return 'fa-file-archive';
+  // Show loading state
+  fileViewer.style.display = 'none';
+  imageViewer.style.display = 'none';
   
-  return 'fa-file';
-}
-
-// Format file size for display
-function formatFileSize(bytes) {
-  if (!bytes) return 'N/A';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1048576).toFixed(1)} MB`;
-}
-
-// Initialize file modal functionality
-function initFileModal() {
-  const modal = document.getElementById('fileModal');
-  if (!modal) return;
-
-  const closeBtn = modal.querySelector('.close-modal');
-  const prevBtn = modal.querySelector('.prev-btn');
-  const nextBtn = modal.querySelector('.next-btn');
-  const fileViewer = document.getElementById('fileViewer');
-  const imageViewer = document.getElementById('imageViewer');
-  const fileNameElement = document.getElementById('fileName');
-  const currentFileText = document.getElementById('currentFileText');
-
-  let currentFileIndex = 0;
-  let allFiles = [];
-
-  // Get all view buttons and collect file data
-  const viewButtons = document.querySelectorAll('.view-btn');
-  viewButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const fileId = this.dataset.fileId;
-      const card = this.closest('.document-card');
-      const section = card.closest('.document-section');
-      const label = section.querySelector('h4').textContent;
-      
-      // Get all files in this section
-      const sectionFiles = Array.from(section.querySelectorAll('.document-card')).map(card => ({
-        id: card.dataset.fileId,
-        name: card.querySelector('.document-name').textContent,
-        type: card.querySelector('.document-icon i').className.replace('fas ', '')
-      }));
-      
-      // Find current file index
-      currentFileIndex = sectionFiles.findIndex(file => file.id === fileId);
-      allFiles = sectionFiles;
-      
-      // Show modal
-      showFileInModal(fileId, sectionFiles[currentFileIndex].name, label);
-    });
-  });
-
-  // Close modal
-  closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
+  // Determine file type and display accordingly
+  const fileExt = fileName.split('.').pop().toLowerCase();
+  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExt);
+  
+  if (isImage) {
+    // Display image
     fileViewer.style.display = 'none';
+    imageViewer.style.display = 'block';
+    imageViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}`;
+  } else {
+    // Display PDF or other files in iframe
     imageViewer.style.display = 'none';
-  });
-
-  // Previous file
-  prevBtn.addEventListener('click', () => {
-    if (allFiles.length === 0) return;
-    currentFileIndex = (currentFileIndex - 1 + allFiles.length) % allFiles.length;
-    showFileInModal(allFiles[currentFileIndex].id, allFiles[currentFileIndex].name);
-  });
-
-  // Next file
-  nextBtn.addEventListener('click', () => {
-    if (allFiles.length === 0) return;
-    currentFileIndex = (currentFileIndex + 1) % allFiles.length;
-    showFileInModal(allFiles[currentFileIndex].id, allFiles[currentFileIndex].name);
-  });
-
-  // Close when clicking outside content
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.style.display = 'none';
-      fileViewer.style.display = 'none';
-      imageViewer.style.display = 'none';
-    }
-  });
-
-  // Function to show file in modal
-  function showFileInModal(fileId, fileName, label = '') {
-    modal.style.display = 'flex';
-    fileNameElement.textContent = fileName;
-    currentFileText.textContent = label ? `${label}: ` : '';
+    fileViewer.style.display = 'block';
     
-    // Show loading state
-    fileViewer.style.display = 'none';
-    imageViewer.style.display = 'none';
-    
-    // Determine file type and display accordingly
-    const fileExt = fileName.split('.').pop().toLowerCase();
-    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExt);
-    
-    if (isImage) {
-      // Display image
-      fileViewer.style.display = 'none';
-      imageViewer.style.display = 'block';
-      imageViewer.src = `${API_BASE_URL}/api/applicant/files/${fileId}`;
+    // For PDFs
+    if (fileExt === 'pdf') {
+      fileViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}#toolbar=0`;
     } else {
-      // Display PDF or other files in iframe
-      imageViewer.style.display = 'none';
-      fileViewer.style.display = 'block';
-      
-      // For PDFs
-      if (fileExt === 'pdf') {
-        fileViewer.src = `${API_BASE_URL}/api/applicant/files/${fileId}#toolbar=0`;
-      } else {
-        // For other file types, use Google Docs viewer
-        fileViewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(`${API_BASE_URL}/api/applicant/files/${fileId}`)}&embedded=true`;
-      }
+      // For other file types, use Google Docs viewer
+      fileViewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(`${API_BASE_URL}/api/admin/applicants/files/${fileId}`)}&embedded=true`;
     }
-    
-    // Update navigation buttons state
-    prevBtn.disabled = allFiles.length <= 1;
-    nextBtn.disabled = allFiles.length <= 1;
   }
+  
+  // Update navigation buttons state
+  prevBtn.disabled = allFiles.length <= 1;
+  nextBtn.disabled = allFiles.length <= 1;
 }
 
 // Initialize the page
