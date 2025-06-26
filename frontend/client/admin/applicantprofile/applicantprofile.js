@@ -97,52 +97,58 @@ async function loadApplicantData() {
     });
     
     if (!authResponse.ok) {
-      window.location.href = '/frontend/client/applicant/login/login.html';
-      return;
+      const errorData = await authResponse.json().catch(() => ({}));
+      throw new Error(errorData.error || `Authentication failed: ${authResponse.status}`);
     }
     
     // Fetch applicant data
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch applicant: ${response.status}`);
+    const [applicantResponse, docsResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
+        credentials: 'include'
+      }),
+      fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
+        credentials: 'include'
+      })
+    ]);
+
+    // Handle applicant data response
+    if (!applicantResponse.ok) {
+      const errorData = await applicantResponse.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch applicant: ${applicantResponse.status}`);
     }
     
-    const data = await response.json();
+    const applicantData = await applicantResponse.json();
     
-    if (!data.success || !data.data) {
-      throw new Error(data.error || 'Failed to load applicant data');
+    if (!applicantData.success || !applicantData.data) {
+      throw new Error(applicantData.error || 'Failed to load applicant data');
     }
-    
-    currentApplicant = data.data;
-    
-    // Fetch documents separately
-    const docsResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
-      credentials: 'include'
-    });
-    
-    if (!docsResponse.ok) {
-      throw new Error('Failed to fetch documents');
+
+    // Handle documents response
+    let filesData = { files: {} };
+    if (docsResponse.ok) {
+      filesData = await docsResponse.json();
+      if (!filesData.success) {
+        console.warn('Files response was not successful:', filesData);
+      }
+    } else {
+      const errorData = await docsResponse.json().catch(() => ({}));
+      console.warn('Failed to fetch documents:', errorData);
     }
-    
-    const docsData = await docsResponse.json();
-    
+
     // Combine data
-    const combinedData = {
-      ...data.data,
-      files: docsData.success ? docsData.files : {}
+    currentApplicant = {
+      ...applicantData.data,
+      files: filesData.files || {}
     };
     
-    displayApplicantData(combinedData);
+    displayApplicantData(currentApplicant);
     
   } catch (error) {
-    console.error('Error loading applicant data:', error);
-    showNotification(error.message, 'error');
-    setTimeout(() => {
-      window.location.href = '/frontend/client/admin/applicants/applicants.html';
-    }, 2000);
+    console.error("Error loading applicant data:", {
+      error: error.message,
+      stack: error.stack
+    });
+    showNotification(`Error: ${error.message}`, "error");
   } finally {
     hideLoading();
   }
@@ -206,6 +212,74 @@ function displayApplicantData(applicant) {
 
 // Display uploaded documents
 // Update the displayDocuments function
+async function loadApplicantData() {
+  showLoading();
+  
+  try {
+    // Verify admin is authenticated first
+    const authResponse = await fetch(`${API_BASE_URL}/admin/auth-status`, {
+      credentials: 'include'
+    });
+    
+    if (!authResponse.ok) {
+      const errorData = await authResponse.json().catch(() => ({}));
+      throw new Error(errorData.error || `Authentication failed: ${authResponse.status}`);
+    }
+    
+    // Fetch applicant data
+    const [applicantResponse, docsResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
+        credentials: 'include'
+      }),
+      fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
+        credentials: 'include'
+      })
+    ]);
+
+    // Handle applicant data response
+    if (!applicantResponse.ok) {
+      const errorData = await applicantResponse.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch applicant: ${applicantResponse.status}`);
+    }
+    
+    const applicantData = await applicantResponse.json();
+    
+    if (!applicantData.success || !applicantData.data) {
+      throw new Error(applicantData.error || 'Failed to load applicant data');
+    }
+
+    // Handle documents response
+    let filesData = { files: {} };
+    if (docsResponse.ok) {
+      filesData = await docsResponse.json();
+      if (!filesData.success) {
+        console.warn('Files response was not successful:', filesData);
+      }
+    } else {
+      const errorData = await docsResponse.json().catch(() => ({}));
+      console.warn('Failed to fetch documents:', errorData);
+    }
+
+    // Combine data
+    currentApplicant = {
+      ...applicantData.data,
+      files: filesData.files || {}
+    };
+    
+    displayApplicantData(currentApplicant);
+    
+  } catch (error) {
+    console.error("Error loading applicant data:", {
+      error: error.message,
+      stack: error.stack
+    });
+    showNotification(`Error: ${error.message}`, "error");
+  } finally {
+    hideLoading();
+  }
+}
+
+// Update displayDocuments to handle empty or error cases
 function displayDocuments(documents) {
   const container = document.getElementById("documents-container");
   const loading = document.getElementById("documents-loading");
@@ -217,8 +291,8 @@ function displayDocuments(documents) {
   // Hide loading
   if (loading) loading.style.display = "none";
   
-  // Check if no documents
-  if (!documents || documents.length === 0) {
+  // Check if documents is empty or invalid
+  if (!documents || typeof documents !== 'object' || Object.keys(documents).length === 0) {
     if (noDocs) noDocs.style.display = "flex";
     if (grid) grid.style.display = "none";
     return;
@@ -230,47 +304,70 @@ function displayDocuments(documents) {
     grid.style.display = "grid";
     grid.innerHTML = "";
     
-    // Flatten all documents from all sections
-    const allFiles = Object.values(documents).flat();
-    
-    allFiles.forEach(file => {
-      const fileExt = file.filename.split('.').pop()?.toLowerCase() || '';
-      let iconClass = 'fa-file';
+    try {
+      // Flatten all documents from all sections
+      const allFiles = Object.values(documents).flat();
       
-      if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
-      else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
-      else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+      if (allFiles.length === 0) {
+        if (noDocs) noDocs.style.display = "flex";
+        grid.style.display = "none";
+        return;
+      }
       
-      const documentCard = document.createElement('div');
-      documentCard.className = 'document-card';
-      documentCard.innerHTML = `
-        <div class="document-icon">
-          <i class="fas ${iconClass}"></i>
-        </div>
-        <div class="document-info">
-          <p class="document-name">${file.filename}</p>
-          <div class="document-actions">
-            <button class="btn view-btn" data-file-id="${file._id}">
-              <i class="fas fa-eye"></i> View
-            </button>
-            <a href="${API_BASE_URL}/api/admin/applicants/${applicantId}/files/${file._id}" download class="btn download-btn">
-              <i class="fas fa-download"></i> Download
-            </a>
+      allFiles.forEach(file => {
+        // Ensure file has required properties
+        if (!file._id || !file.filename) {
+          console.warn('Invalid file object:', file);
+          return;
+        }
+        
+        const fileExt = file.filename.split('.').pop()?.toLowerCase() || '';
+        let iconClass = 'fa-file';
+        
+        if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+        else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
+        else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+        
+        const documentCard = document.createElement('div');
+        documentCard.className = 'document-card';
+        documentCard.innerHTML = `
+          <div class="document-icon">
+            <i class="fas ${iconClass}"></i>
           </div>
-        </div>
-      `;
-      
-      grid.appendChild(documentCard);
-    });
-    
-    // Add event listeners for view buttons
-    grid.querySelectorAll('.view-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const fileId = btn.getAttribute('data-file-id');
-        viewFile(fileId, allFiles);
+          <div class="document-info">
+            <p class="document-name">${file.filename}</p>
+            <div class="document-actions">
+              <button class="btn view-btn" data-file-id="${file._id}">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <a href="${API_BASE_URL}/api/admin/applicants/${applicantId}/files/${file._id}" download="${file.filename}" class="btn download-btn">
+                <i class="fas fa-download"></i> Download
+              </a>
+            </div>
+          </div>
+        `;
+        
+        grid.appendChild(documentCard);
       });
-    });
+      
+      // Add event listeners for view buttons
+      grid.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const fileId = btn.getAttribute('data-file-id');
+          const allFiles = Object.values(documents).flat();
+          viewFile(fileId, allFiles);
+        });
+      });
+      
+    } catch (error) {
+      console.error('Error rendering documents:', error);
+      if (noDocs) {
+        noDocs.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Error loading documents</p>';
+        noDocs.style.display = "flex";
+      }
+      grid.style.display = "none";
+    }
   }
 }
 
