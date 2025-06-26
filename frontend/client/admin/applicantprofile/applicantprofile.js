@@ -3,10 +3,14 @@ let currentApplicant = null;
 let applicantId = null;
 
 // Utility Functions
+function showLoading() {
+  const spinner = document.getElementById('loadingSpinner');
+  if (spinner) spinner.style.display = 'flex';
+}
 
-function getApplicantId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('id'); // URL must include ?id=123...
+function hideLoading() {
+  const spinner = document.getElementById('loadingSpinner');
+  if (spinner) spinner.style.display = 'none';
 }
 
 function showNotification(message, type = 'info') {
@@ -20,7 +24,27 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
+// Get applicant ID from URL or sessionStorage
+function getApplicantId() {
+  // First try to get from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  let id = urlParams.get('id');
 
+  // If not in URL, try sessionStorage
+  if (!id) {
+    id = sessionStorage.getItem('currentApplicantId');
+  }
+
+  if (!id) {
+    showNotification('No applicant ID provided. Redirecting...', 'error');
+    setTimeout(() => {
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
+    }, 2000);
+    return null;
+  }
+
+  return id;
+}
 
 // Format date for display
 function formatDate(dateString) {
@@ -64,7 +88,7 @@ function setTextContent(elementId, text) {
 
 // Load applicant data from server
 async function loadApplicantData() {
-
+  showLoading();
   
   try {
     // Verify admin is authenticated first
@@ -94,7 +118,6 @@ async function loadApplicantData() {
     
     currentApplicant = data.data;
     displayApplicantData(data.data);
-    await loadApplicantFiles(applicantId);
     
   } catch (error) {
     console.error('Error loading applicant data:', error);
@@ -103,10 +126,8 @@ async function loadApplicantData() {
       window.location.href = '/frontend/client/admin/applicants/applicants.html';
     }, 2000);
   } finally {
-    
+    hideLoading();
   }
-
-  
 }
 
 // Display applicant data in the UI
@@ -162,18 +183,17 @@ function displayApplicantData(applicant) {
   }
   
   // Documents
-
+  displayDocuments(applicant.files || []);
 }
 
 // Display uploaded documents
-function displayGroupedDocuments(groupedFiles) {
+function displayDocuments(documents) {
   const container = document.getElementById('documents-container');
   if (!container) return;
-
+  
   container.innerHTML = '';
-
-  const labels = Object.keys(groupedFiles);
-  if (labels.length === 0) {
+  
+  if (!documents || documents.length === 0) {
     container.innerHTML = `
       <div class="no-documents">
         <i class="fas fa-folder-open"></i>
@@ -182,88 +202,66 @@ function displayGroupedDocuments(groupedFiles) {
     `;
     return;
   }
-
-  labels.forEach(label => {
-    const section = document.createElement('div');
-    section.className = 'document-section';
-
-    const header = document.createElement('h3');
-    header.textContent = label.replace(/_/g, ' ').toUpperCase();
-    section.appendChild(header);
-
-    const grid = document.createElement('div');
-    grid.className = 'documents-grid';
-
-    groupedFiles[label].forEach(file => {
-      const ext = file.filename.split('.').pop()?.toLowerCase() || '';
-      let iconClass = 'fa-file';
-      if (ext === 'pdf') iconClass = 'fa-file-pdf';
-      else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) iconClass = 'fa-file-image';
-      else if (['doc', 'docx'].includes(ext)) iconClass = 'fa-file-word';
-
-      const card = document.createElement('div');
-      card.className = 'document-card';
-      card.innerHTML = `
-        <div class="document-icon">
-          <i class="fas ${iconClass}"></i>
+  
+  const documentsGrid = document.createElement('div');
+  documentsGrid.className = 'documents-grid';
+  
+  documents.forEach(doc => {
+    const fileName = doc.split('/').pop() || 'Document';
+    const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
+    let iconClass = 'fa-file';
+    
+    if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+    else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
+    else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+    
+    const documentCard = document.createElement('div');
+    documentCard.className = 'document-card';
+    documentCard.innerHTML = `
+      <div class="document-icon">
+        <i class="fas ${iconClass}"></i>
+      </div>
+      <div class="document-info">
+        <p class="document-name">${fileName}</p>
+        <div class="document-actions">
+          <a href="${API_BASE_URL}/${doc}" target="_blank" class="btn view-btn">
+            <i class="fas fa-eye"></i> View
+          </a>
+          <a href="${API_BASE_URL}/${doc}" download class="btn download-btn">
+            <i class="fas fa-download"></i> Download
+          </a>
         </div>
-        <div class="document-info">
-          <p class="document-name">${file.filename}</p>
-          <div class="document-actions">
-            <a href="${API_BASE_URL}/admin/file/${file._id}" target="_blank" class="btn view-btn">
-              <i class="fas fa-eye"></i> View
-            </a>
-            <a href="${API_BASE_URL}/admin/file/${file._id}" download class="btn download-btn">
-              <i class="fas fa-download"></i> Download
-            </a>
-          </div>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-
-    section.appendChild(grid);
-    container.appendChild(section);
+      </div>
+    `;
+    
+    documentsGrid.appendChild(documentCard);
   });
+  
+  container.appendChild(documentsGrid);
 }
-
-
 
 // Initialize the page
 // Update the DOMContentLoaded event listener in ApplicantProfile.js
-document.addEventListener('DOMContentLoaded', function () {
-  // Get applicant ID from URL
+document.addEventListener('DOMContentLoaded', function() {
+  // Get applicant ID
   applicantId = getApplicantId();
-
-  if (!applicantId) {
-    alert('Applicant ID is missing from the URL');
-    return;
-  }
-
-
+  if (!applicantId) return;
+  
   // Load applicant data
   loadApplicantData();
-
-  // Setup other UI interactions
+  
+  // Set up event listeners
   setupModalControls();
   setupAssessorSelection();
   setupAssessorAssignment();
-
+  
   document.getElementById('backButton')?.addEventListener('click', () => {
-    window.location.href = '/frontend/client/admin/applicants/applicants.html';
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
   });
-
-  document.getElementById('approveBtn')?.addEventListener('click', async () => {
-    if (!confirm('Are you sure you want to approve this application?')) return;
-    await showAssignAssessorModal();
-  });
-
-  document.getElementById('rejectBtn')?.addEventListener('click', async () => {
-    if (!confirm('Are you sure you want to reject this application?')) return;
-    // ... rejection logic
-  });
-
-  document.getElementById('logoutLink')?.addEventListener('click', function (e) {
+  
+  
+  // Admin logout
+  document.getElementById('logoutLink')?.addEventListener('click', function(e) {
     e.preventDefault();
     fetch(`${API_BASE_URL}/admin/logout`, {
       method: 'POST',
@@ -284,7 +282,7 @@ async function showAssignAssessorModal() {
   
   if (!modal || !assessorSelect) return;
   
-
+  showLoading();
   try {
     // Fetch available assessors
     const response = await fetch(`${API_BASE_URL}/api/admin/available-assessors`, {
@@ -317,7 +315,7 @@ async function showAssignAssessorModal() {
     console.error('Error loading assessors:', error);
     showNotification(error.message, 'error');
   } finally {
-   
+    hideLoading();
   }
 }
 
@@ -352,7 +350,7 @@ function setupAssessorSelection() {
       return;
     }
     
-
+    showLoading();
     try {
       const response = await fetch(`${API_BASE_URL}/assessor/${assessorId}`, {
         credentials: 'include'
@@ -375,11 +373,12 @@ function setupAssessorSelection() {
       console.error('Error fetching assessor details:', error);
       assessorDetails.style.display = 'none';
     } finally {
-      
+      hideLoading();
     }
   });
 }
 
+// Handle assessor assignment
 // Handle assessor assignment
 function setupAssessorAssignment() {
   const confirmAssignBtn = document.getElementById('confirmAssignBtn');
@@ -394,7 +393,7 @@ function setupAssessorAssignment() {
       return;
     }
     
-
+    showLoading();
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/assign-assessor`, {
         method: 'POST',
@@ -403,7 +402,7 @@ function setupAssessorAssignment() {
         },
         body: JSON.stringify({
           assessorId: assessorId,
-          applicantId: applicantId // Explicitly include both IDs
+          applicantId: applicantId
         }),
         credentials: 'include'
       });
@@ -434,7 +433,7 @@ function setupAssessorAssignment() {
       console.error('Error assigning assessor:', error);
       showNotification(error.message, 'error');
     } finally {
-      
+      hideLoading();
     }
   });
 }
@@ -462,14 +461,14 @@ function closeModal() {
   if (modal) modal.style.display = 'none';
 }
 
-// Update the approve button click handler to show the assessor modal
+// Show modal for assigning assessor
 async function showAssignAssessorModal() {
   const modal = document.getElementById('assignAssessorModal');
   const assessorSelect = document.getElementById('assessorSelect');
   
   if (!modal || !assessorSelect) return;
   
-
+  showLoading();
   try {
     // First approve the application
     const approveResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/approve`, {
@@ -515,8 +514,25 @@ async function showAssignAssessorModal() {
     showNotification(error.message, 'error');
     closeModal();
   } finally {
-    
+    hideLoading();
   }
+}
+
+// Format expertise for display
+function formatExpertise(expertise) {
+  const expertiseMap = {
+    "engineering": "Engineering",
+    "education": "Education",
+    "business": "Business",
+    "information_technology": "IT",
+    "health_sciences": "Health Sciences",
+    "arts_sciences": "Arts & Sciences",
+    "architecture": "Architecture",
+    "industrial_technology": "Industrial Technology",
+    "hospitality_management": "Hospitality Management",
+    "other": "Other"
+  };
+  return expertiseMap[expertise] || expertise;
 }
 
 // Add this to the DOMContentLoaded event listener
@@ -548,7 +564,7 @@ async function showAssignAssessorModal() {
         return;
     }
     
-
+    showLoading();
     try {
         // First approve the application
         const approveResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/approve`, {
@@ -593,14 +609,14 @@ async function showAssignAssessorModal() {
         console.error('Error loading assessors:', error);
         showNotification(error.message, 'error');
     } finally {
-     
+        hideLoading();
     }
 }
   
   document.getElementById('rejectBtn')?.addEventListener('click', async () => {
     if (!confirm('Are you sure you want to reject this application?')) return;
     
-
+    showLoading();
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/reject`, {
         method: 'POST',
@@ -620,7 +636,7 @@ async function showAssignAssessorModal() {
       console.error('Error rejecting application:', error);
       showNotification(error.message, 'error');
     } finally {
-    
+      hideLoading();
     }
   });
   
@@ -646,34 +662,3 @@ function updateStatus() {
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
 }
-
-async function loadApplicantFiles(applicantId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
-      credentials: 'include',
-    });
-
-    const data = await response.json();
-
-    if (!data.success || !Array.isArray(data.data)) {
-      throw new Error(data.error || 'No files found');
-    }
-
-    const files = data.data;
-    const groupedFiles = files.reduce((acc, file) => {
-      const category = file.documentCategory || 'Uncategorized';
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(file);
-      return acc;
-    }, {});
-
-    displayGroupedDocuments(groupedFiles);
-  } catch (err) {
-    console.error('Error loading files:', err);
-    document.getElementById('no-documents').style.display = 'block';
-  } finally {
-    document.getElementById('documents-loading').style.display = 'none';
-  }
-}
-
-
