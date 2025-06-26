@@ -325,21 +325,39 @@ function showFileInModal(fileId, fileName, label = '') {
   const fileNameElement = document.getElementById('fileName');
   const currentFileText = document.getElementById('currentFileText');
 
-  modal.style.display = 'flex';
-  fileNameElement.textContent = fileName;
-  currentFileText.textContent = label ? `${label}: ` : '';
-  
   // Show loading state
+  modal.style.display = 'flex';
+  fileNameElement.textContent = 'Loading...';
+  currentFileText.textContent = label ? `${label}: ` : '';
   fileViewer.style.display = 'none';
   imageViewer.style.display = 'none';
-  
-  // Determine file type and display accordingly
+
+  // Determine file type
   const fileExt = fileName.split('.').pop().toLowerCase();
   const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExt);
   
-    if (isImage) {
+  // Set up error handling
+  const handleError = () => {
+    fileNameElement.textContent = 'Error loading file';
+    fileViewer.style.display = 'none';
+    imageViewer.style.display = 'block';
+    imageViewer.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f0f0f0"/><text x="50" y="50" font-family="Arial" font-size="10" text-anchor="middle" fill="%23666">Could not load file</text></svg>';
+  };
+
+  if (isImage) {
+    imageViewer.onload = () => {
+      fileNameElement.textContent = fileName;
+      imageViewer.style.display = 'block';
+    };
+    imageViewer.onerror = handleError;
     imageViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}`;
   } else {
+    fileViewer.onload = () => {
+      fileNameElement.textContent = fileName;
+      fileViewer.style.display = 'block';
+    };
+    fileViewer.onerror = handleError;
+    
     if (fileExt === 'pdf') {
       fileViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}#toolbar=0`;
     } else {
@@ -362,11 +380,12 @@ document.addEventListener('DOMContentLoaded', function() {
   setupModalControls();
   setupAssessorSelection();
   setupAssessorAssignment();
+  initFileModal(); // Initialize file modal
+  setupDocumentClickHandlers(); // Setup document click handlers
   
   document.getElementById('backButton')?.addEventListener('click', () => {
-      window.location.href = '/frontend/client/admin/applicants/applicants.html';
+    window.location.href = '/frontend/client/admin/applicants/applicants.html';
   });
-  
   
   // Admin logout
   document.getElementById('logoutLink')?.addEventListener('click', function(e) {
@@ -379,7 +398,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
-
 
 // Add these functions to ApplicantProfile.js
 
@@ -772,3 +790,70 @@ function updateStatus() {
 }
 
 
+
+// Initialize file viewer modal
+function initFileModal() {
+  const modal = document.getElementById('fileModal');
+  if (!modal) return;
+
+  // Close modal when clicking X
+  modal.querySelector('.close-modal').addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  // Close modal when clicking outside content
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (modal.style.display === 'flex') {
+      if (e.key === 'Escape') {
+        modal.style.display = 'none';
+      }
+    }
+  });
+}
+
+// Set up document click handlers
+function setupDocumentClickHandlers() {
+  document.addEventListener('click', async (e) => {
+    // Handle view button clicks
+    if (e.target.closest('.view-btn')) {
+      e.preventDefault();
+      const fileId = e.target.closest('.view-btn').dataset.fileId;
+      const card = e.target.closest('.document-card');
+      const fileName = card.querySelector('.document-name').textContent;
+      const label = card.closest('.document-section')?.querySelector('h4')?.textContent || '';
+      
+      showFileInModal(fileId, fileName, label);
+    }
+  });
+}
+
+// Helper function to get file icon class
+function getFileIconClass(contentType) {
+  if (!contentType) return 'fa-file';
+  
+  if (contentType.startsWith('image/')) return 'fa-file-image';
+  if (contentType.includes('pdf')) return 'fa-file-pdf';
+  if (contentType.includes('word')) return 'fa-file-word';
+  if (contentType.includes('excel')) return 'fa-file-excel';
+  if (contentType.includes('powerpoint')) return 'fa-file-powerpoint';
+  
+  return 'fa-file';
+}
+
+// Helper function to format file size
+function formatFileSize(bytes) {
+  if (!bytes) return 'N/A';
+  
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  if (bytes === 0) return '0 Byte';
+  
+  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+}
