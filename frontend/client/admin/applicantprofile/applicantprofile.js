@@ -325,7 +325,7 @@ async function loadApplicantData() {
       throw new Error(applicantData.error || 'Failed to load applicant data');
     }
 
-    // Handle documents
+    // Handle documents - now properly structured
     let filesData = { files: {} };
     if (docsResponse.ok) {
       filesData = await docsResponse.json();
@@ -340,7 +340,7 @@ async function loadApplicantData() {
     // Combine data
     currentApplicant = {
       ...applicantData.data,
-      files: filesData.files || {}
+      files: filesData.files || {} // Now properly structured
     };
     
     displayApplicantData(currentApplicant);
@@ -715,3 +715,23 @@ async function logoutUser() {
     showNotification("Failed to logout. Please try again.", "error");
   }
 }
+
+// Add this to the top with other constants
+const FILE_VIEWER_MODAL = `
+<div id="fileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div class="file-info">
+      <span id="currentFileText"></span>
+      <span id="fileName"></span>
+    </div>
+    <div class="file-viewer-container">
+      <iframe id="fileViewer" style="display:none; width:100%; height:80vh; border:none;"></iframe>
+      <img id="imageViewer" style="display:none; max-width:100%; max-height:80vh;">
+    </div>
+    <div class="modal-nav">
+      <button class="prev-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+      <button class="next-btn">Next <i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>`;
