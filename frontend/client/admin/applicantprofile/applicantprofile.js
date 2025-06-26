@@ -685,8 +685,21 @@ async function loadApplicantFiles(applicantId) {
   }
 }
 
-if (!id) {
-  showNotification('No applicant ID provided.', 'error');
-  console.warn('No applicant ID found. Check URL or sessionStorage.');
-  return null;
+function getApplicantId() {
+  // First try to get from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  let id = urlParams.get('id');
+
+  // If not in URL, try sessionStorage
+  if (!id) {
+    id = sessionStorage.getItem('currentApplicantId');
+  }
+
+  if (!id) {
+    showNotification('No applicant ID provided.', 'error');
+    console.warn('No applicant ID found. Check URL or sessionStorage.');
+    return null;
+  }
+
+  return id;
 }
