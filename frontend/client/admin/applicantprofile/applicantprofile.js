@@ -802,96 +802,83 @@ async function viewFile(fileId, sectionFiles) {
 }
 
 // Fetch and display applicant's documents
-async function fetchAndDisplayDocuments() {
+exports.fetchApplicantFiles = async (req, res) => {
   try {
-    showLoading();
-    const loadingElement = document.getElementById('documents-loading');
-    const noDocumentsElement = document.getElementById('no-documents');
-    const documentsGrid = document.getElementById('documents-grid');
+    const { applicantId } = req.params;
 
-    loadingElement.style.display = 'flex';
-    noDocumentsElement.style.display = 'none';
-    documentsGrid.style.display = 'none';
+    if (!mongoose.Types.ObjectId.isValid(applicantId)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid applicant ID format"
+      });
+    }
 
-    // Add debug log
-    console.log(`Fetching documents for applicant: ${applicantId}`);
+    const files = await mongoose.connection.db.collection('backupFiles.files')
+      .find({ 'metadata.owner': new mongoose.Types.ObjectId(applicantId) })
+      .toArray();
+
+    const groupedFiles = {};
     
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+    files.forEach(file => {
+      const label = file.metadata?.label || 'others';
+      if (!groupedFiles[label]) {
+        groupedFiles[label] = [];
       }
-    });
-
-    console.log('Response status:', response.status); // Debug log
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Response data:', data); // Debug log
-
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch documents');
-    }
-
-    // Clear existing documents
-    documentsGrid.innerHTML = '';
-
-    // Create document cards
-    allFiles.forEach(file => {
-      const fileExt = file.filename.split('.').pop()?.toLowerCase() || '';
-      let iconClass = 'fa-file';
-      
-      if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
-      else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
-      else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
-
-      const documentCard = document.createElement('div');
-      documentCard.className = 'document-card';
-      documentCard.innerHTML = `
-        <div class="document-icon">
-          <i class="fas ${iconClass}"></i>
-        </div>
-        <div class="document-info">
-          <p class="document-name">${file.filename}</p>
-          <div class="document-actions">
-            <button class="btn view-btn" data-file-id="${file._id}">
-              <i class="fas fa-eye"></i> View
-            </button>
-            <a href="${API_BASE_URL}/api/admin/applicants/files/${file._id}" download class="btn download-btn">
-              <i class="fas fa-download"></i> Download
-            </a>
-          </div>
-        </div>
-      `;
-      
-      documentsGrid.appendChild(documentCard);
-    });
-
-    // Set up event listeners for view buttons
-    documentsGrid.querySelectorAll('.view-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const fileId = btn.getAttribute('data-file-id');
-        viewFile(fileId, allFiles);
+      groupedFiles[label].push({
+        _id: file._id,
+        filename: file.filename,
+        contentType: file.contentType,
+        uploadDate: file.uploadDate,
+        size: file.length
       });
     });
 
-    loadingElement.style.display = 'none';
-    documentsGrid.style.display = 'grid';
+    res.json({
+      success: true,
+      files: groupedFiles
+    });
 
   } catch (error) {
-    console.error('Error loading documents:', {
-      error: error.message,
-      stack: error.stack
+    console.error('Error fetching applicant files:', error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch files",
+      details: error.message
     });
-    showNotification(`Failed to load documents: ${error.message}`, 'error');
-    document.getElementById('documents-loading').style.display = 'none';
-    document.getElementById('no-documents').style.display = 'flex';
-  } finally {
-    hideLoading();
   }
-}
+};
+
+exports.fetchApplicantFile = async (req, res) => {
+  try {
+    if (!gfs) {
+      throw new Error('GridFS not initialized');
+    }
+
+    const fileId = new mongoose.Types.ObjectId(req.params.id);
+    const file = await mongoose.connection.db.collection('backupFiles.files')
+      .findOne({ _id: fileId });
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    const downloadStream = gfs.openDownloadStream(fileId);
+    
+    res.set('Content-Type', file.contentType);
+    res.set('Content-Disposition', `inline; filename="${file.filename}"`);
+
+    downloadStream.pipe(res);
+
+    downloadStream.on('error', (err) => {
+      console.error('Stream error:', err);
+      res.status(500).end();
+    });
+
+  } catch (error) {
+    console.error('Error fetching file:', error);
+    res.status(500).json({ 
+      error: "Failed to fetch file",
+      details: error.message
+    });
+  }
+};
