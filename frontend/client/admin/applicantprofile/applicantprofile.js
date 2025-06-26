@@ -13,19 +13,14 @@ function hideLoading() {
   if (spinner) spinner.style.display = 'none';
 }
 
-// Notification system
-function showNotification(message, type = "info") {
-  const existingNotifications = document.querySelectorAll(".notification");
-  existingNotifications.forEach(notification => notification.remove());
-
-  const notification = document.createElement("div");
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
   notification.className = `notification ${type}`;
   notification.textContent = message;
   document.body.appendChild(notification);
 
   setTimeout(() => {
-    notification.style.opacity = "0";
-    setTimeout(() => notification.remove(), 500);
+    notification.remove();
   }, 3000);
 }
 
@@ -252,12 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
   applicantId = getApplicantId();
   if (!applicantId) return;
   
-  // Initialize file viewer
-  initializeFileViewer();
-  
-  // Load applicant data and documents
+  // Load applicant data
   loadApplicantData();
-  fetchAndDisplayDocuments();
   
   // Set up event listeners
   setupModalControls();
@@ -653,232 +644,3 @@ function updateStatus() {
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
 }
-
-// Add these constants at the top
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
-const ALLOWED_TYPES = [
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-];
-
-// File viewer state
-let currentFiles = [];
-let currentFileIndex = 0;
-
-// Initialize the file viewer modal
-function initializeFileViewer() {
-  const modal = document.getElementById('fileModal');
-  if (!modal) return;
-
-  const closeBtn = modal.querySelector('.close-modal');
-  const prevBtn = modal.querySelector('.prev-btn');
-  const nextBtn = modal.querySelector('.next-btn');
-
-  function closeModal() {
-    modal.style.display = 'none';
-    document.getElementById('fileViewer').style.display = 'none';
-    document.getElementById('imageViewer').style.display = 'none';
-    currentFiles = [];
-    currentFileIndex = 0;
-  }
-
-  // Event listeners
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => e.target === modal && closeModal());
-
-  prevBtn.addEventListener('click', () => {
-    if (currentFileIndex > 0) showFile(currentFileIndex - 1);
-  });
-
-  nextBtn.addEventListener('click', () => {
-    if (currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
-  });
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (modal.style.display === 'block') {
-      if (e.key === 'Escape') closeModal();
-      if (e.key === 'ArrowLeft' && currentFileIndex > 0) showFile(currentFileIndex - 1);
-      if (e.key === 'ArrowRight' && currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
-    }
-  });
-}
-
-// Show file in viewer
-async function showFile(index) {
-  try {
-    const file = currentFiles[index];
-    currentFileIndex = index;
-
-    const modal = document.getElementById('fileModal');
-    const fileViewer = document.getElementById('fileViewer');
-    const imageViewer = document.getElementById('imageViewer');
-    const currentFileText = document.getElementById('currentFileText');
-    const fileName = document.getElementById('fileName');
-    const prevBtn = modal.querySelector('.prev-btn');
-    const nextBtn = modal.querySelector('.next-btn');
-
-    // Update UI
-    currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
-    fileName.textContent = file.filename;
-    prevBtn.disabled = index === 0;
-    nextBtn.disabled = index === currentFiles.length - 1;
-
-    // Show loading state
-    fileName.textContent = `Loading ${file.filename}...`;
-
-    // Fetch the file
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/files/${file._id}`, {
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to load file: ${response.status} ${response.statusText}`);
-    }
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-
-    // Get content type from response headers if not available in file object
-    const contentType = response.headers.get('content-type') || file.contentType;
-
-    // Hide both viewers first
-    fileViewer.style.display = 'none';
-    imageViewer.style.display = 'none';
-
-    // Show appropriate viewer based on file type
-    if (contentType.startsWith('image/')) {
-      imageViewer.onload = () => {
-        imageViewer.style.display = 'block';
-        fileName.textContent = file.filename;
-      };
-      imageViewer.src = url;
-    } else {
-      fileViewer.onload = () => {
-        fileViewer.style.display = 'block';
-        fileName.textContent = file.filename;
-      };
-      fileViewer.src = url;
-    }
-
-    // Clean up URL when modal closes
-    const cleanup = () => {
-      URL.revokeObjectURL(url);
-      modal.removeEventListener('click', cleanup);
-    };
-    modal.addEventListener('click', cleanup, { once: true });
-
-  } catch (error) {
-    console.error('Error showing file:', error);
-    showNotification(`Error: Could not display file (${error.message})`, 'error');
-    
-    // Close modal on error
-    const modal = document.getElementById('fileModal');
-    if (modal) modal.style.display = 'none';
-  }
-}
-
-// View a specific file
-async function viewFile(fileId, sectionFiles) {
-  try {
-    currentFiles = sectionFiles;
-    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
-    
-    if (currentFileIndex === -1) {
-      throw new Error('File not found in this section');
-    }
-
-    const modal = document.getElementById('fileModal');
-    modal.style.display = 'block';
-    
-    await showFile(currentFileIndex);
-  } catch (error) {
-    console.error('Error viewing file:', error);
-    showNotification(`Error viewing file: ${error.message}`, 'error');
-  }
-}
-
-// Fetch and display applicant's documents
-exports.fetchApplicantFiles = async (req, res) => {
-  try {
-    const { applicantId } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(applicantId)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid applicant ID format"
-      });
-    }
-
-    const files = await mongoose.connection.db.collection('backupFiles.files')
-      .find({ 'metadata.owner': new mongoose.Types.ObjectId(applicantId) })
-      .toArray();
-
-    const groupedFiles = {};
-    
-    files.forEach(file => {
-      const label = file.metadata?.label || 'others';
-      if (!groupedFiles[label]) {
-        groupedFiles[label] = [];
-      }
-      groupedFiles[label].push({
-        _id: file._id,
-        filename: file.filename,
-        contentType: file.contentType,
-        uploadDate: file.uploadDate,
-        size: file.length
-      });
-    });
-
-    res.json({
-      success: true,
-      files: groupedFiles
-    });
-
-  } catch (error) {
-    console.error('Error fetching applicant files:', error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch files",
-      details: error.message
-    });
-  }
-};
-
-exports.fetchApplicantFile = async (req, res) => {
-  try {
-    if (!gfs) {
-      throw new Error('GridFS not initialized');
-    }
-
-    const fileId = new mongoose.Types.ObjectId(req.params.id);
-    const file = await mongoose.connection.db.collection('backupFiles.files')
-      .findOne({ _id: fileId });
-
-    if (!file) {
-      return res.status(404).json({ error: "File not found" });
-    }
-
-    const downloadStream = gfs.openDownloadStream(fileId);
-    
-    res.set('Content-Type', file.contentType);
-    res.set('Content-Disposition', `inline; filename="${file.filename}"`);
-
-    downloadStream.pipe(res);
-
-    downloadStream.on('error', (err) => {
-      console.error('Stream error:', err);
-      res.status(500).end();
-    });
-
-  } catch (error) {
-    console.error('Error fetching file:', error);
-    res.status(500).json({ 
-      error: "Failed to fetch file",
-      details: error.message
-    });
-  }
-};
