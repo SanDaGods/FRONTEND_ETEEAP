@@ -191,76 +191,28 @@ function displayApplicantData(applicant) {
 
 // Display uploaded documents
 async function displayDocuments() {
-  const container = document.getElementById('documents-container');
-  const loadingElement = document.getElementById('documents-loading');
-  const emptyElement = document.getElementById('no-documents');
-  const gridElement = document.getElementById('documents-grid');
+  console.log('Starting document display for applicant:', applicantId);
   
-  if (!container || !loadingElement || !emptyElement || !gridElement) return;
-
-  // Show loading state
-  loadingElement.style.display = 'flex';
-  emptyElement.style.display = 'none';
-  gridElement.style.display = 'none';
-  gridElement.innerHTML = '';
-
   try {
-    // Updated fetch URL
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
       credentials: 'include'
     });
-
+    
+    console.log('Fetch response:', response);
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
+      console.error('Fetch failed with status:', response.status);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.error || 'Failed to load documents');
-    }
-
-    // Hide loading state
-    loadingElement.style.display = 'none';
-
-    // Check if we have any files
-    const files = data.files || {};
-    const fileGroups = Object.keys(files);
-
-    if (fileGroups.length === 0) {
-      emptyElement.style.display = 'flex';
-      return;
-    }
-
-    // Create document sections for each label group
-    fileGroups.forEach(label => {
-      const section = document.createElement('div');
-      section.className = 'document-section';
-      
-      const sectionTitle = document.createElement('h4');
-      sectionTitle.textContent = formatLabelName(label);
-      section.appendChild(sectionTitle);
-
-      const groupGrid = document.createElement('div');
-      groupGrid.className = 'documents-group-grid';
-
-      files[label].forEach(file => {
-        const documentCard = createDocumentCard(file);
-        groupGrid.appendChild(documentCard);
-      });
-
-      section.appendChild(groupGrid);
-      gridElement.appendChild(section);
-    });
-
-    gridElement.style.display = 'block';
+    console.log('Fetched documents data:', data);
     
-    // Initialize file modal functionality
-    initFileModal();
-
+    // Rest of your function...
   } catch (error) {
-    console.error('Error loading documents:', error);
+    console.error('Full error:', error);
     loadingElement.style.display = 'none';
     emptyElement.style.display = 'flex';
     emptyElement.innerHTML = `
@@ -808,11 +760,29 @@ function initFileModal() {
     }
   });
 
+  // Navigation buttons
+  const prevBtn = modal.querySelector('.prev-btn');
+  const nextBtn = modal.querySelector('.next-btn');
+  
+  prevBtn.addEventListener('click', () => {
+    // Implement navigation to previous file if needed
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    // Implement navigation to next file if needed
+  });
+
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (modal.style.display === 'flex') {
       if (e.key === 'Escape') {
         modal.style.display = 'none';
+      }
+      if (e.key === 'ArrowLeft') {
+        prevBtn.click();
+      }
+      if (e.key === 'ArrowRight') {
+        nextBtn.click();
       }
     }
   });
@@ -838,11 +808,38 @@ function setupDocumentClickHandlers() {
 function getFileIconClass(contentType) {
   if (!contentType) return 'fa-file';
   
-  if (contentType.startsWith('image/')) return 'fa-file-image';
-  if (contentType.includes('pdf')) return 'fa-file-pdf';
-  if (contentType.includes('word')) return 'fa-file-word';
-  if (contentType.includes('excel')) return 'fa-file-excel';
-  if (contentType.includes('powerpoint')) return 'fa-file-powerpoint';
+  contentType = contentType.toLowerCase();
+  
+  const typeMap = {
+    // Images
+    'image/': 'fa-file-image',
+    
+    // Documents
+    'application/pdf': 'fa-file-pdf',
+    'application/msword': 'fa-file-word',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'fa-file-word',
+    'application/vnd.ms-excel': 'fa-file-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'fa-file-excel',
+    'application/vnd.ms-powerpoint': 'fa-file-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'fa-file-powerpoint',
+    'text/plain': 'fa-file-alt',
+    'text/csv': 'fa-file-csv',
+    
+    // Archives
+    'application/zip': 'fa-file-archive',
+    'application/x-rar-compressed': 'fa-file-archive',
+    
+    // Code
+    'text/html': 'fa-file-code',
+    'application/javascript': 'fa-file-code',
+    'application/json': 'fa-file-code',
+  };
+  
+  for (const [pattern, icon] of Object.entries(typeMap)) {
+    if (contentType.includes(pattern)) {
+      return icon;
+    }
+  }
   
   return 'fa-file';
 }
@@ -857,3 +854,5 @@ function formatFileSize(bytes) {
   const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }
+
+
