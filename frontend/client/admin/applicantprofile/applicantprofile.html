@@ -212,34 +212,24 @@
 
             <!-- Documents Section -->
             <!-- Update your documents container -->
-<div class="documents-container">
-  <div class="documents-header">
-    <h1 class="documents-title">Applicant Portfolio</h1>
-    <div class="documents-controls">
-      <div class="search-container">
-        <i class="fas fa-search"></i>
-        <input type="search" id="search-input" class="search-input" placeholder="Search documents..." />
-      </div>
-      <div class="file-count">
-        <span class="count-number">0</span> files
-      </div>
+<div class="info-section full-width">
+  <h3><i class="fas fa-file"></i> Submitted Documents</h3>
+  <div id="documents-container" class="documents-container">
+    <!-- Loading state -->
+    <div id="documents-loading" class="no-documents">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading documents...</p>
     </div>
+    
+    <!-- Empty state (will be shown if no documents) -->
+    <div id="no-documents" class="no-documents" style="display: none;">
+      <i class="fas fa-folder-open"></i>
+      <p>No documents submitted yet</p>
+    </div>
+    
+    <!-- Documents will be inserted here -->
+    <div id="documents-grid" class="documents-grid" style="display: none;"></div>
   </div>
-
-  <!-- Loading State -->
-  <div id="documents-loading" style="display: none;">
-    <i class="fas fa-spinner fa-spin"></i>
-    <p>Loading documents...</p>
-  </div>
-
-  <!-- Empty State -->
-  <div id="no-documents" style="display: none;">
-    <i class="fas fa-folder-open"></i>
-    <p>No documents found for this applicant</p>
-  </div>
-
-  <!-- Documents Grid -->
-  <div id="documents-grid" class="documents-grid"></div>
 </div>
 
 <!-- Add this modal at the bottom of your HTML, before the scripts -->
