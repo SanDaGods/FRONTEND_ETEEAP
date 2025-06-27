@@ -187,57 +187,193 @@ function displayApplicantData(applicant) {
 }
 
 // Display uploaded documents
+// Update the displayDocuments function in applicantprofile.js
 function displayDocuments(documents) {
   const container = document.getElementById('documents-container');
+  const loading = document.getElementById('documents-loading');
+  const noDocs = document.getElementById('no-documents');
+  const grid = document.getElementById('documents-grid');
+  
   if (!container) return;
   
-  container.innerHTML = '';
+  // Hide all initially
+  if (loading) loading.style.display = 'none';
+  if (noDocs) noDocs.style.display = 'none';
+  if (grid) grid.style.display = 'none';
   
   if (!documents || documents.length === 0) {
-    container.innerHTML = `
-      <div class="no-documents">
-        <i class="fas fa-folder-open"></i>
-        <p>No documents submitted yet</p>
-      </div>
-    `;
+    if (noDocs) noDocs.style.display = 'flex';
     return;
   }
   
-  const documentsGrid = document.createElement('div');
-  documentsGrid.className = 'documents-grid';
-  
+  // Group documents by label/section
+  const groupedDocs = {};
   documents.forEach(doc => {
-    const fileName = doc.split('/').pop() || 'Document';
-    const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
-    let iconClass = 'fa-file';
-    
-    if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
-    else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
-    else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
-    
-    const documentCard = document.createElement('div');
-    documentCard.className = 'document-card';
-    documentCard.innerHTML = `
-      <div class="document-icon">
-        <i class="fas ${iconClass}"></i>
-      </div>
-      <div class="document-info">
-        <p class="document-name">${fileName}</p>
-        <div class="document-actions">
-          <a href="${API_BASE_URL}/${doc}" target="_blank" class="btn view-btn">
-            <i class="fas fa-eye"></i> View
-          </a>
-          <a href="${API_BASE_URL}/${doc}" download class="btn download-btn">
-            <i class="fas fa-download"></i> Download
-          </a>
-        </div>
-      </div>
-    `;
-    
-    documentsGrid.appendChild(documentCard);
+    if (!groupedDocs[doc.label]) {
+      groupedDocs[doc.label] = [];
+    }
+    groupedDocs[doc.label].push(doc);
   });
   
-  container.appendChild(documentsGrid);
+  // Clear existing content
+  if (grid) grid.innerHTML = '';
+  
+  // Create sections for each document group
+  Object.entries(groupedDocs).forEach(([label, docs]) => {
+    const section = document.createElement('div');
+    section.className = 'document-section';
+    
+    const sectionTitle = document.createElement('h4');
+    sectionTitle.textContent = getSectionTitle(label);
+    section.appendChild(sectionTitle);
+    
+    const docsContainer = document.createElement('div');
+    docsContainer.className = 'document-section-grid';
+    
+    docs.forEach(doc => {
+      const docCard = createDocumentCard(doc);
+      docsContainer.appendChild(docCard);
+    });
+    
+    section.appendChild(docsContainer);
+    if (grid) grid.appendChild(section);
+  });
+  
+  if (grid) grid.style.display = 'grid';
+}
+
+// Helper function to create document card
+function createDocumentCard(doc) {
+  const docCard = document.createElement('div');
+  docCard.className = 'document-card';
+  
+  const fileExt = doc.filename.split('.').pop()?.toLowerCase() || '';
+  let iconClass = 'fa-file';
+  
+  if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+  else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
+  else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+  
+  docCard.innerHTML = `
+    <div class="document-icon">
+      <i class="fas ${iconClass}"></i>
+    </div>
+    <div class="document-info">
+      <p class="document-name" title="${doc.filename}">${doc.filename}</p>
+      <p class="document-type">${doc.contentType}</p>
+      <p class="document-date">${new Date(doc.uploadDate).toLocaleDateString()}</p>
+    </div>
+    <div class="document-actions">
+      <button class="btn view-btn" data-file-id="${doc._id}">
+        <i class="fas fa-eye"></i> View
+      </button>
+      <a href="${API_BASE_URL}/api/fetch-documents/${doc._id}" download="${doc.filename}" class="btn download-btn">
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
+  `;
+  
+  return docCard;
+}
+
+// Helper function to map label to section title
+function getSectionTitle(label) {
+  const labelMap = {
+    'initial-submission': 'Initial Submissions',
+    'resume': 'Updated Resume / CV',
+    'training': 'Certificate of Training',
+    'awards': 'Awards',
+    'interview': 'Interview Form',
+    'others': 'Other Documents'
+  };
+  return labelMap[label] || label;
+}
+
+// Initialize file viewer modal
+function initializeFileViewer() {
+  const modal = document.getElementById('fileModal');
+  if (!modal) return;
+
+  const closeBtn = modal.querySelector('.close-modal');
+  const prevBtn = modal.querySelector('.prev-btn');
+  const nextBtn = modal.querySelector('.next-btn');
+
+  function closeModal() {
+    modal.style.display = 'none';
+    document.getElementById('fileViewer').style.display = 'none';
+    document.getElementById('imageViewer').style.display = 'none';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => e.target === modal && closeModal());
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (modal.style.display === 'block') {
+      if (e.key === 'Escape') closeModal();
+    }
+  });
+}
+
+// View a specific file
+async function viewFile(fileId) {
+  try {
+    const modal = document.getElementById('fileModal');
+    const fileViewer = document.getElementById('fileViewer');
+    const imageViewer = document.getElementById('imageViewer');
+    const fileName = document.getElementById('fileName');
+
+    if (!modal || !fileViewer || !imageViewer || !fileName) {
+      throw new Error('File viewer elements not found');
+    }
+
+    // Show loading state
+    modal.style.display = 'block';
+    fileName.textContent = 'Loading file...';
+
+    // Fetch the file
+    const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${fileId}`, {
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to load file: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const contentType = response.headers.get('content-type');
+
+    // Hide both viewers first
+    fileViewer.style.display = 'none';
+    imageViewer.style.display = 'none';
+
+    // Show appropriate viewer based on content type
+    if (contentType.startsWith('image/')) {
+      imageViewer.onload = () => {
+        fileName.textContent = fileId; // You might want to get the actual filename here
+        imageViewer.style.display = 'block';
+      };
+      imageViewer.src = url;
+    } else {
+      fileViewer.onload = () => {
+        fileName.textContent = fileId; // You might want to get the actual filename here
+        fileViewer.style.display = 'block';
+      };
+      fileViewer.src = url;
+    }
+
+    // Clean up when modal closes
+    modal.addEventListener('click', () => {
+      URL.revokeObjectURL(url);
+    }, { once: true });
+
+  } catch (error) {
+    console.error('Error viewing file:', error);
+    showNotification(`Failed to view file: ${error.message}`, 'error');
+    const modal = document.getElementById('fileModal');
+    if (modal) modal.style.display = 'none';
+  }
 }
 
 // Initialize the page
@@ -543,6 +679,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Load applicant data
   loadApplicantData();
+  initializeFileViewer()
   
   // Set up event listeners
   document.getElementById('backButton')?.addEventListener('click', () => {
@@ -650,6 +787,16 @@ async function showAssignAssessorModal() {
       window.location.href = '/frontend/client/applicant/login/login.html';
     });
   });
+
+  document.addEventListener('click', function(e) {
+    const viewBtn = e.target.closest('.view-btn');
+    if (viewBtn) {
+      e.preventDefault();
+      const fileId = viewBtn.getAttribute('data-file-id');
+      viewFile(fileId);
+    }
+  });
+  
 });
 
 
