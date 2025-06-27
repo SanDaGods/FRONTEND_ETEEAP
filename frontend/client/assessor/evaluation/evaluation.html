@@ -431,6 +431,25 @@
     </div>
   </div>
 
+  <!-- File Viewer Modal -->
+<div id="fileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div class="file-info">
+      <span id="currentFileText"></span>
+      <span id="fileName"></span>
+    </div>
+    <div class="file-viewer-container">
+      <iframe id="fileViewer" style="display:none; width:100%; height:80vh; border:none;"></iframe>
+      <img id="imageViewer" style="display:none; max-width:100%; max-height:80vh;">
+    </div>
+    <div class="modal-nav">
+      <button class="prev-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+      <button class="next-btn">Next <i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>
+
   <script src="../../shared/js/auth.js"></script>
   <script src="eval.js"></script>
 </body>
