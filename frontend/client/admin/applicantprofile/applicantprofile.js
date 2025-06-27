@@ -187,57 +187,224 @@ function displayApplicantData(applicant) {
 }
 
 // Display uploaded documents
-function displayDocuments(documents) {
-  const container = document.getElementById('documents-container');
-  if (!container) return;
-  
-  container.innerHTML = '';
-  
-  if (!documents || documents.length === 0) {
-    container.innerHTML = `
-      <div class="no-documents">
-        <i class="fas fa-folder-open"></i>
-        <p>No documents submitted yet</p>
-      </div>
-    `;
-    return;
-  }
-  
-  const documentsGrid = document.createElement('div');
-  documentsGrid.className = 'documents-grid';
-  
-  documents.forEach(doc => {
-    const fileName = doc.split('/').pop() || 'Document';
-    const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
-    let iconClass = 'fa-file';
+async function displayDocuments() {
+    const container = document.getElementById('documents-container');
+    const loading = document.getElementById('documents-loading');
+    const noDocs = document.getElementById('no-documents');
+    const grid = document.getElementById('documents-grid');
     
-    if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
-    else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
-    else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+    if (!container) return;
+
+    // Show loading state
+    loading.style.display = 'flex';
+    noDocs.style.display = 'none';
+    grid.style.display = 'none';
+    grid.innerHTML = '';
+
+    try {
+        // Fetch the applicant's files
+        const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch documents');
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success || !data.data) {
+            throw new Error(data.error || 'No documents found');
+        }
+
+        const documents = data.data;
+        let hasDocuments = false;
+
+        // Create sections for each document type
+        for (const [section, files] of Object.entries(documents)) {
+            if (files.length === 0) continue;
+            
+            hasDocuments = true;
+            
+            const sectionHeader = document.createElement('h4');
+            sectionHeader.className = 'documents-section-header';
+            sectionHeader.textContent = formatSectionName(section);
+            grid.appendChild(sectionHeader);
+            
+            files.forEach(file => {
+                const fileExt = file.filename.split('.').pop()?.toLowerCase() || '';
+                let iconClass = 'fa-file';
+                
+                if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+                else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
+                else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+                
+                const documentCard = document.createElement('div');
+                documentCard.className = 'document-card';
+                documentCard.innerHTML = `
+                    <div class="document-icon">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <div class="document-info">
+                        <p class="document-name" title="${file.filename}">${file.filename}</p>
+                        <p class="document-type">${file.contentType}</p>
+                        <p class="document-date">${formatDate(file.uploadDate)}</p>
+                        <div class="document-actions">
+                            <button class="btn view-btn" data-file-id="${file._id}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download class="btn download-btn">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(documentCard);
+            });
+        }
+
+        if (hasDocuments) {
+            grid.style.display = 'grid';
+            noDocs.style.display = 'none';
+        } else {
+            grid.style.display = 'none';
+            noDocs.style.display = 'flex';
+        }
+
+    } catch (error) {
+        console.error('Error loading documents:', error);
+        grid.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load documents: ${error.message}</p>
+            </div>
+        `;
+        grid.style.display = 'block';
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+// Helper function to format section names
+function formatSectionName(section) {
+    const nameMap = {
+        'initial-submission': 'Initial Submissions',
+        'resume': 'Resume/CV',
+        'training': 'Certificate of Training',
+        'awards': 'Awards',
+        'interview': 'Interview Form',
+        'others': 'Other Documents'
+    };
+    return nameMap[section] || section.replace(/-/g, ' ');
+}
+
+// Add event listener for view buttons
+document.addEventListener('click', async function(e) {
+    if (e.target.closest('.view-btn')) {
+        e.preventDefault();
+        const fileId = e.target.closest('.view-btn').getAttribute('data-file-id');
+        
+        try {
+            // Fetch file metadata first
+            const metaResponse = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
+                credentials: 'include'
+            });
+            
+            const metaData = await metaResponse.json();
+            
+            if (!metaData.success || !metaData.data) {
+                throw new Error('Failed to fetch file metadata');
+            }
+            
+            // Find the file in all sections
+            let file = null;
+            for (const section of Object.values(metaData.data)) {
+                const found = section.find(f => f._id === fileId);
+                if (found) {
+                    file = found;
+                    break;
+                }
+            }
+            
+            if (!file) {
+                throw new Error('File not found');
+            }
+            
+            // Show the file in modal
+            const modal = document.getElementById('fileModal');
+            const fileViewer = document.getElementById('fileViewer');
+            const imageViewer = document.getElementById('imageViewer');
+            
+            // Show loading state
+            document.getElementById('fileName').textContent = `Loading ${file.filename}...`;
+            modal.style.display = 'flex';
+            
+            // Fetch the actual file
+            const fileResponse = await fetch(`${API_BASE_URL}/api/fetch-documents/${fileId}`, {
+                credentials: 'include'
+            });
+            
+            if (!fileResponse.ok) {
+                throw new Error('Failed to load file');
+            }
+            
+            const blob = await fileResponse.blob();
+            const url = URL.createObjectURL(blob);
+            
+            // Determine how to display based on content type
+            if (file.contentType.startsWith('image/')) {
+                fileViewer.style.display = 'none';
+                imageViewer.style.display = 'block';
+                imageViewer.src = url;
+            } else {
+                imageViewer.style.display = 'none';
+                fileViewer.style.display = 'block';
+                fileViewer.src = url;
+            }
+            
+            document.getElementById('fileName').textContent = file.filename;
+            document.getElementById('currentFileText').textContent = 'File 1 of 1';
+            
+            // Clean up when modal closes
+            modal.addEventListener('click', function cleanup(e) {
+                if (e.target === modal || e.target.classList.contains('close-modal')) {
+                    URL.revokeObjectURL(url);
+                    modal.removeEventListener('click', cleanup);
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error viewing file:', error);
+            showNotification(`Failed to view file: ${error.message}`, 'error');
+            document.getElementById('fileModal').style.display = 'none';
+        }
+    }
+});
+
+// Initialize file modal controls
+function setupFileModal() {
+    const modal = document.getElementById('fileModal');
+    if (!modal) return;
     
-    const documentCard = document.createElement('div');
-    documentCard.className = 'document-card';
-    documentCard.innerHTML = `
-      <div class="document-icon">
-        <i class="fas ${iconClass}"></i>
-      </div>
-      <div class="document-info">
-        <p class="document-name">${fileName}</p>
-        <div class="document-actions">
-          <a href="${API_BASE_URL}/${doc}" target="_blank" class="btn view-btn">
-            <i class="fas fa-eye"></i> View
-          </a>
-          <a href="${API_BASE_URL}/${doc}" download class="btn download-btn">
-            <i class="fas fa-download"></i> Download
-          </a>
-        </div>
-      </div>
-    `;
+    const closeBtn = modal.querySelector('.close-modal');
     
-    documentsGrid.appendChild(documentCard);
-  });
-  
-  container.appendChild(documentsGrid);
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Handle keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (modal.style.display === 'flex' && e.key === 'Escape') {
+            modal.style.display = 'none';
+        }
+    });
 }
 
 // Initialize the page
@@ -249,6 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Load applicant data
   loadApplicantData();
+  setupFileModal();
   
   // Set up event listeners
   setupModalControls();
