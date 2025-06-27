@@ -119,9 +119,6 @@ async function loadApplicantData() {
     currentApplicant = data.data;
     displayApplicantData(data.data);
     
-    // Load documents after basic info is loaded
-    await displayDocuments();
-    
   } catch (error) {
     console.error('Error loading applicant data:', error);
     showNotification(error.message, 'error');
@@ -190,132 +187,57 @@ function displayApplicantData(applicant) {
 }
 
 // Display uploaded documents
-async function displayDocuments() {
-  console.log('Starting document display for applicant:', applicantId);
+function displayDocuments(documents) {
+  const container = document.getElementById('documents-container');
+  if (!container) return;
   
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/files`, {
-      credentials: 'include'
-    });
-    
-    console.log('Fetch response:', response);
-    
-    if (!response.ok) {
-      console.error('Fetch failed with status:', response.status);
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error(`Failed to fetch documents: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Fetched documents data:', data);
-    
-    // Rest of your function...
-  } catch (error) {
-    console.error('Full error:', error);
-    loadingElement.style.display = 'none';
-    emptyElement.style.display = 'flex';
-    emptyElement.innerHTML = `
-      <i class="fas fa-exclamation-triangle"></i>
-      <p>${error.message}</p>
-    `;
-  }
-}
-
-// Add this helper function
-function formatLabelName(label) {
-  const labelMap = {
-    'transcript': 'Transcript of Records',
-    'diploma': 'Diploma',
-    'certificate': 'Certificates',
-    'resume': 'Resume/CV',
-    'id': 'Identification',
-    'others': 'Other Documents'
-  };
-  return labelMap[label] || label.charAt(0).toUpperCase() + label.slice(1);
-}
-
-
-function createDocumentCard(file) {
-  const documentCard = document.createElement('div');
-  documentCard.className = 'document-card';
-  documentCard.dataset.fileId = file._id;
+  container.innerHTML = '';
   
-  const iconClass = getFileIconClass(file.contentType);
-  const formattedDate = formatDate(file.uploadDate);
-  const formattedSize = formatFileSize(file.size);
-
-  documentCard.innerHTML = `
-    <div class="document-icon">
-      <i class="fas ${iconClass}"></i>
-    </div>
-    <div class="document-info">
-      <p class="document-name">${file.filename}</p>
-      <p class="document-meta">
-        <span>${formattedDate}</span>
-        <span>${formattedSize}</span>
-      </p>
-      <div class="document-actions">
-        <button class="btn view-btn" data-file-id="${file._id}">
-          <i class="fas fa-eye"></i> View
-        </button>
-        <a href="${API_BASE_URL}/api/admin/applicants/files/${file._id}" download="${file.filename}" class="btn download-btn">
-          <i class="fas fa-download"></i> Download
-        </a>
+  if (!documents || documents.length === 0) {
+    container.innerHTML = `
+      <div class="no-documents">
+        <i class="fas fa-folder-open"></i>
+        <p>No documents submitted yet</p>
       </div>
-    </div>
-  `;
-  
-  return documentCard;
-}
-
-// Update the showFileInModal function
-function showFileInModal(fileId, fileName, label = '') {
-  const modal = document.getElementById('fileModal');
-  const fileViewer = document.getElementById('fileViewer');
-  const imageViewer = document.getElementById('imageViewer');
-  const fileNameElement = document.getElementById('fileName');
-  const currentFileText = document.getElementById('currentFileText');
-
-  // Show loading state
-  modal.style.display = 'flex';
-  fileNameElement.textContent = 'Loading...';
-  currentFileText.textContent = label ? `${label}: ` : '';
-  fileViewer.style.display = 'none';
-  imageViewer.style.display = 'none';
-
-  // Determine file type
-  const fileExt = fileName.split('.').pop().toLowerCase();
-  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExt);
-  
-  // Set up error handling
-  const handleError = () => {
-    fileNameElement.textContent = 'Error loading file';
-    fileViewer.style.display = 'none';
-    imageViewer.style.display = 'block';
-    imageViewer.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f0f0f0"/><text x="50" y="50" font-family="Arial" font-size="10" text-anchor="middle" fill="%23666">Could not load file</text></svg>';
-  };
-
-  if (isImage) {
-    imageViewer.onload = () => {
-      fileNameElement.textContent = fileName;
-      imageViewer.style.display = 'block';
-    };
-    imageViewer.onerror = handleError;
-    imageViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}`;
-  } else {
-    fileViewer.onload = () => {
-      fileNameElement.textContent = fileName;
-      fileViewer.style.display = 'block';
-    };
-    fileViewer.onerror = handleError;
-    
-    if (fileExt === 'pdf') {
-      fileViewer.src = `${API_BASE_URL}/api/admin/applicants/files/${fileId}#toolbar=0`;
-    } else {
-      fileViewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(`${API_BASE_URL}/api/admin/applicants/files/${fileId}`)}&embedded=true`;
-    }
+    `;
+    return;
   }
+  
+  const documentsGrid = document.createElement('div');
+  documentsGrid.className = 'documents-grid';
+  
+  documents.forEach(doc => {
+    const fileName = doc.split('/').pop() || 'Document';
+    const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
+    let iconClass = 'fa-file';
+    
+    if (fileExt === 'pdf') iconClass = 'fa-file-pdf';
+    else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExt)) iconClass = 'fa-file-image';
+    else if (['doc', 'docx'].includes(fileExt)) iconClass = 'fa-file-word';
+    
+    const documentCard = document.createElement('div');
+    documentCard.className = 'document-card';
+    documentCard.innerHTML = `
+      <div class="document-icon">
+        <i class="fas ${iconClass}"></i>
+      </div>
+      <div class="document-info">
+        <p class="document-name">${fileName}</p>
+        <div class="document-actions">
+          <a href="${API_BASE_URL}/${doc}" target="_blank" class="btn view-btn">
+            <i class="fas fa-eye"></i> View
+          </a>
+          <a href="${API_BASE_URL}/${doc}" download class="btn download-btn">
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+      </div>
+    `;
+    
+    documentsGrid.appendChild(documentCard);
+  });
+  
+  container.appendChild(documentsGrid);
 }
 
 // Initialize the page
@@ -332,12 +254,11 @@ document.addEventListener('DOMContentLoaded', function() {
   setupModalControls();
   setupAssessorSelection();
   setupAssessorAssignment();
-  initFileModal(); // Initialize file modal
-  setupDocumentClickHandlers(); // Setup document click handlers
   
   document.getElementById('backButton')?.addEventListener('click', () => {
-    window.location.href = '/frontend/client/admin/applicants/applicants.html';
+      window.location.href = '/frontend/client/admin/applicants/applicants.html';
   });
+  
   
   // Admin logout
   document.getElementById('logoutLink')?.addEventListener('click', function(e) {
@@ -350,6 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
 
 // Add these functions to ApplicantProfile.js
 
@@ -740,119 +662,3 @@ function updateStatus() {
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
 }
-
-
-
-// Initialize file viewer modal
-function initFileModal() {
-  const modal = document.getElementById('fileModal');
-  if (!modal) return;
-
-  // Close modal when clicking X
-  modal.querySelector('.close-modal').addEventListener('click', () => {
-    modal.style.display = 'none';
-  });
-
-  // Close modal when clicking outside content
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.style.display = 'none';
-    }
-  });
-
-  // Navigation buttons
-  const prevBtn = modal.querySelector('.prev-btn');
-  const nextBtn = modal.querySelector('.next-btn');
-  
-  prevBtn.addEventListener('click', () => {
-    // Implement navigation to previous file if needed
-  });
-  
-  nextBtn.addEventListener('click', () => {
-    // Implement navigation to next file if needed
-  });
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (modal.style.display === 'flex') {
-      if (e.key === 'Escape') {
-        modal.style.display = 'none';
-      }
-      if (e.key === 'ArrowLeft') {
-        prevBtn.click();
-      }
-      if (e.key === 'ArrowRight') {
-        nextBtn.click();
-      }
-    }
-  });
-}
-
-// Set up document click handlers
-function setupDocumentClickHandlers() {
-  document.addEventListener('click', async (e) => {
-    // Handle view button clicks
-    if (e.target.closest('.view-btn')) {
-      e.preventDefault();
-      const fileId = e.target.closest('.view-btn').dataset.fileId;
-      const card = e.target.closest('.document-card');
-      const fileName = card.querySelector('.document-name').textContent;
-      const label = card.closest('.document-section')?.querySelector('h4')?.textContent || '';
-      
-      showFileInModal(fileId, fileName, label);
-    }
-  });
-}
-
-// Helper function to get file icon class
-function getFileIconClass(contentType) {
-  if (!contentType) return 'fa-file';
-  
-  contentType = contentType.toLowerCase();
-  
-  const typeMap = {
-    // Images
-    'image/': 'fa-file-image',
-    
-    // Documents
-    'application/pdf': 'fa-file-pdf',
-    'application/msword': 'fa-file-word',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'fa-file-word',
-    'application/vnd.ms-excel': 'fa-file-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'fa-file-excel',
-    'application/vnd.ms-powerpoint': 'fa-file-powerpoint',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'fa-file-powerpoint',
-    'text/plain': 'fa-file-alt',
-    'text/csv': 'fa-file-csv',
-    
-    // Archives
-    'application/zip': 'fa-file-archive',
-    'application/x-rar-compressed': 'fa-file-archive',
-    
-    // Code
-    'text/html': 'fa-file-code',
-    'application/javascript': 'fa-file-code',
-    'application/json': 'fa-file-code',
-  };
-  
-  for (const [pattern, icon] of Object.entries(typeMap)) {
-    if (contentType.includes(pattern)) {
-      return icon;
-    }
-  }
-  
-  return 'fa-file';
-}
-
-// Helper function to format file size
-function formatFileSize(bytes) {
-  if (!bytes) return 'N/A';
-  
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  if (bytes === 0) return '0 Byte';
-  
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-}
-
-
