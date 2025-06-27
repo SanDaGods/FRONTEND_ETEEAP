@@ -778,6 +778,10 @@ document.addEventListener('DOMContentLoaded', function() {
       showNotification('No applicant ID found in URL', 'error');
     }
   });
+  
+   if (applicantId) {
+    fetchAndDisplayFiles();
+  }
 });
 
 
