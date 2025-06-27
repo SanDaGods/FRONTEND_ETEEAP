@@ -152,16 +152,21 @@ async function viewFile(fileId, sectionFiles) {
 async function fetchAndDisplayFiles() {
   try {
     // Hide empty state and show loading
-    document.getElementById('no-documents').style.display = 'none';
-    document.getElementById('documents-grid').style.display = 'none';
-    document.getElementById('documents-loading').style.display = 'flex';
+    const noDocumentsEl = document.getElementById('no-documents');
+    const documentsGridEl = document.getElementById('documents-grid');
+    const documentsLoadingEl = document.getElementById('documents-loading');
+    
+    if (noDocumentsEl) noDocumentsEl.style.display = 'none';
+    if (documentsGridEl) documentsGridEl.style.display = 'none';
+    if (documentsLoadingEl) documentsLoadingEl.style.display = 'flex';
 
     const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
       credentials: 'include'
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch documents: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
@@ -171,6 +176,8 @@ async function fetchAndDisplayFiles() {
     }
 
     const documentsContainer = document.getElementById('documents-grid');
+    if (!documentsContainer) return;
+    
     documentsContainer.innerHTML = '';
 
     // Get all files as a flat array for the viewer
@@ -221,18 +228,22 @@ async function fetchAndDisplayFiles() {
     });
 
     // Show appropriate state
-    document.getElementById('documents-loading').style.display = 'none';
+    if (documentsLoadingEl) documentsLoadingEl.style.display = 'none';
     if (allFiles.length > 0) {
-      documentsContainer.style.display = 'grid';
+      if (documentsContainer) documentsContainer.style.display = 'grid';
     } else {
-      document.getElementById('no-documents').style.display = 'flex';
+      if (noDocumentsEl) noDocumentsEl.style.display = 'flex';
     }
 
   } catch (error) {
     console.error("Error fetching files:", error);
     showNotification(`Failed to load documents: ${error.message}`, "error");
-    document.getElementById('documents-loading').style.display = 'none';
-    document.getElementById('no-documents').style.display = 'flex';
+    
+    const documentsLoadingEl = document.getElementById('documents-loading');
+    const noDocumentsEl = document.getElementById('no-documents');
+    
+    if (documentsLoadingEl) documentsLoadingEl.style.display = 'none';
+    if (noDocumentsEl) noDocumentsEl.style.display = 'flex';
   }
 }
 
