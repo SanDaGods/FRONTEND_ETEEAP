@@ -364,6 +364,7 @@ function downloadCurrentPdf() {
 // APPLICANT DATA FUNCTIONS
 // ========================
 
+// Update fetchApplicantData function
 async function fetchApplicantData(applicantId) {
     try {
         showLoading();
@@ -375,31 +376,122 @@ async function fetchApplicantData(applicantId) {
         
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
+            if (response.status === 404) {
+                throw new Error("Applicant not found");
+            }
+            throw new Error(`Failed to load applicant data: ${response.status}`);
         }
         
         const data = await response.json();
         
-        if (data.success && data.data) {
-            currentApplicant = data.data;
-            
-            // Ensure we use the real applicantId from the server response
-            if (!currentApplicant.applicantId) {
-                // If for some reason it's missing, fall back to the formatted _id
-                currentApplicant.applicantId = `APP${currentApplicant._id.toString().substring(0, 8).toUpperCase()}`;
-            }
-            
-            updateApplicantProfile(currentApplicant);
-            updateDocumentTables(currentApplicant.files);
-        } else {
+        if (!data.success || !data.data) {
             throw new Error(data.error || 'Failed to load applicant data');
         }
+        
+        currentApplicant = data.data;
+        
+        // Ensure we use the real applicantId from the server response
+        if (!currentApplicant.applicantId) {
+            currentApplicant.applicantId = `APP${currentApplicant._id.toString().substring(0, 8).toUpperCase()}`;
+        }
+        
+        updateApplicantProfile(currentApplicant);
     } catch (error) {
         console.error('Error fetching applicant data:', error);
-        showNotification(`Error loading applicant data: ${error.message}`, 'error');
+        showNotification(`Error: ${error.message}`, 'error');
     } finally {
         hideLoading();
     }
+}
+
+// Update fetchAndDisplayFiles function
+async function fetchAndDisplayFiles() {
+  try {
+    // Show loading state
+    document.getElementById('no-documents').style.display = 'none';
+    document.getElementById('documents-grid').style.display = 'none';
+    document.getElementById('documents-loading').style.display = 'flex';
+
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      const errorMsg = errorData?.error || `Server responded with ${response.status}`;
+      throw new Error(`Failed to fetch documents: ${errorMsg}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch documents');
+    }
+
+    const documentsContainer = document.getElementById('documents-grid');
+    documentsContainer.innerHTML = '';
+
+    // Get all files as a flat array for the viewer
+    const allFiles = Object.values(data.files || {}).flat();
+
+    // Create sections for each file group
+    for (const [label, files] of Object.entries(data.files || {})) {
+      const sectionTitle = getSectionTitle(label);
+      const sectionDiv = document.createElement('div');
+      sectionDiv.className = 'document-section';
+      sectionDiv.innerHTML = `<h4>${sectionTitle}</h4>`;
+      
+      const filesGrid = document.createElement('div');
+      filesGrid.className = 'files-grid';
+      
+      files.forEach(file => {
+        const fileCard = document.createElement('div');
+        fileCard.className = 'file-card';
+        fileCard.innerHTML = `
+          <div class="file-icon">
+            <i class="${getFileIcon(file.contentType)}"></i>
+          </div>
+          <div class="file-info">
+            <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
+            <div class="file-actions">
+              <button class="btn view-btn" data-file-id="${file._id}">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
+                <i class="fas fa-download"></i> Download
+              </a>
+            </div>
+          </div>
+        `;
+        filesGrid.appendChild(fileCard);
+      });
+      
+      sectionDiv.appendChild(filesGrid);
+      documentsContainer.appendChild(sectionDiv);
+    }
+
+    // Set up event listeners for view buttons
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const fileId = e.currentTarget.getAttribute('data-file-id');
+        viewFile(fileId, allFiles);
+      });
+    });
+
+    // Show appropriate state
+    document.getElementById('documents-loading').style.display = 'none';
+    if (allFiles.length > 0) {
+      documentsContainer.style.display = 'grid';
+    } else {
+      document.getElementById('no-documents').style.display = 'flex';
+    }
+
+  } catch (error) {
+    console.error("Error fetching files:", error);
+    showNotification(error.message, "error");
+    document.getElementById('documents-loading').style.display = 'none';
+    document.getElementById('no-documents').style.display = 'flex';
+  }
 }
 
 function updateApplicantProfile(applicant) {
