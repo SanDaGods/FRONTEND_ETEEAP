@@ -160,7 +160,8 @@ async function fetchAndDisplayFiles() {
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch documents: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
@@ -172,18 +173,11 @@ async function fetchAndDisplayFiles() {
     const documentsContainer = document.getElementById('documents-grid');
     documentsContainer.innerHTML = '';
 
-    // Group files by label
-    const groupedFiles = {};
-    data.files.forEach(file => {
-      const label = file.metadata?.label || 'others';
-      if (!groupedFiles[label]) {
-        groupedFiles[label] = [];
-      }
-      groupedFiles[label].push(file);
-    });
+    // Get all files as a flat array for the viewer
+    const allFiles = Object.values(data.files).flat();
 
     // Create sections for each file group
-    for (const [label, files] of Object.entries(groupedFiles)) {
+    for (const [label, files] of Object.entries(data.files)) {
       const sectionTitle = getSectionTitle(label);
       const sectionDiv = document.createElement('div');
       sectionDiv.className = 'document-section';
@@ -200,7 +194,7 @@ async function fetchAndDisplayFiles() {
             <i class="${getFileIcon(file.contentType)}"></i>
           </div>
           <div class="file-info">
-            <p class="file-name" title="${file.filename}">${file.filename}</p>
+            <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
             <div class="file-actions">
               <button class="btn view-btn" data-file-id="${file._id}">
                 <i class="fas fa-eye"></i> View
@@ -222,14 +216,13 @@ async function fetchAndDisplayFiles() {
     document.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const fileId = e.currentTarget.getAttribute('data-file-id');
-        const allFiles = Object.values(groupedFiles).flat();
         viewFile(fileId, allFiles);
       });
     });
 
     // Show appropriate state
     document.getElementById('documents-loading').style.display = 'none';
-    if (data.files.length > 0) {
+    if (allFiles.length > 0) {
       documentsContainer.style.display = 'grid';
     } else {
       document.getElementById('no-documents').style.display = 'flex';
@@ -241,6 +234,12 @@ async function fetchAndDisplayFiles() {
     document.getElementById('documents-loading').style.display = 'none';
     document.getElementById('no-documents').style.display = 'flex';
   }
+}
+
+// Helper function to truncate long file names
+function truncateFileName(filename, maxLength = 30) {
+  if (filename.length <= maxLength) return filename;
+  return filename.substring(0, maxLength) + '...';
 }
 
 // Helper function to map label to section title
