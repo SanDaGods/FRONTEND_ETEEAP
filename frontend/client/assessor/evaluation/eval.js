@@ -149,97 +149,100 @@ async function viewFile(fileId, sectionFiles) {
 }
 
 // Fetch and display user files
-async function fetchAndDisplayFiles(applicantId) {
+async function fetchAndDisplayFiles() {
   try {
-    // Show loading state
+    // Hide empty state and show loading
     document.getElementById('no-documents').style.display = 'none';
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
 
-    console.log(`Fetching documents for applicant: ${applicantId}`);
     const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      }
+      credentials: 'include'
     });
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Backend error:', errorData);
-      throw new Error(errorData.error || `Server returned ${response.status}`);
+      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('Received documents:', data);
     
-    if (!data.success) {
-      throw new Error(data.error || 'Invalid response format');
+    if (!data.success || !data.files) {
+      throw new Error(data.error || 'Failed to fetch documents');
     }
 
-    // Handle case where no files exist
-    if (!data.files || Object.keys(data.files).length === 0) {
-      document.getElementById('documents-loading').style.display = 'none';
+    const documentsContainer = document.getElementById('documents-grid');
+    documentsContainer.innerHTML = '';
+
+    // Get all files as a flat array for the viewer
+    const allFiles = Object.values(data.files).flat();
+
+    // Create sections for each file group
+    for (const [label, files] of Object.entries(data.files)) {
+      const sectionTitle = getSectionTitle(label);
+      const sectionDiv = document.createElement('div');
+      sectionDiv.className = 'document-section';
+      sectionDiv.innerHTML = `<h4>${sectionTitle}</h4>`;
+      
+      const filesGrid = document.createElement('div');
+      filesGrid.className = 'files-grid';
+      
+      files.forEach(file => {
+        const fileCard = document.createElement('div');
+        fileCard.className = 'file-card';
+        fileCard.innerHTML = `
+          <div class="file-icon">
+            <i class="${getFileIcon(file.contentType)}"></i>
+          </div>
+          <div class="file-info">
+            <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
+            <div class="file-actions">
+              <button class="btn view-btn" data-file-id="${file._id}">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
+                <i class="fas fa-download"></i> Download
+              </a>
+            </div>
+          </div>
+        `;
+        filesGrid.appendChild(fileCard);
+      });
+      
+      sectionDiv.appendChild(filesGrid);
+      documentsContainer.appendChild(sectionDiv);
+    }
+
+    // Set up event listeners for view buttons
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const fileId = e.currentTarget.getAttribute('data-file-id');
+        viewFile(fileId, allFiles);
+      });
+    });
+
+    // Show appropriate state
+    document.getElementById('documents-loading').style.display = 'none';
+    if (allFiles.length > 0) {
+      documentsContainer.style.display = 'grid';
+    } else {
       document.getElementById('no-documents').style.display = 'flex';
-      return;
     }
-
-    // Render documents
-    renderDocumentSections(data.files);
 
   } catch (error) {
-    console.error("Document fetch error:", error);
+    console.error("Error fetching files:", error);
     showNotification(`Failed to load documents: ${error.message}`, "error");
     document.getElementById('documents-loading').style.display = 'none';
     document.getElementById('no-documents').style.display = 'flex';
   }
 }
 
-function renderDocumentSections(filesByLabel) {
-  const documentsContainer = document.getElementById('documents-grid');
-  documentsContainer.innerHTML = '';
-  
-  // Convert to flat array for viewer
-  const allFiles = Object.values(filesByLabel).flat();
-  
-  // Update file count
-  const fileCountElement = document.querySelector('.file-count .count-number');
-  if (fileCountElement) {
-    fileCountElement.textContent = allFiles.length;
-  }
-
-  // Create sections
-  for (const [label, files] of Object.entries(filesByLabel)) {
-    const sectionDiv = document.createElement('div');
-    sectionDiv.className = 'document-section';
-    sectionDiv.innerHTML = `<h4>${getSectionTitle(label)}</h4>`;
-    
-    const filesGrid = document.createElement('div');
-    filesGrid.className = 'files-grid';
-    
-    files.forEach(file => {
-      filesGrid.appendChild(createFileCard(file));
-    });
-    
-    sectionDiv.appendChild(filesGrid);
-    documentsContainer.appendChild(sectionDiv);
-  }
-
-  // Set up view buttons
-  setupViewButtons(allFiles);
-  
-  // Show documents
-  document.getElementById('documents-loading').style.display = 'none';
-  documentsContainer.style.display = 'grid';
-}
-
-// Helper function to truncate long file names
+// Helper functions
 function truncateFileName(filename, maxLength = 30) {
   if (filename.length <= maxLength) return filename;
   return filename.substring(0, maxLength) + '...';
 }
 
-// Helper function to map label to section title
 function getSectionTitle(label) {
   const labelMap = {
     "initial-submission": "Initial Submissions",
@@ -252,7 +255,6 @@ function getSectionTitle(label) {
   return labelMap[label] || label;
 }
 
-// Helper function to get appropriate file icon
 function getFileIcon(contentType) {
   if (contentType.startsWith('image/')) return 'fas fa-file-image';
   if (contentType === 'application/pdf') return 'fas fa-file-pdf';
@@ -296,8 +298,7 @@ async function fetchApplicantData(applicantId) {
             }
             
             updateApplicantProfile(currentApplicant);
-            // Fetch and display documents instead of updateDocumentTables
-            fetchAndDisplayFiles(applicantId);
+            updateDocumentTables(currentApplicant.files);
         } else {
             throw new Error(data.error || 'Failed to load applicant data');
         }
@@ -520,11 +521,11 @@ function setupDocumentSearch() {
     if (searchInput) {
         searchInput.addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            const fileCards = document.querySelectorAll('.file-card');
+            const documentRows = document.querySelectorAll('.document-table tbody tr');
             
-            fileCards.forEach(card => {
-                const textContent = card.textContent.toLowerCase();
-                card.style.display = textContent.includes(searchTerm) ? '' : 'none';
+            documentRows.forEach(row => {
+                const textContent = row.textContent.toLowerCase();
+                row.style.display = textContent.includes(searchTerm) ? '' : 'none';
             });
         });
     }
@@ -558,33 +559,36 @@ function showNotification(message, type = "info") {
 // ========================
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize components
-    initializeProfileDropdown();
-    setupDocumentSearch();
-    initializeFileViewer(); // Add this line to initialize the file viewer
+  // Initialize components
+  initializeProfileDropdown();
+  setupDocumentSearch();
+  initializeFileViewer(); // Add this line
 
-    // Load user info and applicant data
-    loadAssessorInfo().then(() => {
-        const applicantId = getApplicantIdFromUrl();
-        if (applicantId) {
-            fetchApplicantData(applicantId);
-            
-            // Update the evaluate button to include both IDs
-            const evaluateBtn = document.querySelector('.evaluate-button');
-            if (evaluateBtn) {
-                evaluateBtn.onclick = function(e) {
-                    e.preventDefault();
-                    fetchApplicantData(applicantId).then(() => {
-                        if (currentApplicant) {
-                            window.location.href = `/frontend/client/assessor/scoring/scoring.html?id=${applicantId}&applicantId=${currentApplicant.applicantId}`;
-                        }
-                    });
-                };
+  // Load user info and applicant data
+  loadAssessorInfo().then(() => {
+    const applicantId = getApplicantIdFromUrl();
+    if (applicantId) {
+      fetchApplicantData(applicantId).then(() => {
+        // Fetch and display documents after applicant data is loaded
+        fetchAndDisplayFiles();
+      });
+      
+      // Update the evaluate button to include both IDs
+      const evaluateBtn = document.querySelector('.evaluate-button');
+      if (evaluateBtn) {
+        evaluateBtn.onclick = function(e) {
+          e.preventDefault();
+          fetchApplicantData(applicantId).then(() => {
+            if (currentApplicant) {
+              window.location.href = `/frontend/client/assessor/scoring/scoring.html?id=${applicantId}&applicantId=${currentApplicant.applicantId}`;
             }
-        } else {
-            showNotification('No applicant ID found in URL', 'error');
-        }
-    });
+          });
+        };
+      }
+    } else {
+      showNotification('No applicant ID found in URL', 'error');
+    }
+  });
 });
 
 
@@ -659,44 +663,10 @@ function goToScoring(applicantId) {
     return id;
   }
 
-  
-
-  // Add this function to get applicant ID from URL
-function getApplicantIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id') || urlParams.get('applicantId');
-}
-
-// Add these dummy functions to satisfy the global references
-function viewDocument() {
-    console.log("View document function called");
-}
-
-function downloadDocument() {
-    console.log("Download document function called");
-}
-
-function closePdfModal() {
-    const modal = document.getElementById("fileModal");
-    if (modal) modal.style.display = "none";
-}
-
-function downloadCurrentPdf() {
-    if (currentFiles.length > 0 && currentFileIndex >= 0) {
-        const file = currentFiles[currentFileIndex];
-        const downloadLink = document.createElement('a');
-        downloadLink.href = `${API_BASE_URL}/api/fetch-documents/${file._id}`;
-        downloadLink.download = file.filename;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    }
-}
-
 // Make functions available globally
 window.toggleCategory = toggleCategory;
-window.viewDocument = viewFile; // Use our actual viewFile function
-window.downloadDocument = downloadCurrentPdf;
+window.viewDocument = viewDocument;
+window.downloadDocument = downloadDocument;
 window.closePdfModal = closePdfModal;
 window.downloadCurrentPdf = downloadCurrentPdf;
 window.handleLogout = handleLogout;
