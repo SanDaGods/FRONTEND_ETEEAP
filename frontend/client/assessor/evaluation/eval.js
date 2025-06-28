@@ -177,6 +177,12 @@ async function fetchAndDisplayFiles(applicantId) {
     // Get all files as a flat array for the viewer
     const allFiles = Object.values(data.files).flat();
 
+    // Update file count
+    const fileCountElement = document.querySelector('.file-count .count-number');
+    if (fileCountElement) {
+        fileCountElement.textContent = allFiles.length;
+    }
+
     // Create sections for each file group
     for (const [label, files] of Object.entries(data.files)) {
       const sectionTitle = getSectionTitle(label);
@@ -524,11 +530,11 @@ function setupDocumentSearch() {
     if (searchInput) {
         searchInput.addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            const documentRows = document.querySelectorAll('.document-table tbody tr');
+            const fileCards = document.querySelectorAll('.file-card');
             
-            documentRows.forEach(row => {
-                const textContent = row.textContent.toLowerCase();
-                row.style.display = textContent.includes(searchTerm) ? '' : 'none';
+            fileCards.forEach(card => {
+                const textContent = card.textContent.toLowerCase();
+                card.style.display = textContent.includes(searchTerm) ? '' : 'none';
             });
         });
     }
@@ -663,10 +669,44 @@ function goToScoring(applicantId) {
     return id;
   }
 
+  
+
+  // Add this function to get applicant ID from URL
+function getApplicantIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id') || urlParams.get('applicantId');
+}
+
+// Add these dummy functions to satisfy the global references
+function viewDocument() {
+    console.log("View document function called");
+}
+
+function downloadDocument() {
+    console.log("Download document function called");
+}
+
+function closePdfModal() {
+    const modal = document.getElementById("fileModal");
+    if (modal) modal.style.display = "none";
+}
+
+function downloadCurrentPdf() {
+    if (currentFiles.length > 0 && currentFileIndex >= 0) {
+        const file = currentFiles[currentFileIndex];
+        const downloadLink = document.createElement('a');
+        downloadLink.href = `${API_BASE_URL}/api/fetch-documents/${file._id}`;
+        downloadLink.download = file.filename;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+}
+
 // Make functions available globally
 window.toggleCategory = toggleCategory;
-window.viewDocument = viewDocument;
-window.downloadDocument = downloadDocument;
+window.viewDocument = viewFile; // Use our actual viewFile function
+window.downloadDocument = downloadCurrentPdf;
 window.closePdfModal = closePdfModal;
 window.downloadCurrentPdf = downloadCurrentPdf;
 window.handleLogout = handleLogout;
