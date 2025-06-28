@@ -30,8 +30,6 @@
           Applicants
         </a>
       </div>
-      
-      
     </div>
 
     <!--Main Content-->
@@ -70,7 +68,6 @@
             <!-- Profile card content -->
             <div class="profile-picture">
               <img id="profile-img" src="/images/profile.png" alt="Profile Picture" />
-              <input type="file" id="upload-img" accept="image/*">
             </div>
 
             <div class="profile-details">
@@ -93,8 +90,8 @@
                   <p><strong>Applied on: Loading...</strong></p>
               </div>
           </div>
-
           </div>
+          
           <!-- Buttons outside the left card -->
           <div class="action-buttons">
             <button onclick="window.location.href='/frontend/assessor/scoring/scoring.html';" class="evaluate-button">
@@ -116,296 +113,28 @@
                 <input type="search" id="search-input" class="search-input" placeholder="Search documents..." />
               </div>
               <div class="file-count">
-                <span class="count-number">24</span> files
+                <span class="count-number">0</span> files
               </div>
             </div>
+          </div>
+
+          <!-- Document Loading State -->
+          <div id="documents-loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading documents...</p>
+          </div>
+
+          <!-- Document Empty State -->
+          <div id="no-documents" class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>No documents submitted yet</p>
           </div>
 
           <!-- Document Categories - Accordion Style -->
-          <div class="portfolio-accordion">
-            <!-- Initial Submissions -->
-            <div class="portfolio-category">
-              <div class="category-header" onclick="toggleCategory('initial-submissions')">
-                <div class="category-title">
-                  <i class="fas fa-folder-open"></i>
-                  <span>Initial Submissions</span>
-                </div>
-                <div class="category-meta">
-                  <span class="file-count">7 files</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div class="category-content" id="initial-submissions">
-                <table class="document-table">
-                  <thead>
-                    <tr>
-                      <th>Document</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <i class="fas fa-file-pdf"></i>
-                        Diploma.pdf
-                      </td>
-                      <td><span class="status-badge status-viewed">Reviewed</span></td>
-                      <td>2023-10-01</td>
-                      <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="ETEEAP-APPLICATION-FORM1.pdf">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="ETEEAP-APPLICATION-FORM1.pdf">
-                          <i class="fas fa-download"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <i class="fas fa-file-pdf"></i>
-                        Certificate1.pdf
-                      </td>
-                      <td><span class="status-badge status-viewed">Reviewed</span></td>
-                      <td>2023-10-01</td>
-                      <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="ETEEAP-Acknowledgement-Form.pdf">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="ETEEAP-Acknowledgement-Form.pdf">
-                          <i class="fas fa-download"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Updated Resume/CV -->
-            <div class="portfolio-category">
-              <div class="category-header" onclick="toggleCategory('resume-cv')">
-                <div class="category-title">
-                  <i class="fas fa-file-alt"></i>
-                  <span>Resume/CV</span>
-                </div>
-                <div class="category-meta">
-                  <span class="file-count">3 files</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div class="category-content" id="resume-cv">
-                <table class="document-table">
-                  <thead>
-                    <tr>
-                      <th>Document</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <i class="fas fa-file-word"></i>
-                        Resume_2023.docx
-                      </td>
-                      <td><span class="status-badge status-pending">Pending Review</span></td>
-                      <td>2023-11-15</td>
-                      <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="Resume_2023.docx">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="Resume_2023.docx">
-                          <i class="fas fa-download"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Certificate of Training -->
-            <div class="portfolio-category">
-              <div class="category-header" onclick="toggleCategory('training-certs')">
-                <div class="category-title">
-                  <i class="fas fa-certificate"></i>
-                  <span>Training Certificates</span>
-                </div>
-                <div class="category-meta">
-                  <span class="file-count">5 files</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div class="category-content" id="training-certs">
-                <table class="document-table">
-                  <thead>
-                    <tr>
-                      <th>Document</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <i class="fas fa-file-pdf"></i>
-                        AWS_Certification.pdf
-                      </td>
-                      <td><span class="status-badge status-approved">Approved</span></td>
-                      <td>2022-08-10</td>
-                      <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="AWS_Certification.pdf">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="AWS_Certification.pdf">
-                          <i class="fas fa-download"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Awards -->
-            <div class="portfolio-category">
-              <div class="category-header" onclick="toggleCategory('awards')">
-                <div class="category-title">
-                  <i class="fas fa-trophy"></i>
-                  <span>Awards</span>
-                </div>
-                <div class="category-meta">
-                  <span class="file-count">4 files</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div class="category-content" id="awards">
-                <table class="document-table">
-                  <thead>
-                    <tr>
-                      <th>Document</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <i class="fas fa-file-pdf"></i>
-                        Best_Employee_2022.pdf
-                      </td>
-                      <td><span class="status-badge status-approved">Approved</span></td>
-                      <td>2022-12-15</td>
-                      <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="Best_Employee_2022.pdf">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="Best_Employee_2022.pdf">
-                          <i class="fas fa-download"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Interview Form -->
-            <div class="portfolio-category">
-              <div class="category-header" onclick="toggleCategory('interview')">
-                <div class="category-title">
-                  <i class="fas fa-clipboard-list"></i>
-                  <span>Interview Form</span>
-                </div>
-                <div class="category-meta">
-                  <span class="file-count">1 file</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div class="category-content" id="interview">
-                <table class="document-table">
-                  <thead>
-                    <tr>
-                      <th>Document</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <i class="fas fa-file-pdf"></i>
-                        Interview_Assessment.pdf
-                      </td>
-                      <td><span class="status-badge status-pending">Pending Review</span></td>
-                      <td>2023-12-05</td>
-                      <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="Interview_Assessment.pdf">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="Interview_Assessment.pdf">
-                          <i class="fas fa-download"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Others -->
-            <div class="portfolio-category">
-              <div class="category-header" onclick="toggleCategory('others')">
-                <div class="category-title">
-                  <i class="fas fa-ellipsis-h"></i>
-                  <span>Other Documents</span>
-                </div>
-                <div class="category-meta">
-                  <span class="file-count">4 files</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-              </div>
-              <div class="category-content" id="others">
-                <table class="document-table">
-                  <thead>
-                    <tr>
-                      <th>Document</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <i class="fas fa-file-pdf"></i>
-                        Recommendation_Letter.pdf
-                      </td>
-                      <td><span class="status-badge status-viewed">Reviewed</span></td>
-                      <td>2023-09-20</td>
-                      <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="Recommendation_Letter.pdf">
-                          <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="Recommendation_Letter.pdf">
-                          <i class="fas fa-download"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div class="portfolio-accordion" id="documents-grid">
+            <!-- Sections will be populated by JavaScript -->
           </div>
-          
         </div>
-
       </div>
     </div>
   </div>
@@ -415,18 +144,38 @@
     <div class="spinner"></div>
   </div>
 
-  <!-- PDF Viewer Modal -->
-  <div class="pdf-viewer-modal" id="pdfViewerModal">
-    <div class="pdf-viewer-content">
-      <div class="pdf-viewer-header">
-        <h3 id="pdfModalTitle">Document Viewer</h3>
-        <button class="pdf-close-btn" onclick="closePdfModal()">&times;</button>
+  <!-- File Viewer Modal -->
+  <div class="file-modal" id="fileModal">
+    <div class="file-modal-content">
+      <div class="file-modal-header">
+        <span class="close-modal">&times;</span>
+        <h3 id="fileName">Document Viewer</h3>
+        <div class="file-nav">
+          <span id="currentFileText">File 1 of 1</span>
+          <div class="file-nav-buttons">
+            <button class="nav-btn prev-btn" disabled>
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <button class="nav-btn next-btn" disabled>
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
       </div>
-      <iframe class="pdf-viewer-body" id="pdfViewerFrame"></iframe>
-      <div class="pdf-viewer-footer">
-        <button class="pdf-download-btn" onclick="downloadCurrentPdf()">
+      <div class="file-modal-body">
+        <iframe id="fileViewer" style="display: none;"></iframe>
+        <img id="imageViewer" style="display: none;">
+        <div id="fileFallback" style="display: none;">
+          <p>This file type cannot be displayed in the browser.</p>
+          <a id="downloadFallback" class="download-btn" download>
+            <i class="fas fa-download"></i> Download File
+          </a>
+        </div>
+      </div>
+      <div class="file-modal-footer">
+        <a id="downloadCurrentFile" class="download-btn" download>
           <i class="fas fa-download"></i> Download
-        </button>
+        </a>
       </div>
     </div>
   </div>
