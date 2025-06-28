@@ -1,7 +1,6 @@
 const DOCUMENTS_BASE_PATH = "/documents/";
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 
-
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 const ALLOWED_TYPES = [
   "application/pdf",
@@ -79,7 +78,7 @@ async function showFile(index) {
     fileName.textContent = `Loading ${file.filename}...`;
 
     // Fetch the file
-    const response = await fetch(`${API_BASE_URL}/api/assessor/applicant-documents/${file._id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${file._id}`, {
       credentials: 'include'
     });
     
@@ -157,7 +156,7 @@ async function fetchAndDisplayFiles(applicantId) {
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
 
-    const response = await fetch(`${API_BASE_URL}/api/assessor/applicant-documents/${applicantId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
       credentials: 'include'
     });
     
@@ -201,7 +200,7 @@ async function fetchAndDisplayFiles(applicantId) {
               <button class="btn view-btn" data-file-id="${file._id}">
                 <i class="fas fa-eye"></i> View
               </button>
-              <a href="${API_BASE_URL}/api/assessor/applicant-documents/${file._id}" download="${file.filename}" class="btn download-btn">
+              <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
                 <i class="fas fa-download"></i> Download
               </a>
             </div>
@@ -226,11 +225,6 @@ async function fetchAndDisplayFiles(applicantId) {
     document.getElementById('documents-loading').style.display = 'none';
     if (allFiles.length > 0) {
       documentsContainer.style.display = 'grid';
-      // Update file count
-      const fileCountElement = document.querySelector('.file-count .count-number');
-      if (fileCountElement) {
-        fileCountElement.textContent = allFiles.length;
-      }
     } else {
       document.getElementById('no-documents').style.display = 'flex';
     }
@@ -306,7 +300,8 @@ async function fetchApplicantData(applicantId) {
             }
             
             updateApplicantProfile(currentApplicant);
-            fetchAndDisplayFiles(applicantId); // Add this line to fetch documents
+            // Fetch and display documents instead of updateDocumentTables
+            fetchAndDisplayFiles(applicantId);
         } else {
             throw new Error(data.error || 'Failed to load applicant data');
         }
@@ -570,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize components
     initializeProfileDropdown();
     setupDocumentSearch();
-    initializeFileViewer(); // Add this line
+    initializeFileViewer(); // Add this line to initialize the file viewer
 
     // Load user info and applicant data
     loadAssessorInfo().then(() => {
