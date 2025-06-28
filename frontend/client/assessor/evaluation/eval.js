@@ -153,7 +153,7 @@ async function viewFile(fileId, sectionFiles) {
 // Fetch and display user files
 async function fetchAndDisplayFiles(applicantId) {
   try {
-    // Hide empty state and show loading
+    // Show loading state
     document.getElementById('no-documents').style.display = 'none';
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
@@ -162,16 +162,16 @@ async function fetchAndDisplayFiles(applicantId) {
       credentials: 'include'
     });
     
+    console.log("Response status:", response.status); // Debug
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error("Error details:", errorData); // Debug
       throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
-    
-    if (!data.success || !data.files) {
-      throw new Error(data.error || 'Failed to fetch documents');
-    }
+    console.log("Response data:", data); // Debug
 
     const documentsContainer = document.getElementById('documents-grid');
     documentsContainer.innerHTML = '';
@@ -232,7 +232,7 @@ async function fetchAndDisplayFiles(applicantId) {
     }
 
   } catch (error) {
-    console.error("Error fetching files:", error);
+    console.error("Detailed error:", error); // More detailed logging
     showNotification(`Failed to load documents: ${error.message}`, "error");
     document.getElementById('documents-loading').style.display = 'none';
     document.getElementById('no-documents').style.display = 'flex';
