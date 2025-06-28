@@ -156,16 +156,19 @@ async function fetchAndDisplayFiles(applicantId) {
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
 
+    console.log(`Fetching documents for applicant: ${applicantId}`); // Debug log
     const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
       credentials: 'include'
     });
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('Error response:', errorData); // Debug log
       throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('Documents data:', data); // Debug log
     
     if (!data.success || !data.files) {
       throw new Error(data.error || 'Failed to fetch documents');
@@ -236,7 +239,7 @@ async function fetchAndDisplayFiles(applicantId) {
     }
 
   } catch (error) {
-    console.error("Error fetching files:", error);
+    console.error("Full error details:", error); // More detailed error logging
     showNotification(`Failed to load documents: ${error.message}`, "error");
     document.getElementById('documents-loading').style.display = 'none';
     document.getElementById('no-documents').style.display = 'flex';
