@@ -13,6 +13,8 @@ const ALLOWED_TYPES = [
 // File viewer state
 let currentFiles = [];
 let currentFileIndex = 0;
+let currentApplicant = null;
+let currentUser = null;
 
 // Initialize the file viewer modal
 function initializeFileViewer() {
@@ -149,7 +151,7 @@ async function viewFile(fileId, sectionFiles) {
 }
 
 // Fetch and display user files
-async function fetchAndDisplayFiles() {
+async function fetchAndDisplayFiles(applicantId) {
   try {
     // Hide empty state and show loading
     document.getElementById('no-documents').style.display = 'none';
@@ -262,11 +264,11 @@ function getFileIcon(contentType) {
   return 'fas fa-file';
 }
 
-let currentPdfUrl = '';
-let currentUser = null;
-let currentApplicant = null;
-
-
+// Get applicant ID from URL
+function getApplicantIdFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('id');
+}
 
 // ========================
 // APPLICANT DATA FUNCTIONS
@@ -298,7 +300,7 @@ async function fetchApplicantData(applicantId) {
             }
             
             updateApplicantProfile(currentApplicant);
-            updateDocumentTables(currentApplicant.files);
+            fetchAndDisplayFiles(applicantId); // Load documents after profile is updated
         } else {
             throw new Error(data.error || 'Failed to load applicant data');
         }
@@ -361,7 +363,6 @@ function updateApplicantProfile(applicant) {
     }
 }
 
-
 function formatStatus(status) {
     if (!status) return 'Pending';
     return status.split('_')
@@ -383,7 +384,6 @@ function formatDate(dateString) {
         return 'N/A';
     }
 }
-
 
 // ========================
 // AUTHENTICATION FUNCTIONS
@@ -562,16 +562,13 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize components
   initializeProfileDropdown();
   setupDocumentSearch();
-  initializeFileViewer(); // Add this line
+  initializeFileViewer();
 
   // Load user info and applicant data
   loadAssessorInfo().then(() => {
     const applicantId = getApplicantIdFromUrl();
     if (applicantId) {
-      fetchApplicantData(applicantId).then(() => {
-        // Fetch and display documents after applicant data is loaded
-        fetchAndDisplayFiles();
-      });
+      fetchApplicantData(applicantId);
       
       // Update the evaluate button to include both IDs
       const evaluateBtn = document.querySelector('.evaluate-button');
@@ -591,8 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-
-// In eval.js - Add this to the initialization section
+// Reject applicant handler
 document.getElementById('rejectBtn')?.addEventListener('click', async () => {
     if (!currentApplicant?._id) {
         showNotification('No applicant selected', 'error');
@@ -625,48 +621,7 @@ document.getElementById('rejectBtn')?.addEventListener('click', async () => {
     }
 });
 
-
-// Add this to eval.js (in the initialization section)
-document.querySelector('.evaluate-button')?.addEventListener('click', function(e) {
-    e.preventDefault();
-    
-    if (!currentApplicant) {
-        showNotification('No applicant data loaded', 'error');
-        return;
-    }
-    
-    // Use the real applicantId from the currentApplicant object
-    window.location.href = `/frontend/client/assessor/scoring/scoring.html?id=${currentApplicant._id}&applicantId=${currentApplicant.applicantId}`;
-});
-
-
-function goToScoring(applicantId) {
-    sessionStorage.setItem('currentScoringApplicant', applicantId);
-    window.location.href = `scoring.html?id=${applicantId}`;
-  }
-  
-  // In Scoring.js:
-  function getApplicantIdFromVariousSources() {
-    // 1. URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    let id = urlParams.get('id');
-    
-    // 2. Session storage
-    if (!id) id = sessionStorage.getItem('currentScoringApplicant');
-    
-    // 3. Hash params
-    if (!id && window.location.hash) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      id = hashParams.get('applicantId');
-    }
-    
-    return id;
-  }
-
 // Make functions available globally
 window.toggleCategory = toggleCategory;
-window.viewDocument = viewDocument;
-window.downloadDocument = downloadDocument;
-window.closePdfModal = closePdfModal;
-window.downloadCurrentPdf = downloadCurrentPdf;
+window.viewFile = viewFile;
 window.handleLogout = handleLogout;
