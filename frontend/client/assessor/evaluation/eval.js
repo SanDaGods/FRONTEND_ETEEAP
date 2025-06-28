@@ -151,99 +151,86 @@ async function viewFile(fileId, sectionFiles) {
 // Fetch and display user files
 async function fetchAndDisplayFiles(applicantId) {
   try {
-    // Hide empty state and show loading
+    // Show loading state
     document.getElementById('no-documents').style.display = 'none';
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
 
-    console.log(`Fetching documents for applicant: ${applicantId}`); // Debug log
+    console.log(`Fetching documents for applicant: ${applicantId}`);
     const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Error response:', errorData); // Debug log
-      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
+      console.error('Backend error:', errorData);
+      throw new Error(errorData.error || `Server returned ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('Documents data:', data); // Debug log
+    console.log('Received documents:', data);
     
-    if (!data.success || !data.files) {
-      throw new Error(data.error || 'Failed to fetch documents');
+    if (!data.success) {
+      throw new Error(data.error || 'Invalid response format');
     }
 
-    const documentsContainer = document.getElementById('documents-grid');
-    documentsContainer.innerHTML = '';
-
-    // Get all files as a flat array for the viewer
-    const allFiles = Object.values(data.files).flat();
-
-    // Update file count
-    const fileCountElement = document.querySelector('.file-count .count-number');
-    if (fileCountElement) {
-        fileCountElement.textContent = allFiles.length;
-    }
-
-    // Create sections for each file group
-    for (const [label, files] of Object.entries(data.files)) {
-      const sectionTitle = getSectionTitle(label);
-      const sectionDiv = document.createElement('div');
-      sectionDiv.className = 'document-section';
-      sectionDiv.innerHTML = `<h4>${sectionTitle}</h4>`;
-      
-      const filesGrid = document.createElement('div');
-      filesGrid.className = 'files-grid';
-      
-      files.forEach(file => {
-        const fileCard = document.createElement('div');
-        fileCard.className = 'file-card';
-        fileCard.innerHTML = `
-          <div class="file-icon">
-            <i class="${getFileIcon(file.contentType)}"></i>
-          </div>
-          <div class="file-info">
-            <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
-            <div class="file-actions">
-              <button class="btn view-btn" data-file-id="${file._id}">
-                <i class="fas fa-eye"></i> View
-              </button>
-              <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
-                <i class="fas fa-download"></i> Download
-              </a>
-            </div>
-          </div>
-        `;
-        filesGrid.appendChild(fileCard);
-      });
-      
-      sectionDiv.appendChild(filesGrid);
-      documentsContainer.appendChild(sectionDiv);
-    }
-
-    // Set up event listeners for view buttons
-    document.querySelectorAll('.view-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const fileId = e.currentTarget.getAttribute('data-file-id');
-        viewFile(fileId, allFiles);
-      });
-    });
-
-    // Show appropriate state
-    document.getElementById('documents-loading').style.display = 'none';
-    if (allFiles.length > 0) {
-      documentsContainer.style.display = 'grid';
-    } else {
+    // Handle case where no files exist
+    if (!data.files || Object.keys(data.files).length === 0) {
+      document.getElementById('documents-loading').style.display = 'none';
       document.getElementById('no-documents').style.display = 'flex';
+      return;
     }
+
+    // Render documents
+    renderDocumentSections(data.files);
 
   } catch (error) {
-    console.error("Full error details:", error); // More detailed error logging
+    console.error("Document fetch error:", error);
     showNotification(`Failed to load documents: ${error.message}`, "error");
     document.getElementById('documents-loading').style.display = 'none';
     document.getElementById('no-documents').style.display = 'flex';
   }
+}
+
+function renderDocumentSections(filesByLabel) {
+  const documentsContainer = document.getElementById('documents-grid');
+  documentsContainer.innerHTML = '';
+  
+  // Convert to flat array for viewer
+  const allFiles = Object.values(filesByLabel).flat();
+  
+  // Update file count
+  const fileCountElement = document.querySelector('.file-count .count-number');
+  if (fileCountElement) {
+    fileCountElement.textContent = allFiles.length;
+  }
+
+  // Create sections
+  for (const [label, files] of Object.entries(filesByLabel)) {
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'document-section';
+    sectionDiv.innerHTML = `<h4>${getSectionTitle(label)}</h4>`;
+    
+    const filesGrid = document.createElement('div');
+    filesGrid.className = 'files-grid';
+    
+    files.forEach(file => {
+      filesGrid.appendChild(createFileCard(file));
+    });
+    
+    sectionDiv.appendChild(filesGrid);
+    documentsContainer.appendChild(sectionDiv);
+  }
+
+  // Set up view buttons
+  setupViewButtons(allFiles);
+  
+  // Show documents
+  document.getElementById('documents-loading').style.display = 'none';
+  documentsContainer.style.display = 'grid';
 }
 
 // Helper function to truncate long file names
