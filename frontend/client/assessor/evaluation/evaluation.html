@@ -145,40 +145,40 @@
   </div>
 
   <!-- File Viewer Modal -->
-  <div class="file-modal" id="fileModal">
-    <div class="file-modal-content">
-      <div class="file-modal-header">
-        <span class="close-modal">&times;</span>
-        <h3 id="fileName">Document Viewer</h3>
-        <div class="file-nav">
-          <span id="currentFileText">File 1 of 1</span>
-          <div class="file-nav-buttons">
-            <button class="nav-btn prev-btn" disabled>
-              <i class="fas fa-chevron-left"></i> Previous
-            </button>
-            <button class="nav-btn next-btn" disabled>
-              Next <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
+ <div class="file-modal" id="fileModal">
+  <div class="file-modal-content">
+    <div class="file-modal-header">
+      <span class="close-modal">&times;</span>
+      <h3 id="fileName">Document Viewer</h3>
+      <div class="file-nav">
+        <span id="currentFileText">File 1 of 1</span>
+        <div class="file-nav-buttons">
+          <button class="nav-btn prev-btn" disabled>
+            <i class="fas fa-chevron-left"></i> Previous
+          </button>
+          <button class="nav-btn next-btn" disabled>
+            Next <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
       </div>
-      <div class="file-modal-body">
-        <iframe id="fileViewer" style="display: none;"></iframe>
-        <img id="imageViewer" style="display: none;">
-        <div id="fileFallback" style="display: none;">
-          <p>This file type cannot be displayed in the browser.</p>
-          <a id="downloadFallback" class="download-btn" download>
-            <i class="fas fa-download"></i> Download File
-          </a>
-        </div>
-      </div>
-      <div class="file-modal-footer">
-        <a id="downloadCurrentFile" class="download-btn" download>
-          <i class="fas fa-download"></i> Download
+    </div>
+    <div class="file-modal-body">
+      <iframe id="fileViewer" style="display: none;"></iframe>
+      <img id="imageViewer" style="display: none;">
+      <div id="fileFallback" style="display: none;">
+        <p>This file type cannot be displayed in the browser.</p>
+        <a id="downloadFallback" class="download-btn" download>
+          <i class="fas fa-download"></i> Download File
         </a>
       </div>
     </div>
+    <div class="file-modal-footer">
+      <a id="downloadCurrentFile" class="download-btn" download>
+        <i class="fas fa-download"></i> Download
+      </a>
+    </div>
   </div>
+</div>
 
   <script type="module" src="../../shared/js/auth.js"></script>
   <script src="eval.js"></script>

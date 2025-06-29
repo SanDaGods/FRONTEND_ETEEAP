@@ -3,6 +3,7 @@ const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 let currentPdfUrl = '';
 let currentUser = null;
 let currentApplicant = null;
+let applicantId;
 
 // Add these constants at the top of eval.js
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
@@ -384,6 +385,31 @@ function formatDate(dateString) {
     }
 }
 
+async function downloadDocument(fileId, filename) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/assessor/fetch-documents/${fileId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to download file: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'document';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error downloading document:', error);
+    showNotification(`Failed to download document: ${error.message}`, 'error');
+  }
+}
+
 // Update the updateDocumentTables function
 function updateDocumentTables(files = []) {
     // Group files by category
@@ -411,16 +437,16 @@ function updateDocumentTables(files = []) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
-                        <i class="fas ${getFileIcon(fileName)}"></i>
+                        <i class="fas ${getFileIcon(file.contentType || fileName)}"></i>
                         ${fileName}
                     </td>
                     <td><span class="status-badge ${statusClass}">${file.status || 'Pending Review'}</span></td>
                     <td>${uploadDate}</td>
                     <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="${file.path || file.filename}">
+                        <button class="action-btn view-btn" title="View" data-file-id="${file._id}">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="${file.path || file.filename}">
+                        <button class="action-btn download-btn" title="Download" data-file-id="${file._id}" data-filename="${fileName}">
                             <i class="fas fa-download"></i>
                         </button>
                     </td>
@@ -442,15 +468,16 @@ function updateDocumentTables(files = []) {
     // Reattach event listeners
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const filePath = e.currentTarget.getAttribute('data-filepath');
-            viewDocument(filePath);
+            const fileId = e.currentTarget.getAttribute('data-file-id');
+            viewFile(fileId, Object.values(filesByCategory).flat());
         });
     });
 
     document.querySelectorAll('.download-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const filePath = e.currentTarget.getAttribute('data-filepath');
-            downloadDocument(filePath);
+            const fileId = e.currentTarget.getAttribute('data-file-id');
+            const filename = e.currentTarget.getAttribute('data-filename');
+            downloadDocument(fileId, filename);
         });
     });
 }
@@ -671,15 +698,15 @@ function showNotification(message, type = "info") {
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize components
   initializeProfileDropdown();
-  initializeFileViewer(); // Add this line
+  initializeFileViewer();
   setupDocumentSearch();
 
   // Load user info and applicant data
   loadAssessorInfo().then(() => {
-    const applicantId = getApplicantIdFromUrl();
+    applicantId = getApplicantIdFromUrl(); // Set the global applicantId
     if (applicantId) {
       fetchApplicantData(applicantId);
-      fetchAndDisplayFiles(); // Add this line to load documents
+      fetchAndDisplayFiles();
       
       // Update the evaluate button to include both IDs
       const evaluateBtn = document.querySelector('.evaluate-button');
@@ -773,5 +800,4 @@ function goToScoring(applicantId) {
 
 // Make functions available globally
 window.toggleCategory = toggleCategory;
-window.downloadDocument = downloadDocument;
 window.handleLogout = handleLogout;
