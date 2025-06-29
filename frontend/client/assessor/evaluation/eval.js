@@ -5,224 +5,6 @@ let currentPdfUrl = '';
 let currentUser = null;
 let currentApplicant = null;
 
-// ========================
-// DOCUMENT FUNCTIONS
-// ========================
-
-function updateDocumentTables(files) {
-    if (!files || files.length === 0) {
-        document.getElementById('no-documents').style.display = 'block';
-        document.getElementById('documents-grid').style.display = 'none';
-        return;
-    }
-
-    document.getElementById('no-documents').style.display = 'none';
-    const documentsGrid = document.getElementById('documents-grid');
-    documentsGrid.innerHTML = '';
-    documentsGrid.style.display = 'block';
-
-    // Group files by category/label
-    const filesByCategory = {};
-    files.forEach(file => {
-        const category = file.label || 'Other Documents';
-        if (!filesByCategory[category]) {
-            filesByCategory[category] = [];
-        }
-        filesByCategory[category].push(file);
-    });
-
-    // Create a category section for each group
-    Object.keys(filesByCategory).forEach(category => {
-        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-        
-        // Create category header
-        const categoryHeader = document.createElement('div');
-        categoryHeader.className = 'category-header';
-        categoryHeader.innerHTML = `
-            <div class="category-title">
-                <i class="fas fa-folder"></i>
-                <span>${category}</span>
-            </div>
-            <div class="category-meta">
-                <span>${filesByCategory[category].length} files</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-        `;
-        categoryHeader.onclick = () => toggleCategory(categoryId);
-
-        // Create category content
-        const categoryContent = document.createElement('div');
-        categoryContent.className = 'category-content';
-        categoryContent.id = categoryId;
-        
-        // Create table for documents
-        const table = document.createElement('table');
-        table.className = 'document-table';
-        table.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Document Name</th>
-                    <th>Type</th>
-                    <th>Date Uploaded</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${filesByCategory[category].map(file => `
-                    <tr>
-                        <td>
-                            <i class="${getFileIcon(file.filename)}"></i>
-                            ${file.originalName || file.filename}
-                        </td>
-                        <td>${getFileType(file.filename)}</td>
-                        <td>${formatDate(file.uploadDate)}</td>
-                        <td>
-                            <button class="action-btn view-btn" onclick="viewDocument('${file._id}', '${file.filename}')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="action-btn download-btn" onclick="downloadDocument('${file._id}', '${file.filename}')">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        `;
-
-        categoryContent.appendChild(table);
-        
-        // Create category container
-        const categoryContainer = document.createElement('div');
-        categoryContainer.className = 'portfolio-category';
-        categoryContainer.appendChild(categoryHeader);
-        categoryContainer.appendChild(categoryContent);
-        
-        documentsGrid.appendChild(categoryContainer);
-    });
-}
-
-function getFileIcon(filename) {
-    const extension = filename.split('.').pop().toLowerCase();
-    switch(extension) {
-        case 'pdf':
-            return 'fas fa-file-pdf';
-        case 'doc':
-        case 'docx':
-            return 'fas fa-file-word';
-        case 'xls':
-        case 'xlsx':
-            return 'fas fa-file-excel';
-        case 'jpg':
-        case 'jpeg':
-        case 'png':
-        case 'gif':
-            return 'fas fa-file-image';
-        default:
-            return 'fas fa-file';
-    }
-}
-
-function getFileType(filename) {
-    const extension = filename.split('.').pop().toUpperCase();
-    return `${extension} File`;
-}
-
-async function viewDocument(fileId, filename) {
-    try {
-        showLoading();
-        const fileUrl = `${API_BASE_URL}/api/assessor/documents/${fileId}`;
-        
-        // Set the current PDF URL for download
-        currentPdfUrl = fileUrl;
-        
-        // Check if it's a PDF or image
-        const extension = filename.split('.').pop().toLowerCase();
-        const isPdf = extension === 'pdf';
-        const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension);
-        
-        const modal = document.getElementById('fileModal');
-        const iframe = document.getElementById('fileViewer');
-        const imageViewer = document.getElementById('imageViewer');
-        const fallbackViewer = document.getElementById('fileFallback');
-        const downloadFallback = document.getElementById('downloadFallback');
-        const fileNameDisplay = document.getElementById('fileName');
-        
-        // Reset all viewers
-        iframe.style.display = 'none';
-        imageViewer.style.display = 'none';
-        fallbackViewer.style.display = 'none';
-        
-        fileNameDisplay.textContent = filename;
-        
-        if (isPdf) {
-            // Display PDF
-            iframe.src = fileUrl;
-            iframe.style.display = 'block';
-        } else if (isImage) {
-            // Display image
-            imageViewer.src = fileUrl;
-            imageViewer.style.display = 'block';
-        } else {
-            // Fallback for other file types
-            fallbackViewer.style.display = 'block';
-            downloadFallback.href = fileUrl;
-            downloadFallback.download = filename;
-        }
-        
-        // Show the modal
-        modal.style.display = 'flex';
-        
-        // Set up modal close button
-        document.querySelector('.close-modal').onclick = () => closePdfModal();
-    } catch (error) {
-        console.error('Error viewing document:', error);
-        showNotification(`Error viewing document: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-async function downloadDocument(fileId, filename) {
-    try {
-        showLoading();
-        const fileUrl = `${API_BASE_URL}/api/assessor/documents/${fileId}`;
-        
-        // Create a temporary anchor element to trigger download
-        const a = document.createElement('a');
-        a.href = fileUrl;
-        a.download = filename || 'document';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        showNotification('Download started', 'success');
-    } catch (error) {
-        console.error('Error downloading document:', error);
-        showNotification(`Error downloading document: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
-    }
-}
-
-function closePdfModal() {
-    const modal = document.getElementById('fileModal');
-    modal.style.display = 'none';
-    
-    // Reset the iframe source to release memory
-    const iframe = document.getElementById('fileViewer');
-    iframe.src = '';
-}
-
-function downloadCurrentPdf() {
-    if (currentPdfUrl) {
-        const a = document.createElement('a');
-        a.href = currentPdfUrl;
-        a.download = 'document.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-}
 
 
 // ========================
@@ -250,21 +32,12 @@ async function fetchApplicantData(applicantId) {
             
             // Ensure we use the real applicantId from the server response
             if (!currentApplicant.applicantId) {
+                // If for some reason it's missing, fall back to the formatted _id
                 currentApplicant.applicantId = `APP${currentApplicant._id.toString().substring(0, 8).toUpperCase()}`;
             }
             
             updateApplicantProfile(currentApplicant);
-            
-            // First check if files exist
-            if (currentApplicant.files && currentApplicant.files.length > 0) {
-                // If files are just references, we might need to fetch the actual file data
-                // For now, we'll assume files array contains the complete file info
-                updateDocumentTables(currentApplicant.files);
-            } else {
-                // If no files, show empty state
-                document.getElementById('no-documents').style.display = 'block';
-                document.getElementById('documents-grid').style.display = 'none';
-            }
+            updateDocumentTables(currentApplicant.files);
         } else {
             throw new Error(data.error || 'Failed to load applicant data');
         }
@@ -627,6 +400,7 @@ function goToScoring(applicantId) {
 
 // Make functions available globally
 window.toggleCategory = toggleCategory;
+window.viewDocument = viewDocument;
 window.downloadDocument = downloadDocument;
 window.closePdfModal = closePdfModal;
 window.downloadCurrentPdf = downloadCurrentPdf;
