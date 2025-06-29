@@ -153,32 +153,38 @@ async function viewFile(fileId, sectionFiles) {
 // Fetch and display user files
 async function fetchAndDisplayFiles(applicantId) {
   try {
+    console.log('Starting to fetch documents for:', applicantId); // Debug
+    
     // Show loading state
     document.getElementById('no-documents').style.display = 'none';
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
 
-    console.log("Fetching documents for applicant:", applicantId); // Debug
-    
+    const startTime = performance.now();
     const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Cache-Control': 'no-cache' // Ensure we're not getting cached errors
+      }
     });
     
-    console.log("Response status:", response.status); // Debug
+    const responseTime = performance.now() - startTime;
+    console.log(`Request took ${responseTime}ms`); // Debug
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Full error response:", errorText); // Debug
-      try {
-        const errorData = JSON.parse(errorText);
-        throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
-      } catch (e) {
-        throw new Error(`Failed to fetch documents: ${response.status} - ${errorText}`);
-      }
+      console.error('Full error response:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: errorText
+      }); // Debug
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
-    console.log("Response data:", data); // Debug
+    console.log('Response data:', data); // Debug
 
     const documentsContainer = document.getElementById('documents-grid');
     documentsContainer.innerHTML = '';
@@ -239,7 +245,14 @@ async function fetchAndDisplayFiles(applicantId) {
     }
 
   } catch (error) {
-    console.error("Detailed error:", error);
+    console.error('Full error details:', {
+      error: error,
+      stack: error.stack,
+      applicantId: applicantId,
+      API_BASE_URL: API_BASE_URL,
+      timestamp: new Date().toISOString()
+    }); // Debug
+    
     showNotification(`Failed to load documents: ${error.message}`, "error");
     document.getElementById('documents-loading').style.display = 'none';
     document.getElementById('no-documents').style.display = 'flex';
