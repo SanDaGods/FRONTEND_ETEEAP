@@ -1,11 +1,90 @@
 const DOCUMENTS_BASE_PATH = "/documents/";
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
-
 let currentPdfUrl = '';
 let currentUser = null;
 let currentApplicant = null;
 
+// ========================
+// DOCUMENT VIEWING FUNCTIONS
+// ========================
 
+function viewDocument(filePath) {
+    if (!filePath || !validatePdfFile(filePath)) return;
+    
+    currentPdfUrl = `${DOCUMENTS_BASE_PATH}${encodeURIComponent(filePath)}`;
+    const modal = document.getElementById('pdfViewerModal');
+    const frame = document.getElementById('pdfViewerFrame');
+    const titleElement = document.getElementById('pdfModalTitle');
+    
+    showLoading();
+    titleElement.textContent = typeof filePath === 'string' ? filePath.split('/').pop() : 'Document';
+    
+    frame.onload = function() {
+        try {
+            if (frame.contentDocument && frame.contentDocument.body && 
+                frame.contentDocument.body.innerHTML.includes('Failed to load PDF document')) {
+                throw new Error('PDF failed to load');
+            }
+            hideLoading();
+        } catch (e) {
+            showPreviewError('Failed to load PDF preview');
+            hideLoading();
+        }
+    };
+    
+    frame.onerror = function() {
+        showPreviewError('Failed to load PDF preview');
+        hideLoading();
+    };
+}
+
+function downloadDocument(filePath) {
+    if (!filePath || !validatePdfFile(filePath)) return;
+
+    showLoading();
+    const link = document.createElement('a');
+    link.href = `${DOCUMENTS_BASE_PATH}${encodeURIComponent(filePath)}`;
+    link.download = typeof filePath === 'string' ? filePath.split('/').pop() : 'document.pdf';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    setTimeout(() => {
+        hideLoading();
+    }, 500);
+}
+
+function validatePdfFile(filePath) {
+    if (!filePath.toLowerCase().endsWith('.pdf')) {
+        showNotification('Only PDF files are supported', 'error');
+        return false;
+    }
+    return true;
+}
+
+function showPreviewError(message) {
+    const fallbackDiv = document.getElementById('pdfFallback');
+    if (fallbackDiv) {
+        fallbackDiv.querySelector('p').textContent = message;
+        fallbackDiv.style.display = 'block';
+        document.getElementById('pdfViewerFrame').style.display = 'none';
+    }
+}
+
+function closePdfModal() {
+    const modal = document.getElementById('pdfViewerModal');
+    const frame = document.getElementById('pdfViewerFrame');
+    frame.src = '';
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function downloadCurrentPdf() {
+    if (currentPdfUrl) {
+        downloadDocument(currentPdfUrl.split('/').pop());
+    }
+}
 
 // ========================
 // APPLICANT DATA FUNCTIONS
@@ -123,6 +202,116 @@ function formatDate(dateString) {
     }
 }
 
+// Update the updateDocumentTables function
+function updateDocumentTables(files = []) {
+    // Group files by category
+    const filesByCategory = {
+        'initial-submissions': files.filter(file => file.category === 'initial'),
+        'resume-cv': files.filter(file => file.category === 'resume'),
+        'training-certs': files.filter(file => file.category === 'training'),
+        'awards': files.filter(file => file.category === 'awards'),
+        'interview': files.filter(file => file.category === 'interview'),
+        'others': files.filter(file => !file.category || !['initial', 'resume', 'training', 'awards', 'interview'].includes(file.category))
+    };
+
+    // Update each category table
+    for (const [categoryId, categoryFiles] of Object.entries(filesByCategory)) {
+        const tableBody = document.querySelector(`#${categoryId} tbody`);
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            
+            categoryFiles.forEach(file => {
+                const fileName = file.filename || file.path?.split('/').pop() || 'Unknown';
+                const uploadDate = file.uploadDate || file.createdAt || 'N/A';
+                const statusClass = getStatusClass(file.status || 'pending');
+                
+                // Create a new row element
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <i class="fas ${getFileIcon(fileName)}"></i>
+                        ${fileName}
+                    </td>
+                    <td><span class="status-badge ${statusClass}">${file.status || 'Pending Review'}</span></td>
+                    <td>${uploadDate}</td>
+                    <td>
+                        <button class="action-btn view-btn" title="View" data-filepath="${file.path || file.filename}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn download-btn" title="Download" data-filepath="${file.path || file.filename}">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Update file count in category header
+            const categoryHeader = document.querySelector(`.category-header[onclick*="${categoryId}"]`);
+            if (categoryHeader) {
+                const countElement = categoryHeader.querySelector('.file-count');
+                if (countElement) {
+                    countElement.textContent = `${categoryFiles.length} file${categoryFiles.length !== 1 ? 's' : ''}`;
+                }
+            }
+        }
+    }
+
+    // Reattach event listeners
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const filePath = e.currentTarget.getAttribute('data-filepath');
+            viewDocument(filePath);
+        });
+    });
+
+    document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const filePath = e.currentTarget.getAttribute('data-filepath');
+            downloadDocument(filePath);
+        });
+    });
+}
+
+function getFileIcon(filename) {
+    const extension = filename.split('.').pop().toLowerCase();
+    switch(extension) {
+        case 'pdf': return 'fa-file-pdf';
+        case 'doc': case 'docx': return 'fa-file-word';
+        case 'xls': case 'xlsx': return 'fa-file-excel';
+        case 'jpg': case 'jpeg': case 'png': case 'gif': return 'fa-file-image';
+        default: return 'fa-file';
+    }
+}
+
+function getStatusClass(status) {
+    const statusMap = {
+        'approved': 'status-approved',
+        'rejected': 'status-rejected',
+        'reviewed': 'status-viewed',
+        'pending': 'status-pending'
+    };
+    return statusMap[status.toLowerCase()] || 'status-pending';
+}
+
+function getApplicantIdFromUrl() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idFromParams = urlParams.get('id');
+        
+        if (idFromParams) return idFromParams;
+        
+        const pathParts = window.location.pathname.split('/').filter(part => part.trim() !== '');
+        if (pathParts.length > 0) {
+            return pathParts[pathParts.length - 1];
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Error getting applicant ID from URL:', error);
+        return null;
+    }
+}
 
 // ========================
 // AUTHENTICATION FUNCTIONS
