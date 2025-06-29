@@ -3,46 +3,205 @@ let currentPdfUrl = '';
 let currentUser = null;
 let currentApplicant = null;
 
+// Add this at the top with other constants
+const ALLOWED_FILE_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+];
+
+// File viewer state
+let currentFiles = [];
+let currentFileIndex = 0;
+
+// Initialize the file viewer modal
+function initializeFileViewer() {
+  const modal = document.getElementById("fileModal");
+  if (!modal) return;
+
+  const closeBtn = modal.querySelector(".close-modal");
+  const prevBtn = modal.querySelector(".prev-btn");
+  const nextBtn = modal.querySelector(".next-btn");
+
+  function closeModal() {
+    modal.style.display = "none";
+    document.getElementById("fileViewer").style.display = "none";
+    document.getElementById("imageViewer").style.display = "none";
+    currentFiles = [];
+    currentFileIndex = 0;
+  }
+
+  // Event listeners
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => e.target === modal && closeModal());
+
+  prevBtn.addEventListener("click", () => {
+    if (currentFileIndex > 0) showFile(currentFileIndex - 1);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
+  });
+
+  // Keyboard navigation
+  document.addEventListener("keydown", (e) => {
+    if (modal.style.display === "block") {
+      if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowLeft" && currentFileIndex > 0) showFile(currentFileIndex - 1);
+      if (e.key === "ArrowRight" && currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
+    }
+  });
+}
+
+// Show file in viewer
+async function showFile(index) {
+  try {
+    const file = currentFiles[index];
+    currentFileIndex = index;
+
+    const modal = document.getElementById("fileModal");
+    const fileViewer = document.getElementById("fileViewer");
+    const imageViewer = document.getElementById("imageViewer");
+    const currentFileText = document.getElementById("currentFileText");
+    const fileName = document.getElementById("fileName");
+    const prevBtn = modal.querySelector(".prev-btn");
+    const nextBtn = modal.querySelector(".next-btn");
+
+    // Update UI
+    currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
+    fileName.textContent = file.filename;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === currentFiles.length - 1;
+
+    // Show loading state
+    fileName.textContent = `Loading ${file.filename}...`;
+
+    // Fetch the file using assessor endpoint
+    const response = await fetch(
+      `${API_BASE_URL}/assessor/api/applicants/${currentApplicant._id}/files/${file._id}`,
+      { credentials: 'include' }
+    );
+    
+    if (!response.ok) throw new Error(`Failed to load file: ${response.status}`);
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const contentType = response.headers.get('content-type') || file.contentType;
+
+    // Hide both viewers first
+    fileViewer.style.display = "none";
+    imageViewer.style.display = "none";
+
+    // Show appropriate viewer
+    if (contentType.startsWith("image/")) {
+      imageViewer.onload = () => {
+        imageViewer.style.display = "block";
+        fileName.textContent = file.filename;
+      };
+      imageViewer.src = url;
+    } else {
+      fileViewer.onload = () => {
+        fileViewer.style.display = "block";
+        fileName.textContent = file.filename;
+      };
+      fileViewer.src = url;
+    }
+
+    // Set download link
+    const downloadBtn = document.getElementById("downloadCurrentFile");
+    downloadBtn.href = url;
+    downloadBtn.download = file.filename;
+
+    // Clean up URL when modal closes
+    modal.addEventListener("click", () => URL.revokeObjectURL(url), { once: true });
+
+  } catch (error) {
+    console.error("Error showing file:", error);
+    showNotification(`Error: Could not display file (${error.message})`, "error");
+    document.getElementById("fileModal").style.display = "none";
+  }
+}
+
+// View a specific file
+async function viewFile(fileId, sectionFiles) {
+  try {
+    currentFiles = sectionFiles;
+    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
+    
+    if (currentFileIndex === -1) throw new Error("File not found");
+    
+    document.getElementById("fileModal").style.display = "block";
+    await showFile(currentFileIndex);
+  } catch (error) {
+    console.error("Error viewing file:", error);
+    showNotification(`Error viewing file: ${error.message}`, "error");
+  }
+}
+
+// Helper function to map section titles to labels
+function getSectionLabel(sectionTitle) {
+  const labelMap = {
+    "Initial Submissions": "initial-submission",
+    "Updated Resume / CV": "resume",
+    "Certificate of Training": "training",
+    "Awards": "awards",
+    "Interview Form": "interview",
+    "Others": "others"
+  };
+  return labelMap[sectionTitle] || "others";
+}
+
 // ========================
 // APPLICANT DATA FUNCTIONS
 // ========================
 
 async function fetchApplicantData(applicantId) {
-    try {
-        showLoading();
-        const endpoint = `${API_BASE_URL}/api/assessor/applicants/${applicantId}`;
-        
-        const response = await fetch(endpoint, {
-            credentials: 'include'
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
+  try {
+    showLoading();
+    const response = await fetch(
+      `${API_BASE_URL}/assessor/api/applicants/${applicantId}`,
+      { credentials: 'include' }
+    );
+    
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+    const data = await response.json();
+    
+    if (data.success && data.data) {
+      currentApplicant = data.data;
+      
+      // Ensure we use the real applicantId
+      if (!currentApplicant.applicantId) {
+        currentApplicant.applicantId = `APP${currentApplicant._id.toString().substring(0, 8).toUpperCase()}`;
+      }
+      
+      updateApplicantProfile(currentApplicant);
+      
+      // Fetch files using assessor endpoint
+      const filesResponse = await fetch(
+        `${API_BASE_URL}/assessor/api/applicants/${currentApplicant._id}/files`,
+        { credentials: 'include' }
+      );
+      
+      if (filesResponse.ok) {
+        const filesData = await filesResponse.json();
+        if (filesData.success) {
+          // Flatten grouped files into array
+          const allFiles = Object.values(filesData.files).flat();
+          updateDocumentTables(allFiles);
         }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-            currentApplicant = data.data;
-            
-            // Ensure we use the real applicantId from the server response
-            if (!currentApplicant.applicantId) {
-                // If for some reason it's missing, fall back to the formatted _id
-                currentApplicant.applicantId = `APP${currentApplicant._id.toString().substring(0, 8).toUpperCase()}`;
-            }
-            
-            updateApplicantProfile(currentApplicant);
-            updateDocumentTables(currentApplicant.files);
-        } else {
-            throw new Error(data.error || 'Failed to load applicant data');
-        }
-    } catch (error) {
-        console.error('Error fetching applicant data:', error);
-        showNotification(`Error loading applicant data: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
+      }
+    } else {
+      throw new Error(data.error || 'Failed to load applicant data');
     }
+  } catch (error) {
+    console.error('Error fetching applicant data:', error);
+    showNotification(`Error loading applicant data: ${error.message}`, 'error');
+  } finally {
+    hideLoading();
+  }
 }
 
 function updateApplicantProfile(applicant) {
@@ -121,94 +280,130 @@ function formatDate(dateString) {
 
 // Update the updateDocumentTables function
 function updateDocumentTables(files = []) {
-    // Group files by category
-    const filesByCategory = {
-        'initial-submissions': files.filter(file => file.category === 'initial'),
-        'resume-cv': files.filter(file => file.category === 'resume'),
-        'training-certs': files.filter(file => file.category === 'training'),
-        'awards': files.filter(file => file.category === 'awards'),
-        'interview': files.filter(file => file.category === 'interview'),
-        'others': files.filter(file => !file.category || !['initial', 'resume', 'training', 'awards', 'interview'].includes(file.category))
-    };
+  // Hide loading and show content
+  document.getElementById("documents-loading").style.display = "none";
+  const noDocuments = document.getElementById("no-documents");
+  const documentsGrid = document.getElementById("documents-grid");
 
-    // Update each category table
-    for (const [categoryId, categoryFiles] of Object.entries(filesByCategory)) {
-        const tableBody = document.querySelector(`#${categoryId} tbody`);
-        if (tableBody) {
-            tableBody.innerHTML = '';
-            
-            categoryFiles.forEach(file => {
-                const fileName = file.filename || file.path?.split('/').pop() || 'Unknown';
-                const uploadDate = file.uploadDate || file.createdAt || 'N/A';
-                const statusClass = getStatusClass(file.status || 'pending');
-                
-                // Create a new row element
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>
-                        <i class="fas ${getFileIcon(fileName)}"></i>
-                        ${fileName}
-                    </td>
-                    <td><span class="status-badge ${statusClass}">${file.status || 'Pending Review'}</span></td>
-                    <td>${uploadDate}</td>
-                    <td>
-                        <button class="action-btn view-btn" title="View" data-filepath="${file.path || file.filename}">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn download-btn" title="Download" data-filepath="${file.path || file.filename}">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+  if (files.length === 0) {
+    noDocuments.style.display = "block";
+    documentsGrid.style.display = "none";
+    return;
+  }
 
-            // Update file count in category header
-            const categoryHeader = document.querySelector(`.category-header[onclick*="${categoryId}"]`);
-            if (categoryHeader) {
-                const countElement = categoryHeader.querySelector('.file-count');
-                if (countElement) {
-                    countElement.textContent = `${categoryFiles.length} file${categoryFiles.length !== 1 ? 's' : ''}`;
-                }
-            }
-        }
-    }
+  noDocuments.style.display = "none";
+  documentsGrid.style.display = "block";
 
-    // Reattach event listeners
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const filePath = e.currentTarget.getAttribute('data-filepath');
-            viewDocument(filePath);
-        });
+  // Group files by category
+  const filesByCategory = {
+    'initial-submission': files.filter(f => f.label === 'initial-submission'),
+    'resume': files.filter(f => f.label === 'resume'),
+    'training': files.filter(f => f.label === 'training'),
+    'awards': files.filter(f => f.label === 'awards'),
+    'interview': files.filter(f => f.label === 'interview'),
+    'others': files.filter(f => !f.label || f.label === 'others')
+  };
+
+  // Section titles
+  const sectionTitles = {
+    'initial-submission': 'Initial Submissions',
+    'resume': 'Updated Resume / CV',
+    'training': 'Certificate of Training',
+    'awards': 'Awards',
+    'interview': 'Interview Form',
+    'others': 'Others'
+  };
+
+  // Clear existing sections
+  documentsGrid.innerHTML = '';
+
+  // Create sections for each category
+  Object.entries(filesByCategory).forEach(([categoryId, categoryFiles]) => {
+    if (categoryFiles.length === 0) return;
+
+    const section = document.createElement('div');
+    section.className = 'portfolio-category';
+    section.innerHTML = `
+      <div class="category-header" onclick="toggleCategory('${categoryId}')">
+        <div class="category-title">
+          <i class="fas ${getCategoryIcon(categoryId)}"></i>
+          ${sectionTitles[categoryId]}
+        </div>
+        <div class="category-meta">
+          <span class="file-count">${categoryFiles.length} file${categoryFiles.length !== 1 ? 's' : ''}</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+      <div class="category-content" id="${categoryId}">
+        <table class="document-table">
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Type</th>
+              <th>Upload Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    `;
+
+    documentsGrid.appendChild(section);
+
+    // Populate table
+    const tbody = section.querySelector('tbody');
+    categoryFiles.forEach(file => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>
+          <i class="fas ${getFileIcon(file.filename)}"></i>
+          ${file.filename}
+        </td>
+        <td>${file.contentType}</td>
+        <td>${new Date(file.uploadDate).toLocaleDateString()}</td>
+        <td>
+          <button class="action-btn view-btn" data-file-id="${file._id}">
+            <i class="fas fa-eye"></i> View
+          </button>
+        </td>
+      `;
+      tbody.appendChild(row);
     });
 
-    document.querySelectorAll('.download-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const filePath = e.currentTarget.getAttribute('data-filepath');
-            downloadDocument(filePath);
-        });
+    // Add event listeners to view buttons
+    section.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const fileId = e.currentTarget.getAttribute('data-file-id');
+        viewFile(fileId, categoryFiles);
+      });
     });
+  });
+
+  // Update total file count
+  document.querySelector('.file-count .count-number').textContent = files.length;
 }
 
 function getFileIcon(filename) {
-    const extension = filename.split('.').pop().toLowerCase();
-    switch(extension) {
-        case 'pdf': return 'fa-file-pdf';
-        case 'doc': case 'docx': return 'fa-file-word';
-        case 'xls': case 'xlsx': return 'fa-file-excel';
-        case 'jpg': case 'jpeg': case 'png': case 'gif': return 'fa-file-image';
-        default: return 'fa-file';
-    }
+  const extension = filename.split('.').pop().toLowerCase();
+  switch(extension) {
+    case 'pdf': return 'fa-file-pdf';
+    case 'doc': case 'docx': return 'fa-file-word';
+    case 'xls': case 'xlsx': return 'fa-file-excel';
+    case 'jpg': case 'jpeg': case 'png': case 'gif': return 'fa-file-image';
+    default: return 'fa-file';
+  }
 }
 
-function getStatusClass(status) {
-    const statusMap = {
-        'approved': 'status-approved',
-        'rejected': 'status-rejected',
-        'reviewed': 'status-viewed',
-        'pending': 'status-pending'
-    };
-    return statusMap[status.toLowerCase()] || 'status-pending';
+function getFileIcon(filename) {
+  const extension = filename.split('.').pop().toLowerCase();
+  switch(extension) {
+    case 'pdf': return 'fa-file-pdf';
+    case 'doc': case 'docx': return 'fa-file-word';
+    case 'xls': case 'xlsx': return 'fa-file-excel';
+    case 'jpg': case 'jpeg': case 'png': case 'gif': return 'fa-file-image';
+    default: return 'fa-file';
+  }
 }
 
 function getApplicantIdFromUrl() {
@@ -405,6 +600,7 @@ function showNotification(message, type = "info") {
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize components
+    initializeFileViewer();
     initializeProfileDropdown();
     setupDocumentSearch();
 
@@ -506,8 +702,4 @@ function goToScoring(applicantId) {
 
 // Make functions available globally
 window.toggleCategory = toggleCategory;
-window.viewDocument = viewDocument;
-window.downloadDocument = downloadDocument;
-window.closePdfModal = closePdfModal;
-window.downloadCurrentPdf = downloadCurrentPdf;
-window.handleLogout = handleLogout;
+window.viewFile = viewFile;
