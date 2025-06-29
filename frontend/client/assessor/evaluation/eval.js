@@ -400,7 +400,6 @@ function goToScoring(applicantId) {
 
 // Make functions available globally
 window.toggleCategory = toggleCategory;
-window.viewDocument = viewDocument;
 window.downloadDocument = downloadDocument;
 window.closePdfModal = closePdfModal;
 window.downloadCurrentPdf = downloadCurrentPdf;
