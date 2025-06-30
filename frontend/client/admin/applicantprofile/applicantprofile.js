@@ -190,21 +190,23 @@ async function fetchAndDisplayFiles() {
         const fileCard = document.createElement('div');
         fileCard.className = 'file-card';
         fileCard.innerHTML = `
+        <div class="file-card-header">
           <div class="file-icon">
             <i class="${getFileIcon(file.contentType)}"></i>
           </div>
           <div class="file-info">
             <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
-            <div class="file-actions">
-              <button class="btn view-btn" data-file-id="${file._id}">
-                <i class="fas fa-eye"></i> View
-              </button>
-              <button class="btn download-btn" data-file-id="${file._id}" data-file-name="${file.filename}">
-                <i class="fas fa-download"></i> Download
-              </button>
-            </div>
           </div>
-        `;
+        </div>
+        <div class="file-actions">
+          <button class="btn view-btn" data-file-id="${file._id}">
+            <i class="fas fa-eye"></i> View
+          </button>
+          <button class="btn download-btn" data-file-id="${file._id}" data-file-name="${file.filename}">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+      `;
         filesGrid.appendChild(fileCard);
       });
       
