@@ -136,16 +136,42 @@ async function showFile(index) {
 // View a specific file
 async function viewFile(fileId, sectionFiles) {
   try {
-    currentFiles = sectionFiles;
+    if (!fileId) {
+      throw new Error("No file ID provided");
+    }
+
+    // Ensure sectionFiles is an array
+    currentFiles = Array.isArray(sectionFiles) ? sectionFiles : [];
     currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
     
     if (currentFileIndex === -1) {
-      throw new Error("File not found in this section");
+      // Try to find the file in all documents if not found in current section
+      try {
+        const allFilesResponse = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
+          credentials: 'include'
+        });
+        const allFilesData = await allFilesResponse.json();
+        
+        if (allFilesData.success && allFilesData.files) {
+          const allFiles = Object.values(allFilesData.files).flat();
+          currentFiles = allFiles;
+          currentFileIndex = allFiles.findIndex(file => file._id === fileId);
+        }
+      } catch (fetchError) {
+        console.error("Error fetching all files:", fetchError);
+      }
+      
+      if (currentFileIndex === -1) {
+        throw new Error("File not found");
+      }
     }
 
     const modal = document.getElementById("fileModal");
-    modal.style.display = "block";
+    if (!modal) {
+      throw new Error("File viewer modal not found");
+    }
     
+    modal.style.display = "block";
     await showFile(currentFileIndex);
   } catch (error) {
     console.error("Error viewing file:", error);
@@ -387,23 +413,21 @@ function formatDate(dateString) {
 
 async function downloadDocument(fileId, filename) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/assessor/fetch-documents/${fileId}`, {
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to download file: ${response.status}`);
+    if (!fileId) {
+      throw new Error("No file ID provided");
     }
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename || 'document';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Create a hidden iframe for the download
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}?download=true`;
+    document.body.appendChild(iframe);
+    
+    // Clean up after some time
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 5000);
+
   } catch (error) {
     console.error('Error downloading document:', error);
     showNotification(`Failed to download document: ${error.message}`, 'error');
