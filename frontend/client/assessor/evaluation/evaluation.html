@@ -145,37 +145,39 @@
   </div>
 
 <!-- File Viewer Modal -->
-<div class="file-modal" id="fileModal" style="display: none;">
-  <div class="file-modal-content">
-    <div class="file-modal-header">
-      <h3 id="fileName">Document Viewer</h3>
-      <div class="file-nav">
-        <span class="current-file-text" id="currentFileText">File 1 of 1</span>
-        <div class="file-nav-buttons">
-          <button class="nav-btn prev-btn" disabled>
-            <i class="fas fa-chevron-left"></i> Previous
-          </button>
-          <button class="nav-btn next-btn" disabled>
-            Next <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
+<div id="fileModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="file-info">
+        <span id="currentFileText"></span>
+        <h3 id="fileName"></h3>
       </div>
       <span class="close-modal">&times;</span>
     </div>
-    <div class="file-modal-body">
-      <iframe id="fileViewer" style="display: none;"></iframe>
-      <img id="imageViewer" style="display: none;">
-      <div id="fileFallback" style="display: none;">
-        <p>This file type cannot be displayed in the browser.</p>
-        <a id="downloadFallback" class="download-btn" download>
-          <i class="fas fa-download"></i> Download File
-        </a>
+    <div class="modal-body">
+      <div class="file-viewer-container">
+        <iframe id="fileViewer" style="display:none;"></iframe>
+        <img id="imageViewer" style="display:none;">
+        <div id="fileFallback" style="display:none;">
+          <p>This file type cannot be displayed in the browser.</p>
+          <a id="downloadFallback" class="btn btn-primary" download>
+            <i class="fas fa-download"></i> Download File
+          </a>
+        </div>
       </div>
     </div>
-    <div class="file-modal-footer">
-      <a id="downloadCurrentFile" class="download-btn" download>
-        <i class="fas fa-download"></i> Download
-      </a>
+    <div class="modal-footer">
+      <div class="modal-nav">
+        <button class="btn btn-secondary prev-btn">
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <a id="downloadCurrentFile" class="btn btn-primary" download>
+          <i class="fas fa-download"></i> Download
+        </a>
+        <button class="btn btn-secondary next-btn">
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>

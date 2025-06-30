@@ -18,6 +18,9 @@ function initializeFileViewer() {
   const modal = document.getElementById("fileModal");
   if (!modal) return;
 
+  // Ensure modal is hidden initially
+  modal.style.display = "none";
+  
   const closeBtn = modal.querySelector(".close-modal");
   const prevBtn = modal.querySelector(".prev-btn");
   const nextBtn = modal.querySelector(".next-btn");
@@ -28,6 +31,7 @@ function initializeFileViewer() {
     document.getElementById("imageViewer").style.display = "none";
     currentFiles = [];
     currentFileIndex = 0;
+    document.body.classList.remove('modal-open');
   }
 
   // Event listeners for modal controls
@@ -45,7 +49,7 @@ function initializeFileViewer() {
 
   // Keyboard navigation
   document.addEventListener("keydown", (e) => {
-    if (modal.style.display === "block") {
+    if (modal.style.display === "flex") {
       if (e.key === "Escape") closeModal();
       if (e.key === "ArrowLeft" && currentFileIndex > 0) showFile(currentFileIndex - 1);
       if (e.key === "ArrowRight" && currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
@@ -66,12 +70,15 @@ async function showFile(index) {
     const fileName = document.getElementById("fileName");
     const prevBtn = modal.querySelector(".prev-btn");
     const nextBtn = modal.querySelector(".next-btn");
+    const downloadBtn = document.getElementById("downloadCurrentFile");
 
     // Update UI
     currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
     fileName.textContent = file.filename;
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === currentFiles.length - 1;
+    downloadBtn.href = `${API_BASE_URL}/api/fetch-documents/${file._id}?download=true`;
+    downloadBtn.download = file.filename;
 
     // Show loading state
     fileName.textContent = `Loading ${file.filename}...`;
@@ -94,6 +101,7 @@ async function showFile(index) {
     // Hide both viewers first
     fileViewer.style.display = "none";
     imageViewer.style.display = "none";
+    document.getElementById("fileFallback").style.display = "none";
 
     // Show appropriate viewer based on file type
     if (contentType.startsWith("image/")) {
@@ -102,12 +110,19 @@ async function showFile(index) {
         fileName.textContent = file.filename;
       };
       imageViewer.src = url;
+    } else if (contentType === "application/pdf") {
+      fileViewer.style.display = "block";
+      fileViewer.src = url + "#toolbar=1&navpanes=1&scrollbar=1";
+      fileName.textContent = file.filename;
+    } else if (contentType.includes('word') || contentType.includes('msword')) {
+      // For Word docs, show download option
+      document.getElementById("fileFallback").style.display = "flex";
+      fileName.textContent = file.filename;
     } else {
-      fileViewer.onload = () => {
-        fileViewer.style.display = "block";
-        fileName.textContent = file.filename;
-      };
+      // Default to PDF viewer for other types (may work for some)
+      fileViewer.style.display = "block";
       fileViewer.src = url;
+      fileName.textContent = file.filename;
     }
 
     // Clean up URL when modal closes
@@ -123,14 +138,23 @@ async function showFile(index) {
     
     // Close modal on error
     const modal = document.getElementById("fileModal");
-    if (modal) modal.style.display = "none";
+    if (modal) {
+      modal.style.display = "none";
+      document.body.classList.remove('modal-open');
+    }
   }
 }
+
 
 // View a specific file
 async function viewFile(fileId, sectionFiles) {
   try {
-    currentFiles = sectionFiles;
+    if (!fileId) {
+      throw new Error("No file ID provided");
+    }
+
+    // Ensure sectionFiles is an array
+    currentFiles = Array.isArray(sectionFiles) ? sectionFiles : [];
     currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
     
     if (currentFileIndex === -1) {
@@ -138,7 +162,13 @@ async function viewFile(fileId, sectionFiles) {
     }
 
     const modal = document.getElementById("fileModal");
-    modal.style.display = "block";
+    if (!modal) {
+      throw new Error("File viewer modal not found");
+    }
+    
+    // Show modal and prevent body scrolling
+    modal.style.display = "flex";
+    document.body.classList.add('modal-open');
     
     await showFile(currentFileIndex);
   } catch (error) {
@@ -199,7 +229,7 @@ async function fetchAndDisplayFiles() {
               <button class="btn view-btn" data-file-id="${file._id}">
                 <i class="fas fa-eye"></i> View
               </button>
-              <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
+              <a href="${API_BASE_URL}/api/fetch-documents/${file._id}?download=true" download="${file.filename}" class="btn download-btn">
                 <i class="fas fa-download"></i> Download
               </a>
             </div>
