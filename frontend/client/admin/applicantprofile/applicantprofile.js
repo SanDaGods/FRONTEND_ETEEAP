@@ -199,9 +199,9 @@ async function fetchAndDisplayFiles() {
               <button class="btn view-btn" data-file-id="${file._id}">
                 <i class="fas fa-eye"></i> View
               </button>
-              <a href="${API_BASE_URL}/api/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
+              <button class="btn download-btn" data-file-id="${file._id}" data-file-name="${file.filename}">
                 <i class="fas fa-download"></i> Download
-              </a>
+              </button>
             </div>
           </div>
         `;
@@ -217,6 +217,15 @@ async function fetchAndDisplayFiles() {
       btn.addEventListener('click', (e) => {
         const fileId = e.currentTarget.getAttribute('data-file-id');
         viewFile(fileId, allFiles);
+      });
+    });
+
+    // Set up event listeners for download buttons
+    document.querySelectorAll('.download-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const fileId = e.currentTarget.getAttribute('data-file-id');
+        const fileName = e.currentTarget.getAttribute('data-file-name');
+        downloadFile(fileId, fileName);
       });
     });
 
@@ -240,6 +249,40 @@ async function fetchAndDisplayFiles() {
 function truncateFileName(filename, maxLength = 30) {
   if (filename.length <= maxLength) return filename;
   return filename.substring(0, maxLength) + '...';
+}
+
+async function downloadFile(fileId, fileName) {
+  try {
+    showNotification(`Preparing download for ${fileName}...`, 'info');
+    
+    const response = await fetch(`${API_BASE_URL}/api/fetch-documents/${fileId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to download file: ${response.status} ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    
+    // Create a temporary anchor element to trigger the download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName || 'document';
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+    
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    showNotification(`Failed to download file: ${error.message}`, 'error');
+  }
 }
 
 // Helper function to map label to section title
