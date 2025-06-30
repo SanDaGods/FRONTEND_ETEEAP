@@ -21,6 +21,8 @@ function initializeFileViewer() {
   const closeBtn = modal.querySelector(".close-modal");
   const prevBtn = modal.querySelector(".prev-btn");
   const nextBtn = modal.querySelector(".next-btn");
+  const downloadBtn = modal.querySelector(".download-btn");
+  const fullscreenBtn = modal.querySelector(".fullscreen-btn");
 
   function closeModal() {
     modal.style.display = "none";
@@ -28,6 +30,16 @@ function initializeFileViewer() {
     document.getElementById("imageViewer").style.display = "none";
     currentFiles = [];
     currentFileIndex = 0;
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      modal.requestFullscreen().catch(err => {
+        console.error("Error attempting to enable fullscreen:", err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
   }
 
   // Event listeners for modal controls
@@ -43,12 +55,27 @@ function initializeFileViewer() {
     if (currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
   });
 
+  // Download button
+  downloadBtn.addEventListener("click", () => {
+    if (currentFiles.length > 0 && currentFiles[currentFileIndex]) {
+      const file = currentFiles[currentFileIndex];
+      const downloadLink = document.createElement("a");
+      downloadLink.href = `${API_BASE_URL}/api/fetch-documents/${file._id}`;
+      downloadLink.download = file.filename;
+      downloadLink.click();
+    }
+  });
+
+  // Fullscreen button
+  fullscreenBtn.addEventListener("click", toggleFullscreen);
+
   // Keyboard navigation
   document.addEventListener("keydown", (e) => {
     if (modal.style.display === "block") {
       if (e.key === "Escape") closeModal();
       if (e.key === "ArrowLeft" && currentFileIndex > 0) showFile(currentFileIndex - 1);
       if (e.key === "ArrowRight" && currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
+      if (e.key === "f") toggleFullscreen();
     }
   });
 }
@@ -66,12 +93,15 @@ async function showFile(index) {
     const fileName = document.getElementById("fileName");
     const prevBtn = modal.querySelector(".prev-btn");
     const nextBtn = modal.querySelector(".next-btn");
+    const downloadBtn = modal.querySelector(".download-btn");
 
     // Update UI
     currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
     fileName.textContent = file.filename;
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === currentFiles.length - 1;
+    downloadBtn.href = `${API_BASE_URL}/api/fetch-documents/${file._id}`;
+    downloadBtn.download = file.filename;
 
     // Show loading state
     fileName.textContent = `Loading ${file.filename}...`;
@@ -100,6 +130,12 @@ async function showFile(index) {
       imageViewer.onload = () => {
         imageViewer.style.display = "block";
         fileName.textContent = file.filename;
+        
+        // Center the image in the viewer
+        const container = document.querySelector('.file-viewer-container');
+        container.style.display = 'flex';
+        container.style.justifyContent = 'center';
+        container.style.alignItems = 'center';
       };
       imageViewer.src = url;
     } else {

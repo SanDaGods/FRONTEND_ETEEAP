@@ -148,36 +148,25 @@
 <div id="fileModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <div class="file-info">
-        <span id="currentFileText"></span>
-        <h3 id="fileName"></h3>
-      </div>
-      <span class="close-modal">&times;</span>
-    </div>
-    <div class="modal-body">
-      <div class="file-viewer-container">
-        <iframe id="fileViewer" style="display:none;"></iframe>
-        <img id="imageViewer" style="display:none;">
-        <div id="fileFallback" style="display:none;">
-          <p>This file type cannot be displayed in the browser.</p>
-          <a id="downloadFallback" class="btn btn-primary" download>
-            <i class="fas fa-download"></i> Download File
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <div class="modal-nav">
-        <button class="btn btn-secondary prev-btn">
-          <i class="fas fa-chevron-left"></i> Previous
-        </button>
-        <a id="downloadCurrentFile" class="btn btn-primary" download>
+      <span id="currentFileText"></span>
+      <div class="modal-actions">
+        <a id="modalDownloadBtn" class="btn download-btn" download>
           <i class="fas fa-download"></i> Download
         </a>
-        <button class="btn btn-secondary next-btn">
-          Next <i class="fas fa-chevron-right"></i>
+        <button class="btn fullscreen-btn">
+          <i class="fas fa-expand"></i> Fullscreen
         </button>
+        <span class="close-modal">&times;</span>
       </div>
+    </div>
+    <div class="file-viewer-container">
+      <iframe id="fileViewer" style="display:none; width:100%; height:calc(100vh - 120px); border:none;"></iframe>
+      <img id="imageViewer" style="display:none; max-width:100%; max-height:calc(100vh - 120px);">
+    </div>
+    <div class="modal-nav">
+      <button class="prev-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+      <span id="fileName" class="file-name"></span>
+      <button class="next-btn">Next <i class="fas fa-chevron-right"></i></button>
     </div>
   </div>
 </div>
