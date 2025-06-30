@@ -219,26 +219,26 @@ async function fetchAndDisplayFiles() {
       filesGrid.className = 'files-grid';
       
       files.forEach(file => {
-        const fileCard = document.createElement('div');
-        fileCard.className = 'file-card';
-        fileCard.innerHTML = `
-          <div class="file-icon">
+    const fileCard = document.createElement('div');
+    fileCard.className = 'file-card';
+    fileCard.innerHTML = `
+        <div class="file-icon">
             <i class="${getFileIcon(file.contentType)}"></i>
-          </div>
-          <div class="file-info">
+        </div>
+        <div class="file-info">
             <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
             <div class="file-actions">
-              <button class="btn view-btn" data-file-id="${file._id}">
-                <i class="fas fa-eye"></i> View
-              </button>
-              <a href="${API_BASE_URL}/api/assessor/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
-                <i class="fas fa-download"></i> Download
-              </a>
+                <button class="btn view-btn" data-file-id="${file._id}">
+                    <i class="fas fa-eye"></i> View
+                </button>
+                <button class="btn download-btn" data-file-id="${file._id}" data-filename="${file.filename}">
+                    <i class="fas fa-download"></i> Download
+                </button>
             </div>
-          </div>
-        `;
-        filesGrid.appendChild(fileCard);
-      });
+        </div>
+    `;
+    filesGrid.appendChild(fileCard);
+});
       
       sectionDiv.appendChild(filesGrid);
       documentsContainer.appendChild(sectionDiv);
@@ -412,26 +412,29 @@ function formatDate(dateString) {
 }
 
 async function downloadDocument(fileId, filename) {
-  try {
-    if (!fileId) {
-      throw new Error("No file ID provided");
+    try {
+        if (!fileId) {
+            throw new Error("No file ID provided");
+        }
+
+        // Create a temporary anchor element
+        const a = document.createElement('a');
+        a.href = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}?download=true`;
+        a.download = filename || 'document';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        
+        // Trigger the download
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(a);
+        }, 100);
+    } catch (error) {
+        console.error('Error downloading document:', error);
+        showNotification(`Failed to download document: ${error.message}`, 'error');
     }
-
-    // Create a hidden iframe for the download
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}?download=true`;
-    document.body.appendChild(iframe);
-    
-    // Clean up after some time
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 5000);
-
-  } catch (error) {
-    console.error('Error downloading document:', error);
-    showNotification(`Failed to download document: ${error.message}`, 'error');
-  }
 }
 
 // Update the updateDocumentTables function
@@ -498,12 +501,20 @@ function updateDocumentTables(files = []) {
     });
 
     document.querySelectorAll('.download-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const fileId = e.currentTarget.getAttribute('data-file-id');
-            const filename = e.currentTarget.getAttribute('data-filename');
-            downloadDocument(fileId, filename);
-        });
+    btn.addEventListener('click', (e) => {
+        const fileId = e.currentTarget.getAttribute('data-file-id');
+        const filename = e.currentTarget.getAttribute('data-filename');
+        
+        if (!fileId) {
+            console.error('No file ID found for download button');
+            showNotification('Cannot download: File ID missing', 'error');
+            return;
+        }
+        
+        downloadDocument(fileId, filename);
     });
+});
+
 }
 
 function getFileIcon(filename) {
