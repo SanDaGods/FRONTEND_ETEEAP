@@ -24,6 +24,9 @@ function initializeFileViewer() {
   const modal = document.getElementById("fileModal");
   if (!modal) return;
 
+  // Ensure modal is hidden initially
+  modal.style.display = "none";
+  
   const closeBtn = modal.querySelector(".close-modal");
   const prevBtn = modal.querySelector(".prev-btn");
   const nextBtn = modal.querySelector(".next-btn");
@@ -34,8 +37,10 @@ function initializeFileViewer() {
     document.getElementById("imageViewer").style.display = "none";
     currentFiles = [];
     currentFileIndex = 0;
+    document.body.classList.remove('modal-open'); // Remove this class when closing
   }
 
+  // Rest of the function remains the same...
   // Event listeners for modal controls
   closeBtn.addEventListener("click", closeModal);
   modal.addEventListener("click", (e) => e.target === modal && closeModal());
@@ -51,7 +56,7 @@ function initializeFileViewer() {
 
   // Keyboard navigation
   document.addEventListener("keydown", (e) => {
-    if (modal.style.display === "block") {
+    if (modal.style.display === "flex") { // Changed from 'block' to 'flex'
       if (e.key === "Escape") closeModal();
       if (e.key === "ArrowLeft" && currentFileIndex > 0) showFile(currentFileIndex - 1);
       if (e.key === "ArrowRight" && currentFileIndex < currentFiles.length - 1) showFile(currentFileIndex + 1);
@@ -66,6 +71,12 @@ async function showFile(index) {
     currentFileIndex = index;
 
     const modal = document.getElementById("fileModal");
+    // Ensure modal is open before showing file
+    if (modal.style.display !== "flex") {
+      modal.style.display = "flex";
+      document.body.classList.add('modal-open');
+    }
+
     const fileViewer = document.getElementById("fileViewer");
     const imageViewer = document.getElementById("imageViewer");
     const currentFileText = document.getElementById("currentFileText");
@@ -140,7 +151,10 @@ async function showFile(index) {
     
     // Close modal on error
     const modal = document.getElementById("fileModal");
-    if (modal) modal.style.display = "none";
+    if (modal) {
+      modal.style.display = "none";
+      document.body.classList.remove('modal-open');
+    }
   }
 }
 
@@ -183,9 +197,8 @@ async function viewFile(fileId, sectionFiles) {
     }
     
     // Reset modal position and display
-    modal.style.display = "flex"; // Changed from 'block' to 'flex' for better centering
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
+    modal.style.display = "flex";
+    document.body.classList.add('modal-open'); // Add this to prevent body scrolling
     
     await showFile(currentFileIndex);
   } catch (error) {

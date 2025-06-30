@@ -965,6 +965,7 @@ textarea:focus {
   position: relative;
 }
 
+
 .file-modal-header {
   padding: 15px 20px;
   border-bottom: 1px solid #eee;
@@ -1009,6 +1010,10 @@ textarea:focus {
 .file-nav-buttons {
   display: flex;
   gap: 10px;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 .nav-btn {
