@@ -136,32 +136,37 @@ async function showFile(index) {
 // View a specific file
 async function viewFile(fileId, sectionFiles) {
   try {
-    currentFiles = sectionFiles;
+    if (!fileId) {
+      throw new Error("No file ID provided");
+    }
+
+    currentFiles = sectionFiles.filter(file => file && file._id); // Filter out invalid files
     currentFileIndex = currentFiles.findIndex(file => {
       // Compare both string and ObjectId formats
-      return file._id === fileId || 
-             file._id.toString() === fileId ||
-             (file.fileId && (file.fileId === fileId || file.fileId.toString() === fileId));
+      if (!file._id) return false;
+      return file._id.toString() === fileId.toString();
     });
     
     if (currentFileIndex === -1) {
-      throw new Error(`File with ID ${fileId} not found in this section. Available files: ${currentFiles.map(f => f._id).join(', ')}`);
+      const availableFiles = currentFiles.map(f => f._id?.toString() || 'invalid').join(', ');
+      throw new Error(`File with ID ${fileId} not found. Available files: ${availableFiles}`);
     }
 
     const modal = document.getElementById("fileModal");
+    if (!modal) throw new Error("File viewer modal not found");
     modal.style.display = "block";
     
     await showFile(currentFileIndex);
   } catch (error) {
     console.error("Error viewing file:", error);
-    showNotification(`Error viewing file: ${error.message}`, "error");
+    showNotification(`Error: Could not display file (${error.message})`, "error");
   }
 }
 
 // Fetch and display user files
 async function fetchAndDisplayFiles() {
   try {
-    // Hide empty state and show loading
+    // Show loading state
     document.getElementById('no-documents').style.display = 'none';
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
@@ -171,87 +176,33 @@ async function fetchAndDisplayFiles() {
     });
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
+      throw new Error(`Server responded with ${response.status}`);
     }
 
     const data = await response.json();
     
-    if (!data.success || !data.files) {
-      throw new Error(data.error || 'Failed to fetch documents');
+    if (!data?.files) {
+      throw new Error('Invalid response format from server');
     }
 
-    const documentsContainer = document.getElementById('documents-grid');
-    documentsContainer.innerHTML = '';
-
-    // Process files to ensure they have proper IDs
+    // Process files to ensure they have IDs
     const processedFiles = {};
     for (const [label, files] of Object.entries(data.files)) {
-      processedFiles[label] = files.map(file => ({
-        ...file,
-        _id: file._id || file.fileId // Ensure we have _id field
-      }));
+      processedFiles[label] = files
+        .filter(file => file && file._id) // Filter out invalid files
+        .map(file => ({
+          ...file,
+          _id: file._id.toString() // Ensure string ID
+        }));
     }
 
-    // Get all files as a flat array for the viewer
-    const allFiles = Object.values(processedFiles).flat();
-
-    // Create sections for each file group
-    for (const [label, files] of Object.entries(processedFiles)) {
-      const sectionTitle = getSectionTitle(label);
-      const sectionDiv = document.createElement('div');
-      sectionDiv.className = 'document-section';
-      sectionDiv.innerHTML = `<h4>${sectionTitle}</h4>`;
-      
-      const filesGrid = document.createElement('div');
-      filesGrid.className = 'files-grid';
-      
-      files.forEach(file => {
-        if (!file._id) {
-          console.warn('File missing ID:', file);
-          return;
-        }
-        
-        const fileCard = document.createElement('div');
-        fileCard.className = 'file-card';
-        fileCard.innerHTML = `
-          <div class="file-icon">
-            <i class="${getFileIcon(file.contentType)}"></i>
-          </div>
-          <div class="file-info">
-            <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
-            <div class="file-actions">
-              <button class="btn view-btn" data-file-id="${file._id}">
-                <i class="fas fa-eye"></i> View
-              </button>
-              <a href="${API_BASE_URL}/api/assessor/fetch-documents/${file._id}" download="${file.filename}" class="btn download-btn">
-                <i class="fas fa-download"></i> Download
-              </a>
-            </div>
-          </div>
-        `;
-        filesGrid.appendChild(fileCard);
-      });
-      
-      sectionDiv.appendChild(filesGrid);
-      documentsContainer.appendChild(sectionDiv);
-    }
-
-    // Set up event listeners for view buttons
-    document.querySelectorAll('.view-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const fileId = e.currentTarget.getAttribute('data-file-id');
-        viewFile(fileId, allFiles);
-      });
-    });
-
-    // Show appropriate state
+    updateDocumentTables(Object.values(processedFiles).flat());
+    
+    // Update UI state
     document.getElementById('documents-loading').style.display = 'none';
-    if (allFiles.length > 0) {
-      documentsContainer.style.display = 'grid';
-    } else {
-      document.getElementById('no-documents').style.display = 'flex';
-    }
+    const hasFiles = Object.values(processedFiles).some(files => files.length > 0);
+    document.getElementById('documents-grid').style.display = hasFiles ? 'grid' : 'none';
+    document.getElementById('no-documents').style.display = hasFiles ? 'none' : 'flex';
 
   } catch (error) {
     console.error("Error fetching files:", error);
@@ -406,43 +357,53 @@ function formatDate(dateString) {
 
 async function downloadDocument(fileId, filename) {
   try {
+    if (!fileId) {
+      throw new Error("No file ID provided for download");
+    }
+
     // Ensure fileId is a string
     fileId = fileId.toString();
-    
+    filename = filename || 'document';
+
     const response = await fetch(`${API_BASE_URL}/api/assessor/fetch-documents/${fileId}`, {
       credentials: 'include'
     });
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Failed to download file: ${response.status}`);
+      throw new Error(errorData.error || `Server responded with ${response.status}`);
     }
 
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename || 'document';
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
   } catch (error) {
     console.error('Error downloading document:', error);
-    showNotification(`Failed to download document: ${error.message}`, 'error');
+    showNotification(`Download failed: ${error.message}`, 'error');
   }
 }
 
 // Update the updateDocumentTables function
 function updateDocumentTables(files = []) {
+    // Filter out invalid files first
+    const validFiles = files.filter(file => file && file._id);
+    
     // Group files by category
     const filesByCategory = {
-        'initial-submissions': files.filter(file => file.category === 'initial'),
-        'resume-cv': files.filter(file => file.category === 'resume'),
-        'training-certs': files.filter(file => file.category === 'training'),
-        'awards': files.filter(file => file.category === 'awards'),
-        'interview': files.filter(file => file.category === 'interview'),
-        'others': files.filter(file => !file.category || !['initial', 'resume', 'training', 'awards', 'interview'].includes(file.category))
+        'initial-submissions': validFiles.filter(file => file.category === 'initial'),
+        'resume-cv': validFiles.filter(file => file.category === 'resume'),
+        'training-certs': validFiles.filter(file => file.category === 'training'),
+        'awards': validFiles.filter(file => file.category === 'awards'),
+        'interview': validFiles.filter(file => file.category === 'interview'),
+        'others': validFiles.filter(file => !file.category || !['initial', 'resume', 'training', 'awards', 'interview'].includes(file.category))
     };
 
     // Update each category table
@@ -452,17 +413,11 @@ function updateDocumentTables(files = []) {
             tableBody.innerHTML = '';
             
             categoryFiles.forEach(file => {
-                const fileName = file.filename || file.path?.split('/').pop() || 'Unknown';
+                const fileName = file.filename || 'Untitled';
                 const uploadDate = file.uploadDate || file.createdAt || 'N/A';
                 const statusClass = getStatusClass(file.status || 'pending');
-                const fileId = file._id || file.fileId; // Handle both formats
+                const fileId = file._id.toString(); // Ensure string ID
                 
-                if (!fileId) {
-                    console.warn('File missing ID:', file);
-                    return; // Skip files without IDs
-                }
-
-                // Create a new row element
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
@@ -475,40 +430,39 @@ function updateDocumentTables(files = []) {
                         <button class="action-btn view-btn" title="View" data-file-id="${fileId}">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="action-btn download-btn" title="Download" data-file-id="${fileId}" data-filename="${fileName}">
+                        <a href="${API_BASE_URL}/api/assessor/fetch-documents/${fileId}" 
+                           download="${fileName}" 
+                           class="action-btn download-btn" 
+                           title="Download"
+                           data-file-id="${fileId}"
+                           data-filename="${fileName}">
                             <i class="fas fa-download"></i>
-                        </button>
+                        </a>
                     </td>
                 `;
                 tableBody.appendChild(row);
             });
-
-            // Update file count in category header
-            const categoryHeader = document.querySelector(`.category-header[onclick*="${categoryId}"]`);
-            if (categoryHeader) {
-                const countElement = categoryHeader.querySelector('.file-count');
-                if (countElement) {
-                    countElement.textContent = `${categoryFiles.length} file${categoryFiles.length !== 1 ? 's' : ''}`;
-                }
-            }
         }
     }
 
-    // Reattach event listeners
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const fileId = e.currentTarget.getAttribute('data-file-id');
+    // Use event delegation for better performance
+    document.addEventListener('click', function(e) {
+        // Handle view buttons
+        if (e.target.closest('.view-btn')) {
+            const btn = e.target.closest('.view-btn');
+            const fileId = btn.getAttribute('data-file-id');
             const allFiles = Object.values(filesByCategory).flat();
             viewFile(fileId, allFiles);
-        });
-    });
-
-    document.querySelectorAll('.download-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const fileId = e.currentTarget.getAttribute('data-file-id');
-            const filename = e.currentTarget.getAttribute('data-filename');
+        }
+        
+        // Handle download buttons
+        if (e.target.closest('.download-btn')) {
+            const btn = e.target.closest('.download-btn');
+            const fileId = btn.getAttribute('data-file-id');
+            const filename = btn.getAttribute('data-filename');
+            e.preventDefault(); // Prevent default anchor behavior
             downloadDocument(fileId, filename);
-        });
+        }
     });
 }
 
