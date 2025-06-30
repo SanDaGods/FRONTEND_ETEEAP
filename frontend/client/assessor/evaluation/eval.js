@@ -182,7 +182,11 @@ async function viewFile(fileId, sectionFiles) {
       throw new Error("File viewer modal not found");
     }
     
-    modal.style.display = "block";
+    // Reset modal position and display
+    modal.style.display = "flex"; // Changed from 'block' to 'flex' for better centering
+    modal.style.justifyContent = "center";
+    modal.style.alignItems = "center";
+    
     await showFile(currentFileIndex);
   } catch (error) {
     console.error("Error viewing file:", error);
