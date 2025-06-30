@@ -72,12 +72,15 @@ async function showFile(index) {
     const fileName = document.getElementById("fileName");
     const prevBtn = modal.querySelector(".prev-btn");
     const nextBtn = modal.querySelector(".next-btn");
+    const downloadBtn = document.getElementById("downloadCurrentFile");
 
     // Update UI
     currentFileText.textContent = `File ${index + 1} of ${currentFiles.length}`;
     fileName.textContent = file.filename;
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === currentFiles.length - 1;
+    downloadBtn.href = `${API_BASE_URL}/api/assessor/fetch-documents/${file._id}?download=true`;
+    downloadBtn.download = file.filename;
 
     // Show loading state
     fileName.textContent = `Loading ${file.filename}...`;
@@ -100,6 +103,7 @@ async function showFile(index) {
     // Hide both viewers first
     fileViewer.style.display = "none";
     imageViewer.style.display = "none";
+    document.getElementById("fileFallback").style.display = "none";
 
     // Show appropriate viewer based on file type
     if (contentType.startsWith("image/")) {
@@ -108,12 +112,19 @@ async function showFile(index) {
         fileName.textContent = file.filename;
       };
       imageViewer.src = url;
+    } else if (contentType === "application/pdf") {
+      fileViewer.style.display = "block";
+      fileViewer.src = url + "#toolbar=1&navpanes=1&scrollbar=1";
+      fileName.textContent = file.filename;
+    } else if (contentType.includes('word') || contentType.includes('msword')) {
+      // For Word docs, show download option
+      document.getElementById("fileFallback").style.display = "flex";
+      fileName.textContent = file.filename;
     } else {
-      fileViewer.onload = () => {
-        fileViewer.style.display = "block";
-        fileName.textContent = file.filename;
-      };
+      // Default to PDF viewer for other types (may work for some)
+      fileViewer.style.display = "block";
       fileViewer.src = url;
+      fileName.textContent = file.filename;
     }
 
     // Clean up URL when modal closes

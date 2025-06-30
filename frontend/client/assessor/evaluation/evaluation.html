@@ -143,15 +143,14 @@
   <div class="loading-spinner" id="loadingSpinner">
     <div class="spinner"></div>
   </div>
-
-  <!-- File Viewer Modal -->
- <div class="file-modal" id="fileModal">
+  
+<!-- File Viewer Modal -->
+<div class="file-modal" id="fileModal">
   <div class="file-modal-content">
     <div class="file-modal-header">
-      <span class="close-modal">&times;</span>
       <h3 id="fileName">Document Viewer</h3>
       <div class="file-nav">
-        <span id="currentFileText">File 1 of 1</span>
+        <span class="current-file-text" id="currentFileText">File 1 of 1</span>
         <div class="file-nav-buttons">
           <button class="nav-btn prev-btn" disabled>
             <i class="fas fa-chevron-left"></i> Previous
@@ -161,6 +160,7 @@
           </button>
         </div>
       </div>
+      <span class="close-modal">&times;</span>
     </div>
     <div class="file-modal-body">
       <iframe id="fileViewer" style="display: none;"></iframe>

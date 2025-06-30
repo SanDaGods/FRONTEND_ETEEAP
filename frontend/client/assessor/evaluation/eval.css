@@ -922,6 +922,7 @@ textarea:focus {
 /*new
 
 /* File Viewer Modal Styles */
+/* Improved File Viewer Modal Styles */
 .file-modal {
   display: none;
   position: fixed;
@@ -929,21 +930,25 @@ textarea:focus {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 10000; /* Higher z-index to ensure it's on top */
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .file-modal-content {
   background-color: white;
   border-radius: 8px;
-  width: 90%;
-  max-width: 900px;
+  width: 95%;
+  max-width: 1200px;
+  height: 90vh;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
 .file-modal-header {
@@ -952,20 +957,28 @@ textarea:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #f8f9fa;
+  flex-shrink: 0;
 }
 
 .file-modal-header h3 {
   margin: 0;
   font-size: 1.2rem;
   color: #4C308F;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
 }
 
 .close-modal {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
-  color: #aaa;
+  color: #6c757d;
   cursor: pointer;
   transition: color 0.2s;
+  padding: 0 10px;
+  line-height: 1;
 }
 
 .close-modal:hover {
@@ -976,6 +989,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-shrink: 0;
 }
 
 .file-nav-buttons {
@@ -992,7 +1006,8 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 5px;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  font-size: 14px;
 }
 
 .nav-btn:hover {
@@ -1002,6 +1017,7 @@ textarea:focus {
 .nav-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background-color: #f1f5f9;
 }
 
 .file-modal-body {
@@ -1009,26 +1025,40 @@ textarea:focus {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 0;
   overflow: auto;
+  background: #f5f5f5;
 }
 
-#fileViewer, #imageViewer {
+#fileViewer {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  border: none;
+  background: white;
+}
+
+#imageViewer {
   max-width: 100%;
-  max-height: 70vh;
-  border: 1px solid #eee;
+  max-height: 100%;
+  object-fit: contain;
+  background: white;
+  padding: 20px;
 }
 
 #fileFallback {
   text-align: center;
-  padding: 20px;
+  padding: 40px;
+  width: 100%;
 }
 
 .file-modal-footer {
-  padding: 15px 20px;
+  padding: 12px 20px;
   border-top: 1px solid #eee;
   display: flex;
   justify-content: flex-end;
+  background: #f8f9fa;
+  flex-shrink: 0;
 }
 
 .download-btn {
@@ -1042,11 +1072,18 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 5px;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  font-size: 14px;
 }
 
 .download-btn:hover {
   background-color: #3a1d6b;
+}
+
+.current-file-text {
+  font-size: 14px;
+  color: #6c757d;
+  white-space: nowrap;
 }
 
 /* Document Grid Styles */
