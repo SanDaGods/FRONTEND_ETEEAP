@@ -1050,196 +1050,89 @@ textarea:focus {
 }
 
 /* Document Grid Styles */
-/* File Modal Styles */
-.file-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: none;
+.document-section {
+  margin-bottom: 25px;
+}
+
+.document-section h4 {
+  color: #4C308F;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.file-card {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.file-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.file-icon {
+  font-size: 24px;
+  color: #4C308F;
+  width: 40px;
+  height: 40px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background-color: #f1f5f9;
+  border-radius: 6px;
 }
 
-.file-modal.active {
-  display: flex;
-  opacity: 1;
+.file-info {
+  flex: 1;
 }
 
-.file-modal-content {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 900px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.file-modal-header {
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.file-modal-header h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: #4C308F;
-}
-
-.close-modal {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 1.8rem;
-  color: #6b7280;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.close-modal:hover {
-  color: #4C308F;
-}
-
-.file-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-}
-
-#currentFileText {
+.file-name {
+  margin: 0 0 8px 0;
   font-size: 0.9rem;
-  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.file-nav-buttons {
+.file-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
-.nav-btn {
-  padding: 5px 12px;
+.file-actions .btn {
+  padding: 5px 10px;
+  font-size: 0.8rem;
   border-radius: 4px;
-  border: 1px solid #e2e8f0;
-  background-color: #f8fafc;
-  color: #4C308F;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.85rem;
 }
 
-.nav-btn:hover:not(:disabled) {
+.file-actions .view-btn {
   background-color: #e0e7ff;
-}
-
-.nav-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.file-modal-body {
-  flex: 1;
-  padding: 0;
-  overflow: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f9fafb;
-}
-
-#fileViewer, 
-#imageViewer,
-#fileFallback {
-  width: 100%;
-  height: 70vh;
-  min-height: 400px;
+  color: #4C308F;
   border: none;
+  text-decoration: none;
 }
 
-#fileViewer {
-  background-color: white;
-}
-
-#imageViewer {
-  object-fit: contain;
-  padding: 20px;
-  background-color: white;
-}
-
-#fileFallback {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  background-color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-.file-modal-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.download-btn {
-  padding: 8px 16px;
-  border-radius: 4px;
+.file-actions .download-btn {
   background-color: #e0f2fe;
   color: #0369a1;
+  border: none;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-}
-
-.download-btn:hover {
-  background-color: #bae6fd;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .file-modal-content {
-    width: 95%;
-    max-height: 85vh;
-  }
-  
-  #fileViewer, 
-  #imageViewer,
-  #fileFallback {
-    height: 60vh;
-    min-height: 300px;
-  }
-  
-  .file-nav {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .file-nav-buttons {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .nav-btn {
-    flex: 1;
-    justify-content: center;
-  }
 }
