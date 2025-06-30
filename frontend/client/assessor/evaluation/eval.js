@@ -137,10 +137,15 @@ async function showFile(index) {
 async function viewFile(fileId, sectionFiles) {
   try {
     currentFiles = sectionFiles;
-    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
+    currentFileIndex = currentFiles.findIndex(file => {
+      // Compare both string and ObjectId formats
+      return file._id === fileId || 
+             file._id.toString() === fileId ||
+             (file.fileId && (file.fileId === fileId || file.fileId.toString() === fileId));
+    });
     
     if (currentFileIndex === -1) {
-      throw new Error("File not found in this section");
+      throw new Error(`File with ID ${fileId} not found in this section. Available files: ${currentFiles.map(f => f._id).join(', ')}`);
     }
 
     const modal = document.getElementById("fileModal");
@@ -179,11 +184,20 @@ async function fetchAndDisplayFiles() {
     const documentsContainer = document.getElementById('documents-grid');
     documentsContainer.innerHTML = '';
 
+    // Process files to ensure they have proper IDs
+    const processedFiles = {};
+    for (const [label, files] of Object.entries(data.files)) {
+      processedFiles[label] = files.map(file => ({
+        ...file,
+        _id: file._id || file.fileId // Ensure we have _id field
+      }));
+    }
+
     // Get all files as a flat array for the viewer
-    const allFiles = Object.values(data.files).flat();
+    const allFiles = Object.values(processedFiles).flat();
 
     // Create sections for each file group
-    for (const [label, files] of Object.entries(data.files)) {
+    for (const [label, files] of Object.entries(processedFiles)) {
       const sectionTitle = getSectionTitle(label);
       const sectionDiv = document.createElement('div');
       sectionDiv.className = 'document-section';
@@ -193,6 +207,11 @@ async function fetchAndDisplayFiles() {
       filesGrid.className = 'files-grid';
       
       files.forEach(file => {
+        if (!file._id) {
+          console.warn('File missing ID:', file);
+          return;
+        }
+        
         const fileCard = document.createElement('div');
         fileCard.className = 'file-card';
         fileCard.innerHTML = `
@@ -387,12 +406,16 @@ function formatDate(dateString) {
 
 async function downloadDocument(fileId, filename) {
   try {
+    // Ensure fileId is a string
+    fileId = fileId.toString();
+    
     const response = await fetch(`${API_BASE_URL}/api/assessor/fetch-documents/${fileId}`, {
       credentials: 'include'
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to download file: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to download file: ${response.status}`);
     }
 
     const blob = await response.blob();
@@ -432,7 +455,13 @@ function updateDocumentTables(files = []) {
                 const fileName = file.filename || file.path?.split('/').pop() || 'Unknown';
                 const uploadDate = file.uploadDate || file.createdAt || 'N/A';
                 const statusClass = getStatusClass(file.status || 'pending');
+                const fileId = file._id || file.fileId; // Handle both formats
                 
+                if (!fileId) {
+                    console.warn('File missing ID:', file);
+                    return; // Skip files without IDs
+                }
+
                 // Create a new row element
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -443,10 +472,10 @@ function updateDocumentTables(files = []) {
                     <td><span class="status-badge ${statusClass}">${file.status || 'Pending Review'}</span></td>
                     <td>${uploadDate}</td>
                     <td>
-                        <button class="action-btn view-btn" title="View" data-file-id="${file._id}">
+                        <button class="action-btn view-btn" title="View" data-file-id="${fileId}">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="action-btn download-btn" title="Download" data-file-id="${file._id}" data-filename="${fileName}">
+                        <button class="action-btn download-btn" title="Download" data-file-id="${fileId}" data-filename="${fileName}">
                             <i class="fas fa-download"></i>
                         </button>
                     </td>
@@ -469,7 +498,8 @@ function updateDocumentTables(files = []) {
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const fileId = e.currentTarget.getAttribute('data-file-id');
-            viewFile(fileId, Object.values(filesByCategory).flat());
+            const allFiles = Object.values(filesByCategory).flat();
+            viewFile(fileId, allFiles);
         });
     });
 
