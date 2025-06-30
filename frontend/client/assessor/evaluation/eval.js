@@ -218,7 +218,7 @@ async function fetchAndDisplayFiles() {
       const filesGrid = document.createElement('div');
       filesGrid.className = 'files-grid';
       
-      files.forEach(file => {
+   files.forEach(file => {
     const fileCard = document.createElement('div');
     fileCard.className = 'file-card';
     fileCard.innerHTML = `
@@ -413,27 +413,34 @@ function formatDate(dateString) {
 
 async function downloadDocument(fileId, filename) {
     try {
-        if (!fileId) {
-            throw new Error("No file ID provided");
+        const validFileId = ensureValidFileId(fileId);
+        if (!validFileId) {
+            throw new Error("Invalid file ID format");
         }
 
-        // Create a temporary anchor element
+        showLoading();
+        
+        // Use the validFileId in the download URL
+        const downloadUrl = `${API_BASE_URL}/api/assessor/fetch-documents/${validFileId}?download=true`;
+        
+        // Create and trigger download
         const a = document.createElement('a');
-        a.href = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}?download=true`;
+        a.href = downloadUrl;
         a.download = filename || 'document';
         a.style.display = 'none';
         document.body.appendChild(a);
-        
-        // Trigger the download
         a.click();
         
-        // Clean up
+        // Clean up after a short delay
         setTimeout(() => {
             document.body.removeChild(a);
-        }, 100);
+            hideLoading();
+        }, 1000);
+
     } catch (error) {
         console.error('Error downloading document:', error);
-        showNotification(`Failed to download document: ${error.message}`, 'error');
+        showNotification(`Download failed: ${error.message}`, 'error');
+        hideLoading();
     }
 }
 
@@ -501,17 +508,33 @@ function updateDocumentTables(files = []) {
     });
 
     document.querySelectorAll('.download-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const fileId = e.currentTarget.getAttribute('data-file-id');
-        const filename = e.currentTarget.getAttribute('data-filename');
-        
-        if (!fileId) {
-            console.error('No file ID found for download button');
-            showNotification('Cannot download: File ID missing', 'error');
-            return;
+    btn.addEventListener('click', async (e) => {
+        try {
+            const fileId = e.currentTarget.getAttribute('data-file-id');
+            const filename = e.currentTarget.getAttribute('data-filename');
+            
+            if (!fileId) {
+                // Try to get the ID from a parent element if not found directly
+                const parentCard = e.currentTarget.closest('.file-card');
+                if (parentCard) {
+                    const viewBtn = parentCard.querySelector('.view-btn');
+                    if (viewBtn) {
+                        fileId = viewBtn.getAttribute('data-file-id');
+                    }
+                }
+                
+                if (!fileId) {
+                    console.error('No file ID found for download button', e.currentTarget);
+                    showNotification('Cannot download: File information missing', 'error');
+                    return;
+                }
+            }
+            
+            await downloadDocument(fileId, filename);
+        } catch (error) {
+            console.error('Error handling download click:', error);
+            showNotification('Error initiating download', 'error');
         }
-        
-        downloadDocument(fileId, filename);
     });
 });
 
@@ -832,6 +855,15 @@ function goToScoring(applicantId) {
     
     return id;
   }
+
+  function ensureValidFileId(fileId) {
+    if (!fileId) return null;
+    // If ID is in ObjectId format but as string, use it directly
+    if (/^[0-9a-fA-F]{24}$/.test(fileId)) return fileId;
+    // If ID is in some other format, try to extract the ObjectId portion
+    const match = fileId.match(/[0-9a-fA-F]{24}/);
+    return match ? match[0] : null;
+}
 
 // Make functions available globally
 window.toggleCategory = toggleCategory;
