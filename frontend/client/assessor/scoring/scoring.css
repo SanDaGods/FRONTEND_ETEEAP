@@ -646,11 +646,10 @@ body {
 
 .files-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* Force 3 columns */
   gap: 20px;
   width: 100%;
 }
-
 
 .file-card {
   background-color: white;
@@ -661,28 +660,27 @@ body {
   gap: 15px;
   align-items: center;
   transition: transform 0.2s, box-shadow 0.2s;
-  height: 100px; /* Fixed height */
-  min-width: 300px; /* Minimum width */
+  height: 100px;
   box-sizing: border-box;
+  width: 100%; /* Take full width of grid cell */
 }
 
-@media (max-width: 1000px) {
+/* Responsive adjustments */
+@media (max-width: 1200px) {
   .files-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* Still 3 columns but will wrap */
   }
-  
-  .file-card {
-    min-width: 250px;
+}
+
+@media (max-width: 900px) {
+  .files-grid {
+    grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
   }
 }
 
 @media (max-width: 600px) {
   .files-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .file-card {
-    min-width: 100%;
+    grid-template-columns: 1fr; /* Single column on mobile */
   }
 }
 
@@ -718,17 +716,14 @@ body {
 .file-actions {
   display: flex;
   gap: 8px;
-  flex-shrink: 0; /* Prevent buttons from shrinking */
+  flex-wrap: nowrap;
 }
 
 .file-actions .btn {
-  padding: 6px 10px;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: max-content;
 }
 
 .file-actions .view-btn {
