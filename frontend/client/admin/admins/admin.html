@@ -129,37 +129,30 @@
 
           
   <!-- admin Modal -->
-<div class="modal" id="adminModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="modalTitle">Add New Admin</h2>
-      <button class="close-btn" onclick="closeadminModal()">&times;</button>
+  <div class="modal" id="adminModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Admin</h2>
+        <button class="close-btn" onclick="closeadminModal()">&times;</button>
+      </div>
+      <form id="adminForm">
+        <div class="form-group">
+          <label for="adminName">Full Name</label>
+          <input type="text" id="adminName" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Temporary Password</label>
+          <input type="text" id="password" required />
+
+        </div>
+        <button type="submit" class="submit-btn">Create Admin Account  </button>
+      </form>
     </div>
-    <form id="adminForm">
-      <div class="form-group">
-        <label for="adminName">Full Name</label>
-        <input type="text" id="adminName" name="adminName" required />
-      </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required />
-      </div>
-      <div class="form-group">
-        <label for="adminType">Admin Type</label>
-        <select id="adminType" name="adminType" required>
-          <option value="regular">Regular Admin</option>
-          <option value="super">Super Admin</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="password">Temporary Password</label>
-        <input type="password" id="password" name="password" required />
-        <small class="form-text">Minimum 8 characters</small>
-      </div>
-      <button type="submit" class="submit-btn">Save Admin</button>
-    </form>
   </div>
-</div>
 
   <!-- Delete Confirmation Modal -->
   <div class="modal" id="deleteConfirmationModal">

@@ -290,28 +290,23 @@ function renderadminTable(adminsToRender) {
         <td colspan="${colSpan}" class="empty-state">
           <i class="fas fa-users"></i>
           <h3>No Admins Found</h3>
-          <p>Try adjusting your search or add a new admin</p>
-          <button class="btn-primary" onclick="openadminModal()">
-            <i class="fas fa-plus"></i> Add Admin
-          </button>
         </td>
       </tr>
     `;
     return;
   }
-
   adminsToRender.forEach((admin) => {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${admin.adminId || 'N/A'}</td>
       <td>${escapeHtml(admin.fullName)}</td>
       <td>${admin.email || 'N/A'}</td>
-      <td>${formatDate(admin.createdAt)}</td>
-      <td>${capitalizeFirstLetter(admin.adminType) || 'Regular'}</td>
+      <td>${admin.createdAt || 'N/A'}</td>
+      <td>${"" || 'N/A'}</td>
       <td class="action-buttons">
-        <button class="action-btn view-btn" onclick="viewadmin('${admin._id}')">
+        <a href="/frontend/client/admin/admins/adminprofile.html?id=${admin._id}" class="action-btn view-btn">
           <i class="fas fa-eye"></i> View
-        </button>
+        </a>
         <button class="action-btn edit-btn" onclick="editadmin('${admin._id}')">
           <i class="fas fa-edit"></i> Edit
         </button>
@@ -325,128 +320,58 @@ function renderadminTable(adminsToRender) {
 }
 
 async function loadadmins() {
-  showLoading();
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+      const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
+      credentials: 'include'
     });
     
-    if (!response.ok) {
-      let errorData;
-      try {
-        errorData = await response.json();
-      } catch (e) {
-        // Handle non-JSON responses
-        if (response.status === 500) {
-          throw new Error("Server error occurred. Please try again later.");
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      throw new Error(errorData.message || "Failed to fetch admins");
-    }
+    if (!response.ok) throw new Error("Failed to fetch Admins");
 
-    const result = await response.json();
-    const adminsData = result.data || result || [];
-    
-    if (!Array.isArray(adminsData)) {
-      throw new Error("Invalid admins data format received from server");
-    }
-
-    admins = adminsData;
+    const data = await response.json();
+    admins = data.data || [];
     renderadminTable(admins);
   } catch (error) {
-    console.error("Error loading admins:", error);
-    
-    let userMessage = "Error loading admins";
-    if (error.message.includes("Failed to fetch")) {
-      userMessage = "Network error. Please check your connection.";
-    } else if (error.message.includes("Server error")) {
-      userMessage = "Server error. Please try again later.";
-    } else {
-      userMessage = error.message;
-    }
-    
-    showNotification(userMessage, "error");
+    console.error("Error loading :", error);
+    showNotification("Error loading Admins", "error");
     admins = [];
     renderadminTable([]);
-  } finally {
-    hideLoading();
-  }
-}
-
-async function fetchWithRetry(url, options = {}, retries = 3) {
-  try {
-    const response = await fetch(url, options);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return response;
-  } catch (error) {
-    if (retries > 0) {
-      console.log(`Retrying... ${retries} attempts left`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return fetchWithRetry(url, options, retries - 1);
-    }
-    throw error;
   }
 }
 
 
 // CRUD Operations
 async function createadmin(adminData) {
-  showLoading();
-  try {
-    const response = await fetch(`${API_BASE_URL}/admin/register`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-      },
-      credentials: 'include',
-      body: JSON.stringify(adminData),
-    });
+  const response = await fetch(`/admin/register`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+    },
+    credentials: 'include',
+    body: JSON.stringify(adminData),
+  });
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to create admin");
-    }
-
-    return data;
-  } catch (error) {
-    console.error("Error creating admin:", error);
-    throw error;
-  } finally {
-    hideLoading();
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to create Admin");
   }
+  return response.json();
 }
 
 async function updateadmin(id, adminData) {
-  showLoading();
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/admins/${id}`, {
-      method: "PUT",
-      headers: { 
-        "Content-Type": "application/json",
-      },
-      credentials: 'include',
-      body: JSON.stringify(adminData),
-    });
+  const response = await fetch(`${API_BASE_URL}/admin/${id}`, {
+    method: "PUT",
+    headers: { 
+      "Content-Type": "application/json",
+    },
+    credentials: 'include',
+    body: JSON.stringify(adminData),
+  });
 
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to update admin");
-    }
-
-    return data;
-  } catch (error) {
-    console.error("Error updating admin:", error);
-    throw error;
-  } finally {
-    hideLoading();
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to update Admin");
   }
+  return response.json();
 }
 
 async function deleteadmin(id) {
@@ -458,18 +383,17 @@ async function deleteadmin(id) {
 async function confirmDelete() {
   showLoading();
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/admins/${deleteId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/admins/:id`, {
       method: "DELETE",
       credentials: 'include'
     });
 
-    const data = await response.json();
-    
     if (!response.ok) {
-      throw new Error(data.message || "Failed to delete admin");
+      const error = await response.json();
+      throw new Error(error.error || "Failed to delete Admin");
     }
 
-    showNotification("Admin deleted successfully", "success");
+    showNotification("admin deleted successfully", "success");
     await loadadmins();
   } catch (error) {
     console.error("Error during deletion:", error);
@@ -485,39 +409,14 @@ async function handleFormSubmit(e) {
   e.preventDefault();
   showLoading();
 
-  const formData = new FormData(adminForm);
   const adminData = {
-    fullName: formData.get("adminName").trim(),
-    email: formData.get("email").trim().toLowerCase(),
-    password: formData.get("password"),
-    adminType: formData.get("adminType")
+    fullName: document.getElementById("adminName").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("password").value,
   };
-
-  // Enhanced validation
-  if (!adminData.fullName || adminData.fullName.length < 2) {
-    showNotification("Please enter a valid full name (at least 2 characters)", "error");
-    hideLoading();
-    return;
-  }
-
-  if (!adminData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminData.email)) {
-    showNotification("Please enter a valid email address", "error");
-    hideLoading();
-    return;
-  }
-
-  if (!editingId && (!adminData.password || adminData.password.length < 8)) {
-    showNotification("Password must be at least 8 characters", "error");
-    hideLoading();
-    return;
-  }
 
   try {
     if (editingId) {
-      // For updates, only send password if it was changed
-      if (!adminData.password) {
-        delete adminData.password;
-      }
       await updateadmin(editingId, adminData);
       showNotification("Admin updated successfully", "success");
     } else {
@@ -527,44 +426,10 @@ async function handleFormSubmit(e) {
     closeadminModal();
     await loadadmins();
   } catch (error) {
-    console.error("Error saving admin:", error);
-    
-    // More specific error messages
-    let errorMessage = "Error saving admin data";
-    if (error.message.includes("email")) {
-      errorMessage = "Email already exists. Please use a different email.";
-    } else if (error.message.includes("password")) {
-      errorMessage = "Invalid password requirements";
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-    
-    showNotification(errorMessage, "error");
+    console.error("Error:", error);
+    showNotification(error.message || "Error saving Admin data", "error");
   } finally {
     hideLoading();
-  }
-}
-
-async function debugApiCall(url, options = {}) {
-  try {
-    console.log(`Making API call to: ${url}`);
-    const response = await fetch(url, options);
-    
-    console.log(`Response status: ${response.status}`);
-    const text = await response.text();
-    console.log(`Raw response: ${text}`);
-    
-    try {
-      const json = JSON.parse(text);
-      console.log("Parsed JSON:", json);
-      return { response, data: json };
-    } catch (e) {
-      console.log("Response is not JSON");
-      return { response, data: text };
-    }
-  } catch (error) {
-    console.error("API call failed:", error);
-    throw error;
   }
 }
 
@@ -590,29 +455,27 @@ function closeadminModal() {
 async function editadmin(id) {
   showLoading();
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/admins/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/admin/${id}`, {
       credentials: 'include'
     });
     
-    const data = await response.json();
-    
     if (!response.ok) {
-      throw new Error(data.message || "Failed to fetch admin");
+      const error = await response.json();
+      throw new Error(error.error || "Failed to fetch admin");
     }
 
-    const admin = data.data;
+    const admin = await response.json();
     editingId = id;
     
-    document.getElementById("modalTitle").textContent = "Edit Admin";
-    document.getElementById("adminName").value = admin.fullName || '';
-    document.getElementById("email").value = admin.email || '';
-    document.getElementById("password").value = '';
-    document.getElementById("adminType").value = admin.adminType || 'regular';
+    document.getElementById("modalTitle").textContent = "Edit admin";
+    document.getElementById("adminName").value = admin.data.fullName;
+    document.getElementById("email").value = admin.data.email;
+    document.getElementById("password").value = "";
 
     adminModal.style.display = "flex";
   } catch (error) {
     console.error("Error loading admin for edit:", error);
-    showNotification(error.message || "Error loading admin data", "error");
+    showNotification(error.message || "Error loading Admin data", "error");
   } finally {
     hideLoading();
   }
