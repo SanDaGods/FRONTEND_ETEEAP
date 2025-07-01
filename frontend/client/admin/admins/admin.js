@@ -162,7 +162,7 @@ async function handleLogout() {
 }
 
 function redirectToLogin() {
-  window.location.href = '/frontend/client/applicant/login/login.html';
+  window.location.href = '/frontend/admin/login/login.html';
 }
 
 function clearAuthData() {
@@ -218,7 +218,7 @@ function formatExpertise(expertise) {
 async function viewadmin(id) {
   showLoading();
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/admins/:id`, {
+    const response = await fetch(`/api/admin/admins/:id`, {
       credentials: 'include'
     });
     
@@ -304,9 +304,9 @@ function renderadminTable(adminsToRender) {
       <td>${admin.createdAt || 'N/A'}</td>
       <td>${"" || 'N/A'}</td>
       <td class="action-buttons">
-        <a href="/frontend/client/admin/admins/adminprofile.html?id=${admin._id}" class="action-btn view-btn">
+        <button class="action-btn view-btn" onclick="viewadmin('${admin._id}')">
           <i class="fas fa-eye"></i> View
-        </a>
+        </button>
         <button class="action-btn edit-btn" onclick="editadmin('${admin._id}')">
           <i class="fas fa-edit"></i> Edit
         </button>
@@ -321,7 +321,7 @@ function renderadminTable(adminsToRender) {
 
 async function loadadmins() {
   try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
+      const response = await fetch(`/api/admin/admins`, {
       credentials: 'include'
     });
     
@@ -383,7 +383,7 @@ async function deleteadmin(id) {
 async function confirmDelete() {
   showLoading();
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/admins/:id`, {
+    const response = await fetch(`/api/admin/admins/:id`, {
       method: "DELETE",
       credentials: 'include'
     });
