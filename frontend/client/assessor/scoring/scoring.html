@@ -128,6 +128,76 @@
         </div>
       </div>
 
+      <div class="documents-container">
+  <div class="documents-header">
+    <h1 class="documents-title">Applicant Documents</h1>
+    <div class="documents-controls">
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="search" id="search-input" class="search-input" placeholder="Search documents..." />
+      </div>
+      <div class="file-count">
+        <span class="count-number">0</span> files
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Loading State -->
+  <div id="documents-loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading documents...</p>
+  </div>
+
+  <!-- Document Empty State -->
+  <div id="no-documents" class="empty-state">
+    <i class="fas fa-folder-open"></i>
+    <p>No documents submitted yet</p>
+  </div>
+
+  <!-- Document Categories - Accordion Style -->
+  <div class="portfolio-accordion" id="documents-grid">
+    <!-- Sections will be populated by JavaScript -->
+  </div>
+</div>
+
+<!-- File Viewer Modal (add this near the end of the body) -->
+<div id="fileModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="file-info">
+        <span id="currentFileText"></span>
+        <h3 id="fileName"></h3>
+      </div>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="file-viewer-container">
+        <iframe id="fileViewer" style="display:none;"></iframe>
+        <img id="imageViewer" style="display:none;">
+        <div id="fileFallback" style="display:none;">
+          <p>This file type cannot be displayed in the browser.</p>
+          <a id="downloadFallback" class="btn btn-primary" download>
+            <i class="fas fa-download"></i> Download File
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-nav">
+        <button class="btn btn-secondary prev-btn">
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <a id="downloadCurrentFile" class="btn btn-primary" download>
+          <i class="fas fa-download"></i> Download
+        </a>
+        <button class="btn btn-secondary next-btn">
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
       <!-- Finalize Button -->
    <div class="finalize-section">
   <div class="finalize-content">
