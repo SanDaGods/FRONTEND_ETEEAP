@@ -613,15 +613,10 @@ document.addEventListener('click', function(event) {
 document.addEventListener("DOMContentLoaded", function() {
     // Load assessor info and profile
     showLoading();
-    loadAssessorInfo().then((authenticated) => {
-        if (authenticated) {
-            fetchAssessorProfile();
-        }
-    }).finally(() => {
+    loadAssessorInfo().finally(() => {
         hideLoading();
     });
-})
-
+});
 
 function getApplicantIdFromVariousSources() {
     // 1. Check URL query params first
