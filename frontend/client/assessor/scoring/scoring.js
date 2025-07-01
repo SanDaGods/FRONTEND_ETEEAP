@@ -220,26 +220,26 @@ async function fetchAndDisplayFiles() {
       filesGrid.className = 'files-grid';
       
       files.forEach(file => {
-        const fileCard = document.createElement('div');
-        fileCard.className = 'file-card';
-        fileCard.innerHTML = `
-          <div class="file-icon">
-              <i class="${getFileIcon(file.contentType)}"></i>
-          </div>
-          <div class="file-info">
-              <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
-              <div class="file-actions">
-                  <button class="btn view-btn" data-file-id="${file._id}">
-                      <i class="fas fa-eye"></i> View
-                  </button>
-                  <button class="btn download-btn" data-file-id="${file._id}" data-filename="${file.filename}">
-                      <i class="fas fa-download"></i> Download
-                  </button>
-              </div>
-          </div>
-        `;
-        filesGrid.appendChild(fileCard);
-      });
+  const fileCard = document.createElement('div');
+  fileCard.className = 'file-card';
+  fileCard.innerHTML = `
+    <div class="file-icon">
+      <i class="${getFileIcon(file.contentType)}"></i>
+    </div>
+    <div class="file-info">
+      <p class="file-name" title="${file.filename}">${truncateFileName(file.filename, 25)}</p>
+      <div class="file-actions">
+        <button class="btn view-btn" data-file-id="${file._id}">
+          <i class="fas fa-eye"></i> View
+        </button>
+        <button class="btn download-btn" data-file-id="${file._id}" data-filename="${file.filename}">
+          <i class="fas fa-download"></i> Download
+        </button>
+      </div>
+    </div>
+  `;
+  filesGrid.appendChild(fileCard);
+});
       
       sectionDiv.appendChild(filesGrid);
       documentsContainer.appendChild(sectionDiv);
@@ -268,9 +268,16 @@ async function fetchAndDisplayFiles() {
 }
 
 // Helper functions
-function truncateFileName(filename, maxLength = 30) {
+function truncateFileName(filename, maxLength = 25) {
   if (filename.length <= maxLength) return filename;
-  return filename.substring(0, maxLength) + '...';
+  const extensionIndex = filename.lastIndexOf('.');
+  if (extensionIndex === -1) {
+    return filename.substring(0, maxLength) + '...';
+  }
+  const name = filename.substring(0, extensionIndex);
+  const extension = filename.substring(extensionIndex);
+  const maxNameLength = maxLength - extension.length - 3; // Account for ellipsis
+  return name.substring(0, Math.max(5, maxNameLength)) + '...' + extension;
 }
 
 function getSectionTitle(label) {
