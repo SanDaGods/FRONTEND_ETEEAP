@@ -295,24 +295,24 @@ function renderadminTable(adminsToRender) {
     `;
     return;
   }
+
   adminsToRender.forEach((admin) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${admin.adminId || 'N/A'}</td>
+      <td>${admin._id || 'N/A'}</td>
       <td>${escapeHtml(admin.fullName)}</td>
       <td>${admin.email || 'N/A'}</td>
       <td>${admin.createdAt || 'N/A'}</td>
-      <td>${"" || 'N/A'}</td>
+      <td>${admin.isSuperAdmin ? 'Super Admin' : 'Regular Admin'}</td>
       <td class="action-buttons">
-        <button class="action-btn view-btn" onclick="viewadmin('${admin._id}')">
-          <i class="fas fa-eye"></i> View
-        </button>
         <button class="action-btn edit-btn" onclick="editadmin('${admin._id}')">
           <i class="fas fa-edit"></i> Edit
         </button>
+        ${admin.isSuperAdmin ? '' : `
         <button class="action-btn delete-btn" onclick="deleteadmin('${admin._id}')">
           <i class="fas fa-trash"></i> Delete
         </button>
+        `}
       </td>
     `;
     adminTableBody.appendChild(row);
@@ -320,21 +320,46 @@ function renderadminTable(adminsToRender) {
 }
 
 async function loadadmins() {
+  showLoading();
   try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
-      credentials: 'include'
+    const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
     
-    if (!response.ok) throw new Error("Failed to fetch Admins");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to fetch admins");
+    }
 
     const data = await response.json();
     admins = data.data || [];
+    
+    // Format dates before rendering
+    admins = admins.map(admin => ({
+      ...admin,
+      createdAt: formatDate(admin.createdAt),
+      lastLogin: admin.lastLogin ? formatDate(admin.lastLogin) : 'Never'
+    }));
+    
     renderadminTable(admins);
   } catch (error) {
-    console.error("Error loading :", error);
-    showNotification("Error loading Admins", "error");
+    console.error("Error loading admins:", error);
+    showNotification(error.message || "Error loading admin data", "error");
+    
+    // If unauthorized, redirect to login
+    if (error.message.includes('Unauthorized') || error.message.includes('Please login')) {
+      setTimeout(() => {
+        window.location.href = '/frontend/admin/login/login.html';
+      }, 1500);
+    }
+    
     admins = [];
     renderadminTable([]);
+  } finally {
+    hideLoading();
   }
 }
 
@@ -455,7 +480,7 @@ function closeadminModal() {
 async function editadmin(id) {
   showLoading();
   try {
-    const response = await fetch(`${API_BASE_URL}/admin/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/admin/admins/${id}`, {
       credentials: 'include'
     });
     
@@ -464,18 +489,19 @@ async function editadmin(id) {
       throw new Error(error.error || "Failed to fetch admin");
     }
 
-    const admin = await response.json();
+    const { data: admin } = await response.json();
     editingId = id;
     
-    document.getElementById("modalTitle").textContent = "Edit admin";
-    document.getElementById("adminName").value = admin.data.fullName;
-    document.getElementById("email").value = admin.data.email;
+    document.getElementById("modalTitle").textContent = "Edit Admin";
+    document.getElementById("adminName").value = admin.fullName;
+    document.getElementById("email").value = admin.email;
     document.getElementById("password").value = "";
+    document.getElementById("password").placeholder = "Leave blank to keep current password";
 
     adminModal.style.display = "flex";
   } catch (error) {
     console.error("Error loading admin for edit:", error);
-    showNotification(error.message || "Error loading Admin data", "error");
+    showNotification(error.message || "Error loading admin data", "error");
   } finally {
     hideLoading();
   }
