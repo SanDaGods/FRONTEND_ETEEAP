@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ETEEAP - Scoring System</title>
-  <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
+  <link rel="icon" href="/frontend/client/img/RTU Logo.png" type="image/x-icon">
     <link rel="stylesheet" href="./scoring.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 </head>
@@ -18,14 +18,14 @@
       </div>
 
       <div class="nav-item" data-section="dashboard">
-        <a href="../dashboard/dashboard.html">
+        <a href="/frontend/client/assessor/dashboard/dashboard.html">
           <i class="fas fa-chart-pie"></i>
           Dashboard
         </a>
       </div>
 
       <div class="nav-item" data-section="dashboard">
-        <a href="../applicants/applicants.html">
+        <a href="/frontend/client/assessor/applicants/applicants.html">
           <i class="fas fa-users"></i>
           Applicants
         </a>
@@ -52,7 +52,7 @@
                   Profile
                 </a>
             
-                <a href="#" class="dropdown-item" id="logoutLink">
+                <a href="/client/applicant/login/login.html" class="dropdown-item" id="logoutLink">
                   <i class="fas fa-sign-out-alt"></i>
                   Logout
                 </a>
@@ -495,20 +495,24 @@
       </div>
 
       <!-- Finalize Button -->
-      <div class="finalize-btn-container">
-        <button class="finalize-btn" id="finalizeButton">Finalize Evaluation</button>
-        <p class="text-muted">Once finalized, the applicant's status will be updated and cannot be changed.</p>
-      </div>
-
+   <div class="finalize-section">
+  <div class="finalize-content">
+    <button class="finalize-btn" id="finalizeButton">
+      <i class="fas fa-check-circle"></i> Finalize Evaluation
+    </button>
+    <div class="finalize-warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Once finalized, the applicant's status will be updated and cannot be changed.</span>
     </div>
   </div>
+</div>
     
   <!-- Loading Spinner -->
   <div class="loading-spinner" id="loadingSpinner">
     <div class="spinner"></div>
   </div>
 
-  <script src="../../shared/js/auth.js"></script>
+  <script type="module" src="../../shared/js/auth.js"></script>
   <script src="scoring.js"></script>
 </body>
 </html>
