@@ -148,72 +148,8 @@ function updateApplicantInfo(applicant) {
     }
 }
 
-function loadDocuments(documents) {
-  const documentTable = document.querySelector('.document-table tbody');
-  if (!documentTable) return;
 
-  // Clear existing rows
-  documentTable.innerHTML = '';
 
-  // Group documents by category (if available)
-  const categorizedDocs = {
-      'initial-submissions': documents.filter(doc => 
-          doc.name.toLowerCase().includes('application') || 
-          doc.name.toLowerCase().includes('form') ||
-          doc.name.toLowerCase().includes('diploma')
-      ),
-      'resume-cv': documents.filter(doc => 
-          doc.name.toLowerCase().includes('resume') || 
-          doc.name.toLowerCase().includes('cv')
-      ),
-      // Add other categories as needed
-  };
-
-  // Add documents to the table
-  documents.forEach(doc => {
-      const fileType = doc.type === 'pdf' ? 'pdf' : 
-                     doc.type === 'docx' ? 'word' : 
-                     doc.type === 'xlsx' ? 'excel' : 'file';
-      
-      const row = document.createElement('tr');
-      row.innerHTML = `
-          <td>
-              <i class="fas fa-file-${fileType}"></i>
-              ${doc.name}
-          </td>
-          <td><span class="status-badge status-pending">Pending</span></td>
-          <td>${new Date(doc.uploadDate).toLocaleDateString()}</td>
-          <td>
-              <button class="action-btn view-btn" title="View" data-filepath="${doc.path}">
-                  <i class="fas fa-eye"></i>
-              </button>
-              <button class="action-btn download-btn" title="Download" data-filepath="${doc.path}">
-                  <i class="fas fa-download"></i>
-              </button>
-          </td>
-      `;
-      documentTable.appendChild(row);
-  });
-
-  // Reattach event listeners
-  attachDocumentEventListeners();
-}
-
-function attachDocumentEventListeners() {
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const filePath = btn.dataset.filepath;
-            previewDocument(filePath);
-        });
-    });
-
-    document.querySelectorAll('.download-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const filePath = btn.dataset.filepath;
-            downloadDocument(filePath);
-        });
-    });
-}
 
 function loadExistingEvaluation(evaluation) {
     if (evaluation.educationalQualification) {
@@ -486,19 +422,6 @@ function previewDocument(filePath) {
   }, 100);
 }
 
-function downloadDocument(filePath) {
-    showLoading();
-    
-    const link = document.createElement('a');
-    link.href = `${DOCUMENTS_BASE_PATH}${encodeURIComponent(filePath)}`;
-    link.download = filePath.split('/').pop();
-    link.target = '_blank';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(hideLoading, 500);
-}
 
 function validatePdfFile(filePath) {
     if (!filePath) return false;
@@ -596,14 +519,7 @@ function showNotification(message, type = "info") {
     }, 3000);
 }
 
-function toggleCategory(categoryId) {
-    const category = document.getElementById(categoryId);
-    if (category) {
-        category.classList.toggle('show');
-        const chevron = category.previousElementSibling?.querySelector('.fa-chevron-down');
-        if (chevron) chevron.classList.toggle('fa-chevron-up');
-    }
-}
+
 
 // ========================
 // EVENT LISTENERS
@@ -833,4 +749,3 @@ window.addEduPoints = addEduPoints;
 window.addWorkPoints = addWorkPoints;
 window.addAchievePoints = addAchievePoints;
 window.addInterviewPoints = addInterviewPoints;
-window.toggleCategory = toggleCategory;
