@@ -651,6 +651,7 @@ body {
   width: 100%;
 }
 
+
 .file-card {
   background-color: white;
   border: 1px solid #e2e8f0;
@@ -663,6 +664,26 @@ body {
   height: 100px; /* Fixed height */
   min-width: 300px; /* Minimum width */
   box-sizing: border-box;
+}
+
+@media (max-width: 1000px) {
+  .files-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  
+  .file-card {
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 600px) {
+  .files-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .file-card {
+    min-width: 100%;
+  }
 }
 
 .file-icon {
