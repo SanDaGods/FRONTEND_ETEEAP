@@ -609,21 +609,6 @@ document.addEventListener('click', function(event) {
 });
 
 
-
-// Initialize on page load
-document.addEventListener("DOMContentLoaded", function() {
-    // Load assessor info and profile
-    showLoading();
-    loadAssessorInfo().then((authenticated) => {
-        if (authenticated) {
-            fetchAssessorProfile();
-        }
-    }).finally(() => {
-        hideLoading();
-    });
-})
-
-
 function getApplicantIdFromVariousSources() {
     // 1. Check URL query params first
     const urlParams = new URLSearchParams(window.location.search);
