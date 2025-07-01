@@ -328,24 +328,68 @@ async function loadadmins() {
   showLoading();
   try {
     const response = await fetch(`${API_BASE_URL}/api/admin/admins`, {
-      credentials: 'include'
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        // Handle non-JSON responses
+        if (response.status === 500) {
+          throw new Error("Server error occurred. Please try again later.");
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       throw new Error(errorData.message || "Failed to fetch admins");
     }
 
-    const { data } = await response.json();
-    admins = Array.isArray(data) ? data : [];
+    const result = await response.json();
+    const adminsData = result.data || result || [];
+    
+    if (!Array.isArray(adminsData)) {
+      throw new Error("Invalid admins data format received from server");
+    }
+
+    admins = adminsData;
     renderadminTable(admins);
   } catch (error) {
     console.error("Error loading admins:", error);
-    showNotification(error.message || "Error loading admins", "error");
+    
+    let userMessage = "Error loading admins";
+    if (error.message.includes("Failed to fetch")) {
+      userMessage = "Network error. Please check your connection.";
+    } else if (error.message.includes("Server error")) {
+      userMessage = "Server error. Please try again later.";
+    } else {
+      userMessage = error.message;
+    }
+    
+    showNotification(userMessage, "error");
     admins = [];
     renderadminTable([]);
   } finally {
     hideLoading();
+  }
+}
+
+async function fetchWithRetry(url, options = {}, retries = 3) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response;
+  } catch (error) {
+    if (retries > 0) {
+      console.log(`Retrying... ${retries} attempts left`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
   }
 }
 
@@ -444,27 +488,33 @@ async function handleFormSubmit(e) {
   const formData = new FormData(adminForm);
   const adminData = {
     fullName: formData.get("adminName").trim(),
-    email: formData.get("email").trim(),
+    email: formData.get("email").trim().toLowerCase(),
     password: formData.get("password"),
     adminType: formData.get("adminType")
   };
 
-  // Basic validation
-  if (!adminData.fullName || !adminData.email) {
-    showNotification("Name and email are required", "error");
+  // Enhanced validation
+  if (!adminData.fullName || adminData.fullName.length < 2) {
+    showNotification("Please enter a valid full name (at least 2 characters)", "error");
     hideLoading();
     return;
   }
 
-  if (!editingId && !adminData.password) {
-    showNotification("Password is required for new admins", "error");
+  if (!adminData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminData.email)) {
+    showNotification("Please enter a valid email address", "error");
+    hideLoading();
+    return;
+  }
+
+  if (!editingId && (!adminData.password || adminData.password.length < 8)) {
+    showNotification("Password must be at least 8 characters", "error");
     hideLoading();
     return;
   }
 
   try {
     if (editingId) {
-      // Remove password if empty (not changing it)
+      // For updates, only send password if it was changed
       if (!adminData.password) {
         delete adminData.password;
       }
@@ -477,10 +527,44 @@ async function handleFormSubmit(e) {
     closeadminModal();
     await loadadmins();
   } catch (error) {
-    console.error("Error:", error);
-    showNotification(error.message || "Error saving admin data", "error");
+    console.error("Error saving admin:", error);
+    
+    // More specific error messages
+    let errorMessage = "Error saving admin data";
+    if (error.message.includes("email")) {
+      errorMessage = "Email already exists. Please use a different email.";
+    } else if (error.message.includes("password")) {
+      errorMessage = "Invalid password requirements";
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    showNotification(errorMessage, "error");
   } finally {
     hideLoading();
+  }
+}
+
+async function debugApiCall(url, options = {}) {
+  try {
+    console.log(`Making API call to: ${url}`);
+    const response = await fetch(url, options);
+    
+    console.log(`Response status: ${response.status}`);
+    const text = await response.text();
+    console.log(`Raw response: ${text}`);
+    
+    try {
+      const json = JSON.parse(text);
+      console.log("Parsed JSON:", json);
+      return { response, data: json };
+    } catch (e) {
+      console.log("Response is not JSON");
+      return { response, data: text };
+    }
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
   }
 }
 
