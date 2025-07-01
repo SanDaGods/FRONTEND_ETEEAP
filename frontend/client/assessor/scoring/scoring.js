@@ -186,12 +186,11 @@ async function viewFile(fileId, sectionFiles) {
 // Fetch and display user files
 async function fetchAndDisplayFiles() {
   try {
-    // Hide empty state and show loading
     document.getElementById('no-documents').style.display = 'none';
     document.getElementById('documents-grid').style.display = 'none';
     document.getElementById('documents-loading').style.display = 'flex';
 
-    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/documents`, {
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${currentApplicantId}/documents`, {
       credentials: 'include'
     });
     
@@ -209,10 +208,8 @@ async function fetchAndDisplayFiles() {
     const documentsContainer = document.getElementById('documents-grid');
     documentsContainer.innerHTML = '';
 
-    // Get all files as a flat array for the viewer
     const allFiles = Object.values(data.files).flat();
 
-    // Create sections for each file group
     for (const [label, files] of Object.entries(data.files)) {
       const sectionTitle = getSectionTitle(label);
       const sectionDiv = document.createElement('div');
@@ -227,18 +224,18 @@ async function fetchAndDisplayFiles() {
         fileCard.className = 'file-card';
         fileCard.innerHTML = `
           <div class="file-icon">
-            <i class="${getFileIcon(file.contentType)}"></i>
+              <i class="${getFileIcon(file.contentType)}"></i>
           </div>
           <div class="file-info">
-            <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
-            <div class="file-actions">
-              <button class="btn view-btn" data-file-id="${file._id}">
-                <i class="fas fa-eye"></i> View
-              </button>
-              <button class="btn download-btn" data-file-id="${file._id}" data-filename="${file.filename}">
-                <i class="fas fa-download"></i> Download
-              </button>
-            </div>
+              <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
+              <div class="file-actions">
+                  <button class="btn view-btn" data-file-id="${file._id}">
+                      <i class="fas fa-eye"></i> View
+                  </button>
+                  <button class="btn download-btn" data-file-id="${file._id}" data-filename="${file.filename}">
+                      <i class="fas fa-download"></i> Download
+                  </button>
+              </div>
           </div>
         `;
         filesGrid.appendChild(fileCard);
@@ -248,7 +245,6 @@ async function fetchAndDisplayFiles() {
       documentsContainer.appendChild(sectionDiv);
     }
 
-    // Set up event listeners for view buttons
     document.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const fileId = e.currentTarget.getAttribute('data-file-id');
@@ -256,16 +252,6 @@ async function fetchAndDisplayFiles() {
       });
     });
 
-    // Set up event listeners for download buttons
-    document.querySelectorAll('.download-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const fileId = e.currentTarget.getAttribute('data-file-id');
-        const filename = e.currentTarget.getAttribute('data-filename');
-        await downloadDocument(fileId, filename);
-      });
-    });
-
-    // Show appropriate state
     document.getElementById('documents-loading').style.display = 'none';
     if (allFiles.length > 0) {
       documentsContainer.style.display = 'grid';
@@ -282,43 +268,27 @@ async function fetchAndDisplayFiles() {
 }
 
 // Helper functions
-function truncateFileName(filename, maxLength = 25) {
+function truncateFileName(filename, maxLength = 30) {
   if (filename.length <= maxLength) return filename;
-  
-  // Try to preserve file extension
-  const lastDotIndex = filename.lastIndexOf('.');
-  if (lastDotIndex > 0) {
-    const name = filename.substring(0, lastDotIndex);
-    const ext = filename.substring(lastDotIndex);
-    const maxNameLength = maxLength - ext.length - 3; // Account for '...'
-    
-    if (maxNameLength > 0) {
-      return name.substring(0, maxNameLength) + '...' + ext;
-    }
-  }
-  
-  // Fallback if no extension or name is too short
   return filename.substring(0, maxLength) + '...';
 }
 
 function getSectionTitle(label) {
   const labelMap = {
     "initial-submission": "Initial Submissions",
-    "resume": "Resume/CV",
-    "training": "Training Certificates",
-    "awards": "Awards & Achievements",
-    "interview": "Interview Documents",
+    "resume": "Updated Resume / CV",
+    "training": "Certificate of Training",
+    "awards": "Awards",
+    "interview": "Interview Form",
     "others": "Other Documents"
   };
-  return labelMap[label] || label.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return labelMap[label] || label;
 }
 
 function getFileIcon(contentType) {
   if (contentType.startsWith('image/')) return 'fas fa-file-image';
   if (contentType === 'application/pdf') return 'fas fa-file-pdf';
   if (contentType.includes('word') || contentType.includes('msword')) return 'fas fa-file-word';
-  if (contentType.includes('excel') || contentType.includes('spreadsheet')) return 'fas fa-file-excel';
-  if (contentType.includes('powerpoint') || contentType.includes('presentation')) return 'fas fa-file-powerpoint';
   return 'fas fa-file';
 }
 

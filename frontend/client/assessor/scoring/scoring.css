@@ -530,21 +530,6 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 25px;
-  box-sizing: border-box;
-}
-
-.document-section {
-  margin-bottom: 30px;
-  width: 100%;
-}
-
-.document-section h4 {
-  color: #4C308F;
-  margin-bottom: 15px;
-  font-size: 1.1rem;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
-  width: 100%;
 }
 
 .documents-header {
@@ -646,9 +631,8 @@ body {
 
 .files-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Force 3 columns */
-  gap: 20px;
-  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
 }
 
 .file-card {
@@ -660,47 +644,27 @@ body {
   gap: 15px;
   align-items: center;
   transition: transform 0.2s, box-shadow 0.2s;
-  height: 100px;
-  box-sizing: border-box;
-  width: 100%; /* Take full width of grid cell */
 }
 
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-  .files-grid {
-    grid-template-columns: repeat(3, 1fr); /* Still 3 columns but will wrap */
-  }
-}
-
-@media (max-width: 900px) {
-  .files-grid {
-    grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
-  }
-}
-
-@media (max-width: 600px) {
-  .files-grid {
-    grid-template-columns: 1fr; /* Single column on mobile */
-  }
+.file-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .file-icon {
   font-size: 24px;
   color: #4C308F;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f1f5f9;
   border-radius: 6px;
-  flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 .file-info {
   flex: 1;
-  min-width: 0; /* Allow text truncation */
-  overflow: hidden; /* Ensure content doesn't overflow */
 }
 
 .file-name {
@@ -710,20 +674,20 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
 }
 
 .file-actions {
   display: flex;
   gap: 8px;
-  flex-wrap: nowrap;
 }
 
 .file-actions .btn {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: max-content;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .file-actions .view-btn {
