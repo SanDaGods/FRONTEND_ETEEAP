@@ -609,49 +609,6 @@ document.addEventListener('click', function(event) {
 });
 
 
-async function fetchAssessorProfile() {
-    showLoading();
-    try {
-        const response = await fetch(`${API_BASE_URL}/assessor/profile`, {
-            credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        if (data.success && data.assessor) {
-            currentUser = data.assessor;
-            updateProfileDisplay(data.assessor);
-            updateUserDisplay(data.assessor);
-            sessionStorage.setItem('assessorData', JSON.stringify(data.assessor));
-            return true;
-        } else {
-            throw new Error('Failed to load assessor profile');
-        }
-    } catch (error) {
-        console.error('Error fetching assessor profile:', error);
-        
-        // Try to use cached data if available
-        const storedData = sessionStorage.getItem('assessorData');
-        if (storedData) {
-            currentUser = JSON.parse(storedData);
-            updateProfileDisplay(currentUser);
-            updateUserDisplay(currentUser);
-            return true;
-        }
-        showNotification('Failed to load profile data. Please try again.', 'error');
-        return false;
-    } finally {
-        hideLoading();
-    }
-}
-
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function() {
