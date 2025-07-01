@@ -475,20 +475,70 @@ function redirectToLogin() {
     window.location.href = '/frontend/client/applicant/login/login.html';
 }
 
+function initializeProfileDropdown() {
+    const profileDropdown = document.querySelector('.profile-dropdown');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    const logoutLink = document.getElementById('logoutLink');
+
+    if (profileDropdown && dropdownMenu) {
+        profileDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isVisible = dropdownMenu.style.opacity === '1';
+            
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu !== dropdownMenu) {
+                    menu.style.opacity = '0';
+                    menu.style.visibility = 'hidden';
+                    menu.style.transform = 'translateY(10px)';
+                }
+            });
+            
+            dropdownMenu.style.opacity = isVisible ? '0' : '1';
+            dropdownMenu.style.visibility = isVisible ? 'hidden' : 'visible';
+            dropdownMenu.style.transform = isVisible ? 'translateY(10px)' : 'translateY(0)';
+        });
+
+        document.addEventListener('click', function() {
+            dropdownMenu.style.opacity = '0';
+            dropdownMenu.style.visibility = 'hidden';
+            dropdownMenu.style.transform = 'translateY(10px)';
+        });
+
+        dropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+
+    if (logoutLink) {
+        logoutLink.addEventListener('click', async function(e) {
+            e.preventDefault();
+            await handleLogout();
+        });
+    }
+}
+
 async function handleLogout() {
     showLoading();
     try {
-        await fetch(`${API_BASE_URL}/assessor/logout`, {
+        const response = await fetch(`${API_BASE_URL}/assessor/logout`, {
             method: 'POST',
             credentials: 'include'
         });
         
-        sessionStorage.removeItem('assessorData');
-        showNotification('Logout successful', 'success');
-        setTimeout(redirectToLogin, 1000);
+        const data = await response.json();
+        if (data.success) {
+            showNotification('Logout successful! Redirecting...', 'success');
+            sessionStorage.removeItem('assessorData');
+            setTimeout(() => {
+                window.location.href = '/frontend/client/applicant/login/login.html';
+            }, 1500);
+        } else {
+            showNotification('Logout failed. Please try again.', 'error');
+        }
     } catch (error) {
-        console.error('Logout failed:', error);
-        showNotification('Logout failed', 'error');
+        console.error('Logout error:', error);
+        showNotification('Logout failed. Please try again.', 'error');
+    } finally {
         hideLoading();
     }
 }
@@ -607,6 +657,7 @@ document.addEventListener('click', function(event) {
         }
     }
 });
+
 
 
 function getApplicantIdFromVariousSources() {
