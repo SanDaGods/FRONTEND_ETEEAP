@@ -703,36 +703,30 @@ function previewDocument(filePath) {
     showLoading();
 
     try {
-        // Extract file ID and filename from path
-        const parts = filePath.split('/');
-        const fileId = parts[0];
-        const filename = parts.length > 1 ? parts[1] : 'document';
-
-        // First try direct file fetch
+        // Extract file ID from path (format is "fileId/filename")
+        const fileId = filePath.split('/')[0];
         const fileUrl = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}`;
         
-        // Check if it's a PDF (can be displayed directly)
-        if (filename.toLowerCase().endsWith('.pdf')) {
-            previewFrame.src = fileUrl;
-            previewFrame.style.display = 'block';
-            
-            previewFrame.onload = () => {
-                hideLoading();
-                // Check if PDF loaded successfully
-                setTimeout(() => {
-                    if (!previewFrame.contentDocument || 
-                        previewFrame.contentDocument.readyState !== 'complete') {
-                        tryGoogleViewerFallback();
-                    }
-                }, 2000);
-            };
-            
-            previewFrame.onerror = tryGoogleViewerFallback;
-        } 
-        // For non-PDF files, try Google Viewer first
-        else {
+        // First try direct PDF display
+        previewFrame.src = fileUrl;
+        previewFrame.style.display = 'block';
+        
+        // Set timeout to check if PDF loaded successfully
+        const loadTimeout = setTimeout(() => {
+            if (!previewFrame.contentDocument || previewFrame.contentDocument.readyState !== 'complete') {
+                tryGoogleViewerFallback();
+            }
+        }, 3000); // Increased timeout to 3 seconds
+
+        previewFrame.onload = () => {
+            clearTimeout(loadTimeout);
+            hideLoading();
+        };
+
+        previewFrame.onerror = () => {
+            clearTimeout(loadTimeout);
             tryGoogleViewerFallback();
-        }
+        };
 
         // Set up download fallback
         downloadLink.href = `${fileUrl}?download=true`;
@@ -740,7 +734,7 @@ function previewDocument(filePath) {
             e.preventDefault();
             const a = document.createElement('a');
             a.href = downloadLink.href;
-            a.download = filename;
+            a.download = filePath.split('/')[1] || 'document';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -757,14 +751,32 @@ function previewDocument(filePath) {
             encodeURIComponent(`${API_BASE_URL}/api/assessor/fetch-documents/${filePath}`)
         }&embedded=true`;
         
-        previewFrame.src = googleViewerUrl;
-        previewFrame.style.display = 'block';
+        // Create a temporary iframe to test the Google Viewer connection
+        const testFrame = document.createElement('iframe');
+        testFrame.style.display = 'none';
+        document.body.appendChild(testFrame);
         
-        previewFrame.onload = hideLoading;
-        previewFrame.onerror = () => {
-            showPreviewError('This document cannot be previewed');
+        testFrame.onload = () => {
+            // Google Viewer is accessible, use it
+            previewFrame.src = googleViewerUrl;
+            previewFrame.style.display = 'block';
+            document.body.removeChild(testFrame);
+            
+            previewFrame.onload = hideLoading;
+            previewFrame.onerror = () => {
+                showPreviewError('This document cannot be previewed');
+                hideLoading();
+            };
+        };
+        
+        testFrame.onerror = () => {
+            // Google Viewer not accessible
+            document.body.removeChild(testFrame);
+            showPreviewError('Preview service unavailable');
             hideLoading();
         };
+        
+        testFrame.src = 'about:blank';
     }
 }
 
