@@ -693,34 +693,99 @@ function updateLastUpdated() {
 // ========================
 
 function previewDocument(filePath) {
-  try {
     const previewFrame = document.getElementById('documentPreview');
     const fallbackDiv = document.querySelector('.preview-unavailable');
+    const downloadLink = document.getElementById('downloadInstead');
     
-    // Reset the iframe first
-    previewFrame.src = 'about:blank';
-    
-    showLoading();
+    // Reset state
+    previewFrame.style.display = 'none';
     fallbackDiv.style.display = 'none';
-    previewFrame.style.display = 'block';
+    showLoading();
 
-    // Add error handling to the iframe
-    previewFrame.onload = () => hideLoading();
-    previewFrame.onerror = () => {
-      showPreviewError('Failed to load document preview');
-      hideLoading();
-    };
+    // Validate input
+    if (!filePath) {
+        showPreviewError('No document specified');
+        return;
+    }
 
-    // Set the new source after a small delay
-    setTimeout(() => {
-      const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(API_BASE_URL + '/api/assessor/fetch-documents/' + filePath)}&embedded=true`;
-      previewFrame.src = googleViewerUrl;
-    }, 100);
-  } catch (error) {
-    console.error("Error in previewDocument:", error);
-    showPreviewError('Error loading document');
+    try {
+        // First try Google Docs Viewer
+        const googleViewerUrl = `https://docs.google.com/viewer?url=${
+            encodeURIComponent(`${API_BASE_URL}/api/assessor/fetch-documents/${filePath}`)
+        }&embedded=true`;
+
+        // Create a temporary iframe to test connection
+        const testFrame = document.createElement('iframe');
+        testFrame.style.display = 'none';
+        document.body.appendChild(testFrame);
+
+        testFrame.onload = () => {
+            // Connection successful, load the actual preview
+            previewFrame.src = googleViewerUrl;
+            previewFrame.style.display = 'block';
+            document.body.removeChild(testFrame);
+            
+            // Set timeout in case the frame loads but content fails
+            const loadTimeout = setTimeout(() => {
+                if (!previewFrame.contentDocument || 
+                    previewFrame.contentDocument.readyState !== 'complete') {
+                    fallbackToDirect();
+                }
+            }, 5000);
+
+            previewFrame.onload = () => {
+                clearTimeout(loadTimeout);
+                hideLoading();
+            };
+
+            previewFrame.onerror = fallbackToDirect;
+        };
+
+        testFrame.onerror = fallbackToDirect;
+        testFrame.src = 'about:blank'; // Start with blank page to test connection
+
+        // Set up download fallback
+        downloadLink.href = `${API_BASE_URL}/api/assessor/fetch-documents/${filePath}?download=true`;
+        downloadLink.onclick = (e) => {
+            e.preventDefault();
+            const a = document.createElement('a');
+            a.href = downloadLink.href;
+            a.download = filePath.split('/').pop() || 'document';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+
+    } catch (error) {
+        console.error('Error in previewDocument:', error);
+        showPreviewError('Failed to load document');
+        hideLoading();
+    }
+
+    function fallbackToDirect() {
+        try {
+            // Try loading the PDF directly as fallback
+            previewFrame.src = `${API_BASE_URL}/api/assessor/fetch-documents/${filePath}`;
+            previewFrame.style.display = 'block';
+            previewFrame.onload = hideLoading;
+            previewFrame.onerror = () => {
+                showPreviewError('This document cannot be previewed');
+                hideLoading();
+            };
+        } catch (fallbackError) {
+            console.error('Fallback failed:', fallbackError);
+            showPreviewError('Document preview unavailable');
+            hideLoading();
+        }
+    }
+}
+
+function showPreviewError(message) {
+    const fallbackDiv = document.querySelector('.preview-unavailable');
+    fallbackDiv.querySelector('p').textContent = message;
+    fallbackDiv.style.display = 'flex';
+    document.getElementById('documentPreview').style.display = 'none';
     hideLoading();
-  }
 }
 
 
