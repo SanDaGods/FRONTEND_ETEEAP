@@ -702,55 +702,45 @@ function previewDocument(filePath) {
     fallbackDiv.style.display = 'none';
     showLoading();
 
-    // Validate input
-    if (!filePath) {
-        showPreviewError('No document specified');
-        return;
-    }
-
     try {
-        // First try Google Docs Viewer
-        const googleViewerUrl = `https://docs.google.com/viewer?url=${
-            encodeURIComponent(`${API_BASE_URL}/api/assessor/fetch-documents/${filePath}`)
-        }&embedded=true`;
+        // Extract file ID and filename from path
+        const parts = filePath.split('/');
+        const fileId = parts[0];
+        const filename = parts.length > 1 ? parts[1] : 'document';
 
-        // Create a temporary iframe to test connection
-        const testFrame = document.createElement('iframe');
-        testFrame.style.display = 'none';
-        document.body.appendChild(testFrame);
-
-        testFrame.onload = () => {
-            // Connection successful, load the actual preview
-            previewFrame.src = googleViewerUrl;
+        // First try direct file fetch
+        const fileUrl = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}`;
+        
+        // Check if it's a PDF (can be displayed directly)
+        if (filename.toLowerCase().endsWith('.pdf')) {
+            previewFrame.src = fileUrl;
             previewFrame.style.display = 'block';
-            document.body.removeChild(testFrame);
             
-            // Set timeout in case the frame loads but content fails
-            const loadTimeout = setTimeout(() => {
-                if (!previewFrame.contentDocument || 
-                    previewFrame.contentDocument.readyState !== 'complete') {
-                    fallbackToDirect();
-                }
-            }, 5000);
-
             previewFrame.onload = () => {
-                clearTimeout(loadTimeout);
                 hideLoading();
+                // Check if PDF loaded successfully
+                setTimeout(() => {
+                    if (!previewFrame.contentDocument || 
+                        previewFrame.contentDocument.readyState !== 'complete') {
+                        tryGoogleViewerFallback();
+                    }
+                }, 2000);
             };
-
-            previewFrame.onerror = fallbackToDirect;
-        };
-
-        testFrame.onerror = fallbackToDirect;
-        testFrame.src = 'about:blank'; // Start with blank page to test connection
+            
+            previewFrame.onerror = tryGoogleViewerFallback;
+        } 
+        // For non-PDF files, try Google Viewer first
+        else {
+            tryGoogleViewerFallback();
+        }
 
         // Set up download fallback
-        downloadLink.href = `${API_BASE_URL}/api/assessor/fetch-documents/${filePath}?download=true`;
+        downloadLink.href = `${fileUrl}?download=true`;
         downloadLink.onclick = (e) => {
             e.preventDefault();
             const a = document.createElement('a');
             a.href = downloadLink.href;
-            a.download = filePath.split('/').pop() || 'document';
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -762,21 +752,19 @@ function previewDocument(filePath) {
         hideLoading();
     }
 
-    function fallbackToDirect() {
-        try {
-            // Try loading the PDF directly as fallback
-            previewFrame.src = `${API_BASE_URL}/api/assessor/fetch-documents/${filePath}`;
-            previewFrame.style.display = 'block';
-            previewFrame.onload = hideLoading;
-            previewFrame.onerror = () => {
-                showPreviewError('This document cannot be previewed');
-                hideLoading();
-            };
-        } catch (fallbackError) {
-            console.error('Fallback failed:', fallbackError);
-            showPreviewError('Document preview unavailable');
+    function tryGoogleViewerFallback() {
+        const googleViewerUrl = `https://docs.google.com/viewer?url=${
+            encodeURIComponent(`${API_BASE_URL}/api/assessor/fetch-documents/${filePath}`)
+        }&embedded=true`;
+        
+        previewFrame.src = googleViewerUrl;
+        previewFrame.style.display = 'block';
+        
+        previewFrame.onload = hideLoading;
+        previewFrame.onerror = () => {
+            showPreviewError('This document cannot be previewed');
             hideLoading();
-        }
+        };
     }
 }
 
