@@ -144,10 +144,10 @@ async function viewFile(fileId, sectionFiles) {
       throw new Error("No file ID provided");
     }
 
-    currentFiles = Array.isArray(sectionFiles) ? sectionFiles : [];
-    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
+    // Find the file in the provided files or fetch all files if not found
+    let file = Array.isArray(sectionFiles) ? sectionFiles.find(f => f._id === fileId) : null;
     
-    if (currentFileIndex === -1) {
+    if (!file) {
       try {
         const allFilesResponse = await fetch(`${API_BASE_URL}/api/assessor/applicants/${currentApplicantId}/documents`, {
           credentials: 'include'
@@ -156,27 +156,21 @@ async function viewFile(fileId, sectionFiles) {
         
         if (allFilesData.success && allFilesData.files) {
           const allFiles = Object.values(allFilesData.files).flat();
-          currentFiles = allFiles;
-          currentFileIndex = allFiles.findIndex(file => file._id === fileId);
+          file = allFiles.find(f => f._id === fileId);
         }
       } catch (fetchError) {
         console.error("Error fetching all files:", fetchError);
       }
       
-      if (currentFileIndex === -1) {
+      if (!file) {
         throw new Error("File not found");
       }
     }
 
-    const modal = document.getElementById("fileModal");
-    if (!modal) {
-      throw new Error("File viewer modal not found");
-    }
+    // Construct the file path for preview
+    const filePath = `${file._id}/${encodeURIComponent(file.filename)}`;
+    previewDocument(filePath);
     
-    modal.style.display = "flex";
-    document.body.classList.add('modal-open');
-    
-    await showFile(currentFileIndex);
   } catch (error) {
     console.error("Error viewing file:", error);
     showNotification(`Error viewing file: ${error.message}`, "error");
@@ -245,10 +239,26 @@ async function fetchAndDisplayFiles() {
       documentsContainer.appendChild(sectionDiv);
     }
 
+    // Add event listeners
     document.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const fileId = e.currentTarget.getAttribute('data-file-id');
         viewFile(fileId, allFiles);
+      });
+    });
+
+    document.querySelectorAll('.download-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const fileId = e.currentTarget.getAttribute('data-file-id');
+        const filename = e.currentTarget.getAttribute('data-filename');
+        const downloadUrl = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}?download=true`;
+        
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       });
     });
 
@@ -683,22 +693,6 @@ function updateLastUpdated() {
 // ========================
 
 function previewDocument(filePath) {
-    if (!filePath) {
-      showNotification('No document path provided', 'error');
-      return;
-    }
-  
-    // Browser-compatible way to get file extension
-    const lastDotIndex = filePath.lastIndexOf('.');
-    const fileExt = lastDotIndex >= 0 ? filePath.substring(lastDotIndex).toLowerCase() : '';
-    
-    const validExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx'];
-    
-    if (!validExtensions.includes(fileExt)) {
-      showNotification('Only PDF, Word, and Excel files can be previewed', 'error');
-      return;
-    }
-
   const previewFrame = document.getElementById('documentPreview');
   const fallbackDiv = document.querySelector('.preview-unavailable');
   
@@ -707,7 +701,7 @@ function previewDocument(filePath) {
   previewFrame.style.display = 'block';
 
   // Use Google Docs Viewer for better compatibility
-  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + DOCUMENTS_BASE_PATH + filePath)}&embedded=true`;
+  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(API_BASE_URL + '/api/assessor/fetch-documents/' + filePath)}&embedded=true`;
   
   previewFrame.src = '';
   
@@ -717,7 +711,7 @@ function previewDocument(filePath) {
     previewFrame.onload = () => hideLoading();
     previewFrame.onerror = () => {
       // Fallback to direct PDF view
-      previewFrame.src = `${DOCUMENTS_BASE_PATH}${encodeURIComponent(filePath)}?t=${Date.now()}`;
+      previewFrame.src = `${API_BASE_URL}/api/assessor/fetch-documents/${filePath}?t=${Date.now()}`;
       previewFrame.onerror = () => {
         showPreviewError('Failed to load document preview');
         hideLoading();
