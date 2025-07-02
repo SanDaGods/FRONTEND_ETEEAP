@@ -1,6 +1,7 @@
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 
 document.addEventListener("DOMContentLoaded", function () {
+   loadProfilePicture();
   // Notification function
   function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
@@ -164,3 +165,42 @@ async function fetchApplicantStatus() {
 
   fetchApplicantStatus();
 });
+
+async function loadProfilePicture() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth-status`, {
+      credentials: 'include'
+    });
+    const authData = await response.json();
+
+    if (authData.authenticated && authData.user) {
+      // Update profile name in navigation
+      const navProfileName = document.getElementById("nav-profile-name");
+      if (navProfileName) {
+        const nameParts = [
+          authData.user.personalInfo?.firstname || '',
+          authData.user.personalInfo?.lastname || ''
+        ];
+        const displayName = nameParts.filter(part => part.trim()).join(' ');
+        navProfileName.innerText = displayName || "Applicant";
+      }
+
+      // Load profile picture
+      const userId = authData.user._id; // or whatever your user ID field is
+      const picResponse = await fetch(`${API_BASE_URL}/api/profile-pic/${userId}`, {
+        credentials: 'include'
+      });
+      
+      if (picResponse.ok) {
+        const blob = await picResponse.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        const navProfilePic = document.getElementById("nav-profile-pic");
+        if (navProfilePic) {
+          navProfilePic.src = imageUrl;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error loading profile picture:", error);
+  }
+}
