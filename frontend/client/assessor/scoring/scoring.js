@@ -168,7 +168,7 @@ async function viewFile(fileId, sectionFiles) {
     }
 
     // Construct the file path for preview
-    const filePath = file._id;
+    const filePath = `${file._id}/${encodeURIComponent(file.filename)}`;
     previewDocument(filePath);
     
   } catch (error) {
