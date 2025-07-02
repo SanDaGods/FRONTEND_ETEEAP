@@ -693,31 +693,34 @@ function updateLastUpdated() {
 // ========================
 
 function previewDocument(filePath) {
-  const previewFrame = document.getElementById('documentPreview');
-  const fallbackDiv = document.querySelector('.preview-unavailable');
-  
-  showLoading();
-  fallbackDiv.style.display = 'none';
-  previewFrame.style.display = 'block';
-
-  // Use Google Docs Viewer for better compatibility
-  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(API_BASE_URL + '/api/assessor/fetch-documents/' + filePath)}&embedded=true`;
-  
-  previewFrame.src = '';
-  
-  setTimeout(() => {
-    previewFrame.src = googleViewerUrl;
+  try {
+    const previewFrame = document.getElementById('documentPreview');
+    const fallbackDiv = document.querySelector('.preview-unavailable');
     
+    // Reset the iframe first
+    previewFrame.src = 'about:blank';
+    
+    showLoading();
+    fallbackDiv.style.display = 'none';
+    previewFrame.style.display = 'block';
+
+    // Add error handling to the iframe
     previewFrame.onload = () => hideLoading();
     previewFrame.onerror = () => {
-      // Fallback to direct PDF view
-      previewFrame.src = `${API_BASE_URL}/api/assessor/fetch-documents/${filePath}?t=${Date.now()}`;
-      previewFrame.onerror = () => {
-        showPreviewError('Failed to load document preview');
-        hideLoading();
-      };
+      showPreviewError('Failed to load document preview');
+      hideLoading();
     };
-  }, 100);
+
+    // Set the new source after a small delay
+    setTimeout(() => {
+      const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(API_BASE_URL + '/api/assessor/fetch-documents/' + filePath)}&embedded=true`;
+      previewFrame.src = googleViewerUrl;
+    }, 100);
+  } catch (error) {
+    console.error("Error in previewDocument:", error);
+    showPreviewError('Error loading document');
+    hideLoading();
+  }
 }
 
 
