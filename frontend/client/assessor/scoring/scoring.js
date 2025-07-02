@@ -168,68 +168,20 @@ async function viewFile(fileId, sectionFiles) {
       }
     }
 
-    const file = currentFiles[currentFileIndex];
-    showLoading();
-    
-    const response = await fetch(`${API_BASE_URL}/api/assessor/fetch-documents/${file._id}`, {
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to load file: ${response.status} ${response.statusText}`);
+    const modal = document.getElementById("fileModal");
+    if (!modal) {
+      throw new Error("File viewer modal not found");
     }
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const contentType = response.headers.get('content-type') || file.contentType;
-
-    const previewFrame = document.getElementById('documentPreview');
-    const fallbackDiv = document.querySelector('.preview-unavailable');
-    const downloadLink = document.getElementById('downloadInstead');
     
-    // Hide both initially
-    previewFrame.style.display = 'none';
-    fallbackDiv.style.display = 'none';
-
-    if (contentType.startsWith("image/")) {
-      // For images, we'll use a fallback since iframes don't display images well
-      fallbackDiv.querySelector('p').textContent = 'Image preview not available in this view';
-      fallbackDiv.style.display = 'flex';
-    } else if (contentType === "application/pdf") {
-      previewFrame.style.display = 'block';
-      previewFrame.src = url + "#toolbar=1&navpanes=1&scrollbar=1";
-    } else if (contentType.includes('word') || contentType.includes('msword')) {
-      fallbackDiv.querySelector('p').textContent = 'Word document preview not available';
-      fallbackDiv.style.display = 'flex';
-    } else {
-      // Try to display other types in iframe
-      previewFrame.style.display = 'block';
-      previewFrame.src = url;
-    }
-
-    // Set up download link
-    downloadLink.href = `${API_BASE_URL}/api/assessor/fetch-documents/${file._id}?download=true`;
-    downloadLink.download = file.filename;
-
-    // Clean up when the iframe loads or fails
-    previewFrame.onload = hideLoading;
-    previewFrame.onerror = () => {
-      fallbackDiv.querySelector('p').textContent = 'Preview not available for this file type';
-      fallbackDiv.style.display = 'flex';
-      hideLoading();
-    };
-
+    modal.style.display = "flex";
+    document.body.classList.add('modal-open');
+    
+    await showFile(currentFileIndex);
   } catch (error) {
     console.error("Error viewing file:", error);
     showNotification(`Error viewing file: ${error.message}`, "error");
-    hideLoading();
-    
-    const fallbackDiv = document.querySelector('.preview-unavailable');
-    fallbackDiv.querySelector('p').textContent = 'Error loading document preview';
-    fallbackDiv.style.display = 'flex';
   }
 }
-
 
 // Fetch and display user files
 async function fetchAndDisplayFiles() {
@@ -293,7 +245,6 @@ async function fetchAndDisplayFiles() {
       documentsContainer.appendChild(sectionDiv);
     }
 
-    // Set up event listeners for view buttons
     document.querySelectorAll('.view-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const fileId = e.currentTarget.getAttribute('data-file-id');
@@ -301,23 +252,9 @@ async function fetchAndDisplayFiles() {
       });
     });
 
-    // Set up event listeners for download buttons
-    document.querySelectorAll('.download-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const fileId = e.currentTarget.getAttribute('data-file-id');
-        const filename = e.currentTarget.getAttribute('data-filename');
-        const downloadLink = document.createElement('a');
-        downloadLink.href = `${API_BASE_URL}/api/assessor/fetch-documents/${fileId}?download=true`;
-        downloadLink.download = filename;
-        downloadLink.click();
-      });
-    });
-
     document.getElementById('documents-loading').style.display = 'none';
     if (allFiles.length > 0) {
       documentsContainer.style.display = 'grid';
-      // Auto-view the first file if available
-      viewFile(allFiles[0]._id, allFiles);
     } else {
       document.getElementById('no-documents').style.display = 'flex';
     }
