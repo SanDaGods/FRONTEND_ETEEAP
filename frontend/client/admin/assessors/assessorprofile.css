@@ -596,6 +596,36 @@ body {
     }
 }
 
+/* Export Button Styles */
+.export-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.export-button:hover {
+  background-color: #45a049;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.table-header h3 {
+  margin: 0;
+}
+
+
 /* Table Controls */
 .table-controls {
   display: flex;
@@ -671,13 +701,13 @@ body {
 }
 
 .sort-option:hover {
-  background-color: #f1f5f9;
+  background-color: #4dde57;
   color: var(--primary-color);
 }
 
 .sort-divider {
   height: 1px;
-  background-color: #e2e8f0;
+  background-color: #76256b;
   margin: 5px 0;
 }
 

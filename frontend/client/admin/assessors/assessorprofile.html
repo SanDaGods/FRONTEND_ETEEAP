@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RTU ETEEAP - Admin Assessor Profile</title>
   <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="./assessorprofile.css">
+    <link rel="stylesheet" href="AssessorProfile.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
      <div class="container">
@@ -17,52 +18,55 @@
         ETEEAP
       </div>
       <div class="nav-item" data-section="dashboard">
-        <a href="../dashboard/dashboard.html">
+        <a href="/frontend/client/admin/dashboard/dashboard.html">
         <i class="fas fa-chart-pie"></i>
         Dashboard
       </a>
       </div>
       <div class="nav-item" data-section="students">
-        <a href="../applicants/applicants.html">
+        <a href="/frontend/client/admin/applicants/applicants.html">
         <i class="fas fa-users"></i>
         Applicants
       </a>
       </div>
       <div class="nav-item active" data-section="assessors">
-        <a href="../assessors/assessor.html">
+        <a href="/frontend/client/admin/assessors/assessor.html">
         <i class="fas fa-users"></i>
         Assessors
       </a>
       </div>
 
       <div class="nav-item" data-section="courses">
-        <a href="../courses/course.html">
+        <a href="/frontend/client/admin/courses/course.html">
         <i class="fas fa-book"></i>
         Courses
       </a>
       </div>
 
       <div class="nav-item" data-section="files">
-        <a href="../documents/docs.html">
+        <a href="/frontend/client/admin/documents/docs.html">
         <i class="fas fa-file"></i>
         Files
       </a>
       </div>
 
       <div class="nav-item" data-section="users">
-        <a href="../admins/admin.html">
+        <a href="/frontend/client/admin/admins/admin.html">
         <i class="fas fa-user"></i>
         Admins
       </a>
       </div>
 
       <div class="nav-item" data-section="logs">
-        <a href="../activitylogs/logs.html">
+        <a href="/frontend/client/admin/activitylogs/logs.html">
         <i class="fas fa-clock"></i>
         Activity Logs
       </a>
       </div>
+
+
     </div>
+ 
     
     <!-- Main Content -->
     <div class="main-content">
@@ -78,13 +82,13 @@
             <span class="username">Admin</span>
             <i class="fas fa-caret-down dropdown-toggle"></i>
             <div class="dropdown-menu">
-              <a href="/Frontend/Admin/Admis/AdminProfile.html" class="dropdown-item">
+              <a href="/client/admin/admins/adminprofile.html" class="dropdown-item">
                 <i class="fas fa-user"></i> Profile
               </a>
               <a href="#" class="dropdown-item">
                 <i class="fas fa-cog"></i> Settings
               </a>
-              <a href="/Frontend/AdminSide/1.adminLogin/adminlogin.html" class="dropdown-item" id="logoutLink">
+              <a href="/frontend/client/applicant/login/login.html" class="dropdown-item" id="logoutLink">
                 <i class="fas fa-sign-out-alt"></i> Logout
               </a>
             </div>
@@ -157,7 +161,7 @@
         </div>
 
         <!-- Assessor's Applicants Section -->
-        <div class="applicants-section">
+  <div class="applicants-section">
   <div class="table-header">
     <h3>Current Applicants Assigned</h3>
     <div class="table-controls">
@@ -183,16 +187,16 @@
           <div class="sort-option" data-sort="course-desc">Course (Z-A)</div>
         </div>
       </div>
+      <button id="export-applicants-btn" class="export-button">
+        <i class="fas fa-file-export"></i> Export
+      </button>
     </div>
   </div>
   <div class="applicants-list" id="assignedApplicantsList">
+
     <!-- Will be populated dynamically -->
   </div>
 </div>
-
-        
-      </div>
-    </div>
 
     <!-- Loading Spinner -->
     <div class="loading-spinner" id="loadingSpinner">
@@ -219,7 +223,7 @@
     <!-- Notification Container -->
     <div id="notificationContainer"></div>
 
-    <script src="../../shared/js/auth.js"></script>
+    <script type="module" src="../../shared/js/auth.js"></script>
     <script src="./AssessorProfile.js"></script>
  
   </div>

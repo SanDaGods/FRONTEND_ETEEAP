@@ -1,6 +1,9 @@
+// Admin Assessor Profile Controller - Complete Fixed Version with Working Export Feature
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 let currentAssessor = null;
-let assignedApplicants = []; // Add this line
+
+// Store applicants data globally for sorting
+let assignedApplicants = [];
 
 // DOM Elements
 const elements = {
@@ -14,108 +17,12 @@ const elements = {
     dropdownMenu: document.querySelector('.dropdown-menu'),
     logoutLink: document.getElementById('logoutLink'),
     usernameElement: document.querySelector('.username'),
-    userAvatar: document.querySelector('.user-avatar')
+    userAvatar: document.querySelector('.user-avatar'),
+    exportApplicantsBtn: document.getElementById('export-applicants-btn'),
+    searchApplicantsInput: document.getElementById('searchApplicantsInput')
 };
 
 // Utility Functions
-
-// Add to the utils object
-function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-
-// Add these functions to the main script (not inside any object)
-function handleApplicantSearch(e) {
-    const searchTerm = e.target.value.trim().toLowerCase();
-    
-    if (!searchTerm) {
-        profileDisplay.updateAssignedApplicants(assignedApplicants);
-        return;
-    }
-    
-    const filteredApplicants = assignedApplicants.filter(applicant => 
-        (applicant.name && applicant.name.toLowerCase().includes(searchTerm)) ||
-        (applicant.applicantId && applicant.applicantId.toLowerCase().includes(searchTerm)) ||
-        (applicant.course && applicant.course.toLowerCase().includes(searchTerm))
-    );
-    
-    profileDisplay.updateAssignedApplicants(filteredApplicants);
-}
-
-function handleApplicantSort(sortType) {
-    if (!assignedApplicants || assignedApplicants.length === 0) return;
-
-    let sortedApplicants = [...assignedApplicants];
-
-    switch (sortType) {
-        case 'name-asc':
-            sortedApplicants.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-            break;
-        case 'name-desc':
-            sortedApplicants.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
-            break;
-        case 'id-asc':
-            sortedApplicants.sort((a, b) => (a.applicantId || '').localeCompare(b.applicantId || ''));
-            break;
-        case 'id-desc':
-            sortedApplicants.sort((a, b) => (b.applicantId || '').localeCompare(a.applicantId || ''));
-            break;
-        case 'course-asc':
-            sortedApplicants.sort((a, b) => (a.course || '').localeCompare(b.course || ''));
-            break;
-        case 'course-desc':
-            sortedApplicants.sort((a, b) => (b.course || '').localeCompare(a.course || ''));
-            break;
-        case 'status-pending':
-            sortedApplicants = sortedApplicants.filter(app => 
-                /pending/i.test(app.status));
-            break;
-        case 'status-under-assessment':
-            sortedApplicants = sortedApplicants.filter(app => 
-                /under[\s-]?assessment/i.test(app.status));
-            break;
-        case 'status-evaluated-pass':
-            sortedApplicants = sortedApplicants.filter(app => 
-                /evaluated[\s-]?pass/i.test(app.status) || 
-                /passed/i.test(app.status) ||
-                /pass/i.test(app.status));
-            break;
-        case 'status-evaluated-failed':
-            sortedApplicants = sortedApplicants.filter(app => 
-                /evaluated[\s-]?fail/i.test(app.status) || 
-                /failed/i.test(app.status) ||
-                /fail/i.test(app.status));
-            break;
-        default:
-            break;
-    }
-
-    profileDisplay.updateAssignedApplicants(sortedApplicants);
-    
-    let sortMessage = '';
-    switch (sortType) {
-        case 'name-asc': sortMessage = 'Sorted by name (A-Z)'; break;
-        case 'name-desc': sortMessage = 'Sorted by name (Z-A)'; break;
-        case 'id-asc': sortMessage = 'Sorted by ID (ascending)'; break;
-        case 'id-desc': sortMessage = 'Sorted by ID (descending)'; break;
-        case 'course-asc': sortMessage = 'Sorted by course (A-Z)'; break;
-        case 'course-desc': sortMessage = 'Sorted by course (Z-A)'; break;
-        case 'status-pending': sortMessage = 'Showing Pending Review applicants'; break;
-        case 'status-under-assessment': sortMessage = 'Showing Under Assessment applicants'; break;
-        case 'status-evaluated-pass': sortMessage = 'Showing Evaluated-Pass applicants'; break;
-        case 'status-evaluated-failed': sortMessage = 'Showing Evaluated-Failed applicants'; break;
-    }
-    
-    if (sortMessage) {
-        utils.showNotification(sortMessage, 'info');
-    }
-}
-
-
 const utils = {
     showLoading: () => elements.loadingSpinner.classList.add("active"),
     hideLoading: () => elements.loadingSpinner.classList.remove("active"),
@@ -137,7 +44,7 @@ const utils = {
     
     formatDate: (dateString) => {
         if (!dateString) return 'N/A';
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
     },
     
@@ -238,7 +145,7 @@ const profileDisplay = {
                 </td>
                 <td>${utils.formatDate(applicant.dateAssigned) || 'N/A'}</td>
                 <td>
-                    <button class="action-btn view-btn" onclick="window.location.href='/frontend/client/admin/applicantprofile/applicantprofile.html?id=${applicant._id}'">
+                    <button class="action-btn view-btn" onclick="window.location.href='/client/admin/applicantprofile/applicantprofile.html?id=${applicant._id}'">
                         <i class="fas fa-eye"></i> View
                     </button>
                 </td>
@@ -274,26 +181,22 @@ const api = {
                 currentAssessor = data.data;
                 profileDisplay.update(currentAssessor);
                 
-                // Process assigned applicants data with proper applicant ID handling
-                const assignedApplicants = currentAssessor.assignedApplicants.map(app => {
+                // Process assigned applicants data
+                assignedApplicants = currentAssessor.assignedApplicants.map(app => {
                     const applicant = app.applicantId || {};
                     const isPopulatedApplicant = applicant && applicant._id;
                     
-                    // Get applicant ID from either the populated object or direct reference
-                    const applicantId = isPopulatedApplicant ? 
-                        applicant.applicantId : 
-                        (app.applicantId && typeof app.applicantId === 'string' ? app.applicantId : null);
-                    
-                    // Get name from either personalInfo or direct reference
-                    const name = applicant.personalInfo ? 
-                        `${applicant.personalInfo.lastname || ''}, ${applicant.personalInfo.firstname || ''}`.trim() : 
-                        app.fullName || 'No name provided';
-                    
                     return {
                         _id: isPopulatedApplicant ? applicant._id : app._id || app.applicantId,
-                        applicantId: applicantId || 'N/A',
-                        name: name,
-                        fullName: name,
+                        applicantId: isPopulatedApplicant ? 
+                            applicant.applicantId : 
+                            (app.applicantId && typeof app.applicantId === 'string' ? app.applicantId : 'N/A'),
+                        name: applicant.personalInfo ? 
+                            `${applicant.personalInfo.lastname || ''}, ${applicant.personalInfo.firstname || ''}`.trim() : 
+                            app.fullName || 'No name provided',
+                        fullName: applicant.personalInfo ? 
+                            `${applicant.personalInfo.firstname || ''} ${applicant.personalInfo.lastname || ''}`.trim() : 
+                            app.fullName || 'No name provided',
                         course: applicant.personalInfo?.firstPriorityCourse || app.course || 'Not specified',
                         status: applicant.status || app.status || 'Under Assessment',
                         dateAssigned: app.dateAssigned || new Date()
@@ -368,6 +271,101 @@ const api = {
     }
 };
 
+// Search and Sort Functions
+function handleApplicantSearch(e) {
+    const searchTerm = e.target.value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+        profileDisplay.updateAssignedApplicants(assignedApplicants);
+        return;
+    }
+    
+    const filteredApplicants = assignedApplicants.filter(applicant => 
+        (applicant.name && applicant.name.toLowerCase().includes(searchTerm)) ||
+        (applicant.applicantId && applicant.applicantId.toLowerCase().includes(searchTerm)) ||
+        (applicant.course && applicant.course.toLowerCase().includes(searchTerm))
+    );
+    
+    profileDisplay.updateAssignedApplicants(filteredApplicants);
+}
+
+function handleApplicantSort(sortType) {
+    if (!assignedApplicants || assignedApplicants.length === 0) return;
+
+    let sortedApplicants = [...assignedApplicants];
+
+    switch (sortType) {
+        case 'name-asc':
+            sortedApplicants.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            break;
+        case 'name-desc':
+            sortedApplicants.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            break;
+        case 'id-asc':
+            sortedApplicants.sort((a, b) => (a.applicantId || '').localeCompare(b.applicantId || ''));
+            break;
+        case 'id-desc':
+            sortedApplicants.sort((a, b) => (b.applicantId || '').localeCompare(a.applicantId || ''));
+            break;
+        case 'course-asc':
+            sortedApplicants.sort((a, b) => (a.course || '').localeCompare(b.course || ''));
+            break;
+        case 'course-desc':
+            sortedApplicants.sort((a, b) => (b.course || '').localeCompare(a.course || ''));
+            break;
+        case 'status-pending':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /pending/i.test(app.status));
+            break;
+        case 'status-under-assessment':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /under[\s-]?assessment/i.test(app.status));
+            break;
+        case 'status-evaluated-pass':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /evaluated[\s-]?pass/i.test(app.status) || 
+                /passed/i.test(app.status) ||
+                /pass/i.test(app.status));
+            break;
+        case 'status-evaluated-failed':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /evaluated[\s-]?fail/i.test(app.status) || 
+                /failed/i.test(app.status) ||
+                /fail/i.test(app.status));
+            break;
+        default:
+            break;
+    }
+
+    profileDisplay.updateAssignedApplicants(sortedApplicants);
+    
+    let sortMessage = '';
+    switch (sortType) {
+        case 'name-asc': sortMessage = 'Sorted by name (A-Z)'; break;
+        case 'name-desc': sortMessage = 'Sorted by name (Z-A)'; break;
+        case 'id-asc': sortMessage = 'Sorted by ID (ascending)'; break;
+        case 'id-desc': sortMessage = 'Sorted by ID (descending)'; break;
+        case 'course-asc': sortMessage = 'Sorted by course (A-Z)'; break;
+        case 'course-desc': sortMessage = 'Sorted by course (Z-A)'; break;
+        case 'status-pending': sortMessage = 'Showing Pending Review applicants'; break;
+        case 'status-under-assessment': sortMessage = 'Showing Under Assessment applicants'; break;
+        case 'status-evaluated-pass': sortMessage = 'Showing Evaluated-Pass applicants'; break;
+        case 'status-evaluated-failed': sortMessage = 'Showing Evaluated-Failed applicants'; break;
+    }
+    
+    if (sortMessage) {
+        utils.showNotification(sortMessage, 'info');
+    }
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
 // Admin Functions
 const admin = {
     updateUserDisplay: (user) => {
@@ -407,7 +405,7 @@ const admin = {
     },
     
     redirectToLogin: () => {
-        window.location.href = '/frontend/client/applicant/login/login.html';
+        window.location.href = '/client/applicant/login/login.html';
     },
     
     clearAuthData: () => {
@@ -492,6 +490,51 @@ const navigation = {
     }
 };
 
+// Export Functions
+const exportFunctions = {
+    exportAssignedApplicants: () => {
+        if (!currentAssessor || !currentAssessor.assignedApplicants || currentAssessor.assignedApplicants.length === 0) {
+            utils.showNotification('No applicants to export', 'info');
+            return;
+        }
+
+        try {
+            // Prepare the data for export
+            const exportData = currentAssessor.assignedApplicants.map(applicant => {
+                const applicantData = applicant.applicantId || {};
+                const isPopulatedApplicant = applicantData && applicantData._id;
+                
+                return {
+                    'Applicant ID': isPopulatedApplicant ? 
+                        applicantData.applicantId : 
+                        (applicant.applicantId && typeof applicant.applicantId === 'string' ? applicant.applicantId : 'N/A'),
+                    'Full Name': applicantData.personalInfo ? 
+                        `${applicantData.personalInfo.lastname || ''}, ${applicantData.personalInfo.firstname || ''}`.trim() : 
+                        applicant.fullName || 'No name provided',
+                    'Course': applicantData.personalInfo?.firstPriorityCourse || applicant.course || 'Not specified',
+                    'Status': applicantData.status || applicant.status || 'Under Assessment',
+                    'Date Assigned': utils.formatDate(applicant.dateAssigned) || 'N/A'
+                };
+            });
+
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Assigned Applicants");
+            
+            // Export the file
+            XLSX.writeFile(wb, `Assigned_Applicants_${currentAssessor.assessorId || 'Export'}_${new Date().toISOString().slice(0,10)}.xlsx`);
+            
+            utils.showNotification('Export successful!', 'success');
+        } catch (error) {
+            console.error('Export error:', error);
+            utils.showNotification(`Export failed: ${error.message}`, 'error');
+        }
+    }
+};
+
 // Event Listeners
 const setupEventListeners = () => {
     // Delete button
@@ -504,6 +547,11 @@ const setupEventListeners = () => {
         elements.editAssessorBtn.addEventListener('click', navigation.editAssessor);
     }
     
+    // Export button
+    if (elements.exportApplicantsBtn) {
+        elements.exportApplicantsBtn.addEventListener('click', exportFunctions.exportAssignedApplicants);
+    }
+    
     // Close modal when clicking outside
     window.addEventListener('click', (event) => {
         if (event.target === elements.deleteModal) {
@@ -512,8 +560,8 @@ const setupEventListeners = () => {
     });
     
     // Search input
-    if (document.getElementById('searchApplicantsInput')) {
-        document.getElementById('searchApplicantsInput').addEventListener('input', debounce(handleApplicantSearch, 300));
+    if (elements.searchApplicantsInput) {
+        elements.searchApplicantsInput.addEventListener('input', debounce(handleApplicantSearch, 300));
     }
     
     // Sort dropdown
@@ -542,6 +590,29 @@ const setupEventListeners = () => {
     // Initialize admin UI components
     admin.initializeDropdown();
     admin.initializeLogout();
+};
+
+// Initialize the page
+const init = async () => {
+    const assessorId = utils.getAssessorIdFromUrl();
+    
+    if (!assessorId) {
+        utils.showNotification('No assessor specified. Redirecting...', 'error');
+        setTimeout(() => {
+            window.location.href = '/client/admin/assessors/assessors.html';
+        }, 2000);
+        return;
+    }
+    
+    setupEventListeners();
+    
+    try {
+        await api.loadAdminInfo();
+        await api.fetchAssessorData(assessorId);
+    } catch (error) {
+        console.error('Initialization error:', error);
+        utils.showNotification('Failed to load assessor data', 'error');
+    }
 };
 
 // Make functions available globally
