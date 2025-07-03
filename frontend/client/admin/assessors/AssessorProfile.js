@@ -562,10 +562,37 @@ const setupEventListeners = () => {
     admin.initializeLogout();
 };
 
+
+const init = async () => {
+    const assessorId = utils.getAssessorIdFromUrl();
+    
+    if (!assessorId) {
+        utils.showNotification('No assessor specified. Redirecting...', 'error');
+        setTimeout(() => {
+            window.location.href = '/client/admin/assessors/assessors.html';
+        }, 2000);
+        return;
+    }
+    
+    setupEventListeners();
+    
+    try {
+        await api.loadAdminInfo();
+        await api.fetchAssessorData(assessorId);
+    } catch (error) {
+        console.error('Initialization error:', error);
+        utils.showNotification('Failed to load assessor data', 'error');
+    }
+};
+
 // Make functions available globally
 window.viewApplicant = navigation.viewApplicant;
 window.closeDeleteModal = modal.closeDelete;
 window.confirmDelete = modal.confirmDelete;
+
+
+
+
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
