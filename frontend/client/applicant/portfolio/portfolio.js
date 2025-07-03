@@ -542,6 +542,7 @@ async function fetchAndDisplayFiles() {
 
 // Main initialization when DOM loads
 document.addEventListener("DOMContentLoaded", async function() {
+  loadProfilePicture();
   // Initialize file viewer
   initializeFileViewer();
 
@@ -580,3 +581,42 @@ document.addEventListener("DOMContentLoaded", async function() {
     showNotification(`Failed to load profile data: ${error.message}`, "error");
   }
 });
+
+async function loadProfilePicture() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth-status`, {
+      credentials: 'include'
+    });
+    const authData = await response.json();
+
+    if (authData.authenticated && authData.user) {
+      // Update profile name in navigation
+      const navProfileName = document.getElementById("nav-profile-name");
+      if (navProfileName) {
+        const nameParts = [
+          authData.user.personalInfo?.firstname || '',
+          authData.user.personalInfo?.lastname || ''
+        ];
+        const displayName = nameParts.filter(part => part.trim()).join(' ');
+        navProfileName.innerText = displayName || "Applicant";
+      }
+
+      // Load profile picture
+      const userId = authData.user._id; // or whatever your user ID field is
+      const picResponse = await fetch(`${API_BASE_URL}/api/profile-pic/${userId}`, {
+        credentials: 'include'
+      });
+      
+      if (picResponse.ok) {
+        const blob = await picResponse.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        const navProfilePic = document.getElementById("nav-profile-pic");
+        if (navProfilePic) {
+          navProfilePic.src = imageUrl;
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error loading profile picture:", error);
+  }
+}
