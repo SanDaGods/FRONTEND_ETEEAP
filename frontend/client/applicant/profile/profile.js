@@ -83,9 +83,9 @@ function populateProfile(userData) {
 
   // Add applicant ID display
   const idElement = document.getElementById("user-id");
-  if (idElement) {
-    idElement.innerHTML = `<i class="fa-solid fa-id-card"></i> ${userData.applicantId || "Not assigned"}`;
-  }
+if (idElement) {
+  idElement.innerHTML = `<i class="fa-solid fa-id-card"></i> ${userData.applicantId || "Not assigned"}`;
+}
 
   const emailElement = document.getElementById("user-email");
   if (emailElement) {
