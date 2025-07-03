@@ -69,9 +69,24 @@
       <!-- Header -->
       <div class="header">
         <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" placeholder="Search..." id="searchInput" />
-        </div>
+  <i class="fas fa-search"></i>
+  <input type="text" placeholder="Search..." id="searchInput" />
+  <div class="sort-dropdown">
+    <button class="sort-btn">
+      <i class="fas fa-sort"></i> Sort
+    </button>
+    <div class="sort-options">
+      <div class="sort-option" data-sort="id-asc">ID (Low to High)</div>
+      <div class="sort-option" data-sort="id-desc">ID (High to Low)</div>
+      <div class="sort-divider"></div>
+      <div class="sort-option" data-sort="type-internal">Internal Assessors</div>
+      <div class="sort-option" data-sort="type-external">External Assessors</div>
+      <div class="sort-divider"></div>
+      <div class="sort-option" data-sort="applicants-asc">Applicants Count (Low to High)</div>
+      <div class="sort-option" data-sort="applicants-desc">Applicants Count (High to Low)</div>
+    </div>
+  </div>
+</div>
         
         <div class="user-profile">
           <div class="profile-dropdown">
