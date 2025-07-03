@@ -158,13 +158,40 @@
 
         <!-- Assessor's Applicants Section -->
         <div class="applicants-section">
-          <h3>Current Applicants Assigned</h3>
-          <div class="applicants-list" id="assignedApplicantsList">
-            <!-- Will be populated dynamically -->
-          </div>
+  <div class="table-header">
+    <h3>Current Applicants Assigned</h3>
+    <div class="table-controls">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search..." id="searchApplicantsInput" />
+      </div>
+      <div class="sort-dropdown">
+        <button class="sort-btn">
+          <i class="fas fa-sort"></i> Sort
+        </button>
+        <div class="sort-options">
+          <div class="sort-option" data-sort="name-asc">Name (A-Z)</div>
+          <div class="sort-option" data-sort="name-desc">Name (Z-A)</div>
+          <div class="sort-option" data-sort="id-asc">ID (Low to High)</div>
+          <div class="sort-option" data-sort="id-desc">ID (High to Low)</div>
+          <div class="sort-divider"></div>
+          <div class="sort-option" data-sort="status-pending">Pending Review</div>
+          <div class="sort-option" data-sort="status-under-assessment">Under Assessment</div>
+          <div class="sort-option" data-sort="status-evaluated-pass">Evaluated-Pass</div>
+          <div class="sort-option" data-sort="status-evaluated-failed">Evaluated-Failed</div>
+          <div class="sort-option" data-sort="course-asc">Course (A-Z)</div>
+          <div class="sort-option" data-sort="course-desc">Course (Z-A)</div>
         </div>
       </div>
+      <button id="export-applicants-btn" class="export-button">
+        <i class="fas fa-file-export"></i> Export
+      </button>
     </div>
+  </div>
+  <div class="applicants-list" id="assignedApplicantsList">
+    <!-- Will be populated dynamically -->
+  </div>
+</div>
 
     <!-- Loading Spinner -->
     <div class="loading-spinner" id="loadingSpinner">
@@ -191,8 +218,9 @@
     <!-- Notification Container -->
     <div id="notificationContainer"></div>
 
-    <script src="../../shared/js/auth.js"></script>
+    <script type="module" src="../../shared/js/auth.js"></script>
     <script src="./AssessorProfile.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
  
   </div>
 </body>

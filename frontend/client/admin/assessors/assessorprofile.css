@@ -596,3 +596,157 @@ body {
     }
 }
 
+/* Export Button Styles */
+.export-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.export-button:hover {
+  background-color: #45a049;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.table-header h3 {
+  margin: 0;
+}
+
+/* Table Controls */
+.table-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: auto;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: 200px;
+}
+
+.search-bar input {
+  border: none;
+  background: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Sort Dropdown Styles */
+.sort-dropdown {
+  position: relative;
+}
+
+.sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.sort-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.sort-options {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  z-index: 100;
+  display: none;
+  overflow: hidden;
+}
+
+.sort-dropdown:hover .sort-options {
+  display: block;
+}
+
+.sort-option {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.sort-option:hover {
+  background-color: #4dde57;
+  color: var(--primary-color);
+}
+
+.sort-divider {
+  height: 1px;
+  background-color: #76256b;
+  margin: 5px 0;
+}
+
+/* Table Header */
+.table-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.table-header h3 {
+  color: var(--primary-color);
+  margin: 0;
+  font-size: 1.25rem;
+  position: relative;
+  padding-left: 15px;
+}
+
+.table-header h3::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 60%;
+  width: 4px;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .table-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .search-bar {
+    flex-grow: 1;
+  }
+}
