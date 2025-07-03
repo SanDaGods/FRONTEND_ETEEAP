@@ -81,17 +81,18 @@ function populateProfile(userData) {
     occupationElement.innerText = personalInfo.occupation || "Not specified";
   }
 
+  // Add applicant ID display
+  const idElement = document.getElementById("user-id");
+  if (idElement) {
+    idElement.innerHTML = `<i class="fa-solid fa-id-card"></i> ${userData.applicantId || "Not assigned"}`;
+  }
+
   const emailElement = document.getElementById("user-email");
   if (emailElement) {
     emailElement.innerHTML = `<i class="fa-solid fa-envelope"></i> ${
       personalInfo.emailAddress || userData.email || "N/A"
     }`;
   }
-
-  const idElement = document.getElementById("user-id");
-        if (idElement) {
-        idElement.innerHTML = `<i class="fa-solid fa-id-card"></i> ${userData.applicantId || "Not assigned"}`;
-      }
 
   // Field mappings for profile sections
   const fieldMappings = {
