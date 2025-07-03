@@ -67,38 +67,34 @@
     <!--Main Content-->
     <div class="main-content">
       <!-- Header -->
-      <div class="header">
-        <div class="search-bar">
-          <i class="fas fa-search"></i>
-          <input type="text" placeholder="Search..." id="searchInput" />
-        </div>
-        
-        <div class="user-profile">
-          <div class="profile-dropdown">
-            <div class="user-avatar">
-              <i class="fas fa-user"></i>
-            </div>
-            <span class="username">Admin</span>
-            <i class="fas fa-caret-down dropdown-toggle"></i>
-            <div class="dropdown-menu">
-              <a href="#" class="dropdown-item">
-                <i class="fas fa-user"></i>
-                Profile
-              </a>
-              <a href="#" class="dropdown-item">
-                <i class="fas fa-cog"></i>
-                Settings
-              </a>
-              <a href="/frontend/client/applicant/login/login.html" 
-              class="dropdown-item" id="logoutLink">
-                <i class="fas fa-sign-out-alt"></i>
-                Logout
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+<!-- Pagination controls -->
+<div class="pagination-controls">
+  <button id="prevPage" class="pagination-btn" disabled>
+    <i class="fas fa-chevron-left"></i> Previous
+  </button>
+  <span id="pageInfo">Page 1 of 1</span>
+  <button id="nextPage" class="pagination-btn" disabled>
+    Next <i class="fas fa-chevron-right"></i>
+  </button>
+</div>
 
+<!-- Sort dropdown (should be in your header) -->
+<div class="sort-dropdown">
+  <button class="sort-btn">
+    <i class="fas fa-sort"></i> Sort
+  </button>
+  <div class="sort-options">
+    <div class="sort-option" data-sort="name-asc">Name (A-Z)</div>
+    <div class="sort-option" data-sort="name-desc">Name (Z-A)</div>
+    <div class="sort-option" data-sort="id-asc">ID (Low to High)</div>
+    <div class="sort-option" data-sort="id-desc">ID (High to Low)</div>
+    <div class="sort-divider"></div>
+    <div class="sort-option" data-sort="status-pending">Pending Review</div>
+    <div class="sort-option" data-sort="status-under-assessment">Under Assessment</div>
+    <div class="sort-option" data-sort="status-evaluated-pass">Evaluated-Pass</div>
+    <div class="sort-option" data-sort="status-evaluated-failed">Evaluated-Failed</div>
+  </div>
+</div>
   
 
       <!-- students Section -->

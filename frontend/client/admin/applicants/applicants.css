@@ -582,3 +582,64 @@ textarea:focus {
 .export-button:hover {
   background-color: #45a049;
 }
+
+
+/* Sort Dropdown Styles */
+.sort-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.sort-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.sort-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  z-index: 100;
+  display: none;
+  overflow: hidden;
+}
+
+.sort-dropdown:hover .sort-options {
+  display: block;
+}
+
+.sort-option {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.sort-option:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-color);
+}
+
+.sort-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 5px 0;
+}

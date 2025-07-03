@@ -1,5 +1,7 @@
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 
+
+
 // DOM Elements
 const loadingSpinner = document.getElementById("loadingSpinner");
 const allStudentsTableBody = document.getElementById("allStudentsTableBody");
@@ -27,8 +29,9 @@ async function fetchApplicants() {
     const data = await response.json();
     
     if (data.success && data.data) {
-      // Store applicants locally for search
+      // Store applicants globally for search/sort
       applicants = data.data;
+      filteredApplicants = [...applicants]; // Initialize filtered list
       
       // Update the total applicants counter in sessionStorage
       sessionStorage.setItem('totalApplicants', applicants.length);
@@ -36,7 +39,7 @@ async function fetchApplicants() {
       // Update the counter in the dashboard if it exists on this page
       updateTotalApplicantsCounter(applicants.length);
       
-      renderApplicantsTable(applicants);
+      renderApplicantsTable(filteredApplicants); // Render filtered applicants
     } else {
       showNotification('No applicants found', 'info');
       sessionStorage.setItem('totalApplicants', '0');
@@ -52,6 +55,47 @@ async function fetchApplicants() {
   } finally {
     hideLoading();
   }
+}
+
+// Add these pagination functions
+function goToPreviousPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderApplicantsTable(filteredApplicants);
+    updatePaginationControls();
+  }
+}
+
+function goToNextPage() {
+  const totalPages = Math.ceil(filteredApplicants.length / applicantsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderApplicantsTable(filteredApplicants);
+    updatePaginationControls();
+  }
+}
+
+function updatePaginationControls() {
+  const totalPages = Math.ceil(filteredApplicants.length / applicantsPerPage);
+  
+  // Update page info
+  const pageInfo = document.getElementById('pageInfo');
+  if (pageInfo) {
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+  }
+  
+  // Update button states
+  const prevPageBtn = document.getElementById('prevPage');
+  const nextPageBtn = document.getElementById('nextPage');
+  
+  if (prevPageBtn) prevPageBtn.disabled = currentPage === 1;
+  if (nextPageBtn) nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+}
+
+function getPaginatedApplicants(applicantsToPaginate) {
+  const startIndex = (currentPage - 1) * applicantsPerPage;
+  const endIndex = startIndex + applicantsPerPage;
+  return applicantsToPaginate.slice(startIndex, endIndex);
 }
 
 // Update this function to handle both dashboard and list page counters
@@ -73,22 +117,25 @@ function updateTotalApplicantsCounter(count) {
 }
 
 // Render applicants data in the table
-function renderApplicantsTable(applicants) {
+function renderApplicantsTable(applicantsToRender) {
   if (!allStudentsTableBody) return;
   
-  // Clear existing table rows
   allStudentsTableBody.innerHTML = '';
   
-  if (applicants.length === 0) {
+  if (applicantsToRender.length === 0) {
     renderEmptyState();
     return;
   }
+
+  // Store filtered applicants globally
+  filteredApplicants = applicantsToRender;
   
-  // Create table rows for each applicant
-  applicants.forEach(applicant => {
+  // Get paginated subset
+  const paginatedApplicants = getPaginatedApplicants(filteredApplicants);
+  
+  paginatedApplicants.forEach(applicant => {
     const row = document.createElement('tr');
     
-    // Format application date
     const appDate = new Date(applicant.applicationDate);
     const formattedDate = appDate.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -96,7 +143,6 @@ function renderApplicantsTable(applicants) {
       day: 'numeric'
     });
     
-    // Create table cells
     row.innerHTML = `
       <td>${applicant.applicantId || 'N/A'}</td>
       <td>${applicant.name || 'No name provided'}</td>
@@ -104,7 +150,7 @@ function renderApplicantsTable(applicants) {
       <td>${formattedDate}</td>
       <td>${applicant.currentScore || 0}</td>
       <td>
-        <span class="status-badge status-${applicant.status.toLowerCase().replace(' ', '-')}">
+        <span class="status-badge status-${applicant.status.toLowerCase().replace(/\s+/g, '-')}">
           ${applicant.status}
         </span>
       </td>
@@ -122,8 +168,8 @@ function renderApplicantsTable(applicants) {
     
     allStudentsTableBody.appendChild(row);
   });
-  
-  // Add event listeners to action buttons
+
+  updatePaginationControls();
   addActionButtonListeners();
 }
 
@@ -204,11 +250,18 @@ function addActionButtonListeners() {
 
 // Initialize all event listeners
 function initializeEventListeners() {
-  // Initialize dropdown and logout
   initializeDropdown();
   initializeLogout();
+  initializeSortDropdown(); // Add this line
+
+  // Initialize pagination buttons
+  const prevPageBtn = document.getElementById('prevPage');
+  const nextPageBtn = document.getElementById('nextPage');
   
-  // Add search functionality
+  if (prevPageBtn) prevPageBtn.addEventListener('click', goToPreviousPage);
+  if (nextPageBtn) nextPageBtn.addEventListener('click', goToNextPage);
+  
+  // Search functionality
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('input', debounce(handleSearch, 300));
@@ -221,22 +274,26 @@ async function handleSearch(e) {
   const searchTerm = e.target.value.trim().toLowerCase();
   
   if (!searchTerm) {
-    // If search is empty, fetch all applicants
-    await fetchApplicants();
+    currentPage = 1;
+    filteredApplicants = [...applicants];
+    renderApplicantsTable(filteredApplicants);
     return;
   }
 
   showLoading();
   try {
-    // First try to search locally for instant results
+    // First try local search
     const localResults = applicants.filter(applicant => 
       (applicant.name && applicant.name.toLowerCase().includes(searchTerm)) ||
       (applicant.applicantId && applicant.applicantId.toLowerCase().includes(searchTerm)) ||
       (applicant.course && applicant.course.toLowerCase().includes(searchTerm))
     );
     
+    currentPage = 1;
+    filteredApplicants = localResults;
+    renderApplicantsTable(filteredApplicants);
+    
     if (localResults.length > 0) {
-      renderApplicantsTable(localResults);
       hideLoading();
       return;
     }
@@ -254,7 +311,8 @@ async function handleSearch(e) {
     const data = await response.json();
     
     if (data.success && data.data) {
-      renderApplicantsTable(data.data);
+      filteredApplicants = data.data;
+      renderApplicantsTable(filteredApplicants);
     } else {
       renderEmptyState();
       showNotification('No matching applicants found', 'info');
@@ -489,6 +547,99 @@ function debounce(func, wait) {
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
+
+// Add these sorting/filtering functions
+function initializeSortDropdown() {
+  const sortBtn = document.querySelector('.sort-btn');
+  const sortOptions = document.querySelector('.sort-options');
+
+  if (sortBtn && sortOptions) {
+    sortBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sortOptions.style.display = sortOptions.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', () => {
+      sortOptions.style.display = 'none';
+    });
+
+    document.querySelectorAll('.sort-option').forEach(option => {
+      option.addEventListener('click', (e) => {
+        const sortType = e.target.getAttribute('data-sort');
+        handleSort(sortType);
+        sortOptions.style.display = 'none';
+      });
+    });
+  }
+}
+
+function handleSort(sortType) {
+  if (!applicants || applicants.length === 0) return;
+
+  let sortedApplicants = [...applicants];
+  switch (sortType) {
+    case 'name-asc':
+      sortedApplicants.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      break;
+    case 'name-desc':
+      sortedApplicants.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+      break;
+    case 'id-asc':
+      sortedApplicants.sort((a, b) => (a.applicantId || '').localeCompare(b.applicantId || ''));
+      break;
+    case 'id-desc':
+      sortedApplicants.sort((a, b) => (b.applicantId || '').localeCompare(a.applicantId || ''));
+      break;
+    case 'status-pending':
+      sortedApplicants = sortedApplicants.filter(app => 
+        /pending/i.test(app.status));
+      break;
+    case 'status-under-assessment':
+      sortedApplicants = sortedApplicants.filter(app => 
+        /under[\s-]?assessment/i.test(app.status));
+      break;
+    case 'status-evaluated-pass':
+      sortedApplicants = sortedApplicants.filter(app => 
+        /evaluated[\s-]?pass/i.test(app.status) || 
+        /passed/i.test(app.status) ||
+        /pass/i.test(app.status));
+      break;
+    case 'status-evaluated-failed':
+      sortedApplicants = sortedApplicants.filter(app => 
+        /evaluated[\s-]?fail/i.test(app.status) || 
+        /failed/i.test(app.status) ||
+        /fail/i.test(app.status));
+      break;
+    default:
+      break;
+  }
+  
+  currentPage = 1;
+  renderApplicantsTable(sortedApplicants);
+  
+  // Show notification about current filter
+  let sortMessage = '';
+  switch (sortType) {
+    case 'name-asc': sortMessage = 'Sorted by name (A-Z)'; break;
+    case 'name-desc': sortMessage = 'Sorted by name (Z-A)'; break;
+    case 'id-asc': sortMessage = 'Sorted by ID (ascending)'; break;
+    case 'id-desc': sortMessage = 'Sorted by ID (descending)'; break;
+    case 'status-pending': sortMessage = 'Showing Pending Review applicants'; break;
+    case 'status-under-assessment': sortMessage = 'Showing Under Assessment applicants'; break;
+    case 'status-evaluated-pass': sortMessage = 'Showing Evaluated-Pass applicants'; break;
+    case 'status-evaluated-failed': sortMessage = 'Showing Evaluated-Failed applicants'; break;
+  }
+  
+  if (sortMessage) {
+    showNotification(sortMessage, 'info');
+  }
+}
+
+let currentPage = 1;
+const applicantsPerPage = 20;
+let applicants = []; // Store all applicants
+let filteredApplicants = []; // Store filtered applicants
+
 
 // Make logout function available globally
 window.handleLogout = handleLogout;
