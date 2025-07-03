@@ -1,5 +1,6 @@
 const API_BASE_URL = "https://backendeteeap-production.up.railway.app";
 let currentAssessor = null;
+let assignedApplicants = []; // Add this line
 
 // DOM Elements
 const elements = {
@@ -17,6 +18,104 @@ const elements = {
 };
 
 // Utility Functions
+
+// Add to the utils object
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Add these functions to the main script (not inside any object)
+function handleApplicantSearch(e) {
+    const searchTerm = e.target.value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+        profileDisplay.updateAssignedApplicants(assignedApplicants);
+        return;
+    }
+    
+    const filteredApplicants = assignedApplicants.filter(applicant => 
+        (applicant.name && applicant.name.toLowerCase().includes(searchTerm)) ||
+        (applicant.applicantId && applicant.applicantId.toLowerCase().includes(searchTerm)) ||
+        (applicant.course && applicant.course.toLowerCase().includes(searchTerm))
+    );
+    
+    profileDisplay.updateAssignedApplicants(filteredApplicants);
+}
+
+function handleApplicantSort(sortType) {
+    if (!assignedApplicants || assignedApplicants.length === 0) return;
+
+    let sortedApplicants = [...assignedApplicants];
+
+    switch (sortType) {
+        case 'name-asc':
+            sortedApplicants.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            break;
+        case 'name-desc':
+            sortedApplicants.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            break;
+        case 'id-asc':
+            sortedApplicants.sort((a, b) => (a.applicantId || '').localeCompare(b.applicantId || ''));
+            break;
+        case 'id-desc':
+            sortedApplicants.sort((a, b) => (b.applicantId || '').localeCompare(a.applicantId || ''));
+            break;
+        case 'course-asc':
+            sortedApplicants.sort((a, b) => (a.course || '').localeCompare(b.course || ''));
+            break;
+        case 'course-desc':
+            sortedApplicants.sort((a, b) => (b.course || '').localeCompare(a.course || ''));
+            break;
+        case 'status-pending':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /pending/i.test(app.status));
+            break;
+        case 'status-under-assessment':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /under[\s-]?assessment/i.test(app.status));
+            break;
+        case 'status-evaluated-pass':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /evaluated[\s-]?pass/i.test(app.status) || 
+                /passed/i.test(app.status) ||
+                /pass/i.test(app.status));
+            break;
+        case 'status-evaluated-failed':
+            sortedApplicants = sortedApplicants.filter(app => 
+                /evaluated[\s-]?fail/i.test(app.status) || 
+                /failed/i.test(app.status) ||
+                /fail/i.test(app.status));
+            break;
+        default:
+            break;
+    }
+
+    profileDisplay.updateAssignedApplicants(sortedApplicants);
+    
+    let sortMessage = '';
+    switch (sortType) {
+        case 'name-asc': sortMessage = 'Sorted by name (A-Z)'; break;
+        case 'name-desc': sortMessage = 'Sorted by name (Z-A)'; break;
+        case 'id-asc': sortMessage = 'Sorted by ID (ascending)'; break;
+        case 'id-desc': sortMessage = 'Sorted by ID (descending)'; break;
+        case 'course-asc': sortMessage = 'Sorted by course (A-Z)'; break;
+        case 'course-desc': sortMessage = 'Sorted by course (Z-A)'; break;
+        case 'status-pending': sortMessage = 'Showing Pending Review applicants'; break;
+        case 'status-under-assessment': sortMessage = 'Showing Under Assessment applicants'; break;
+        case 'status-evaluated-pass': sortMessage = 'Showing Evaluated-Pass applicants'; break;
+        case 'status-evaluated-failed': sortMessage = 'Showing Evaluated-Failed applicants'; break;
+    }
+    
+    if (sortMessage) {
+        utils.showNotification(sortMessage, 'info');
+    }
+}
+
+
 const utils = {
     showLoading: () => elements.loadingSpinner.classList.add("active"),
     hideLoading: () => elements.loadingSpinner.classList.remove("active"),
@@ -412,32 +511,37 @@ const setupEventListeners = () => {
         }
     });
     
+    // Search input
+    if (document.getElementById('searchApplicantsInput')) {
+        document.getElementById('searchApplicantsInput').addEventListener('input', debounce(handleApplicantSearch, 300));
+    }
+    
+    // Sort dropdown
+    const sortBtn = document.querySelector('.sort-btn');
+    const sortOptions = document.querySelector('.sort-options');
+    
+    if (sortBtn && sortOptions) {
+        sortBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sortOptions.style.display = sortOptions.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        document.addEventListener('click', () => {
+            sortOptions.style.display = 'none';
+        });
+        
+        document.querySelectorAll('.sort-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const sortType = e.target.getAttribute('data-sort');
+                handleApplicantSort(sortType);
+                sortOptions.style.display = 'none';
+            });
+        });
+    }
+    
     // Initialize admin UI components
     admin.initializeDropdown();
     admin.initializeLogout();
-};
-
-// Initialize the page
-const init = async () => {
-    const assessorId = utils.getAssessorIdFromUrl();
-    
-    if (!assessorId) {
-        utils.showNotification('No assessor specified. Redirecting...', 'error');
-        setTimeout(() => {
-            window.location.href = '/client/admin/assessors/assessors.html';
-        }, 2000);
-        return;
-    }
-    
-    setupEventListeners();
-    
-    try {
-        await api.loadAdminInfo();
-        await api.fetchAssessorData(assessorId);
-    } catch (error) {
-        console.error('Initialization error:', error);
-        utils.showNotification('Failed to load assessor data', 'error');
-    }
 };
 
 // Make functions available globally
