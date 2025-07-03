@@ -88,6 +88,11 @@ function populateProfile(userData) {
     }`;
   }
 
+  const idElement = document.getElementById("user-id");
+        if (idElement) {
+        idElement.innerHTML = `<i class="fa-solid fa-id-card"></i> ${userData.applicantId || "Not assigned"}`;
+      }
+
   // Field mappings for profile sections
   const fieldMappings = {
     "first-name": "firstname",
