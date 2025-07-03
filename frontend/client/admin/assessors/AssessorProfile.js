@@ -139,7 +139,7 @@ const profileDisplay = {
                 </td>
                 <td>${utils.formatDate(applicant.dateAssigned) || 'N/A'}</td>
                 <td>
-                    <button class="action-btn view-btn" onclick="window.location.href='/client/admin/applicantprofile/applicantprofile.html?id=${applicant._id}'">
+                    <button class="action-btn view-btn" onclick="window.location.href='/frontend/client/admin/applicantprofile/applicantprofile.html?id=${applicant._id}'">
                         <i class="fas fa-eye"></i> View
                     </button>
                 </td>
