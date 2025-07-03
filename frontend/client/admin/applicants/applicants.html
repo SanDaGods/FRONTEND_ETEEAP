@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>rtu-eteeap-admin</title>
-  <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
+    <link rel="icon" href="../../img/RTU Logo.png" type="image/x-icon">
     <link rel="stylesheet" href="./applicants.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 </head>
 <body>
       <div class="container">
-    <!--Sidebar--->
+    <!--Sidebar-->
     <div class="sidebar">
       <div class="logo">
         <img src="../IFLDE Logo.png" class="iflde">
@@ -34,78 +34,99 @@
         Assessors
       </a>
       </div>
-
       <div class="nav-item" data-section="courses">
         <a href="../courses/course.html">
         <i class="fas fa-book"></i>
         Courses
       </a>
       </div>
-
       <div class="nav-item" data-section="files">
         <a href="../documents/docs.html">
         <i class="fas fa-file"></i>
         Files
       </a>
       </div>
-
       <div class="nav-item" data-section="users">
         <a href="../admins/admin.html">
         <i class="fas fa-user"></i>
         Admins
       </a>
       </div>
-
       <div class="nav-item" data-section="logs">
         <a href="../activitylogs/logs.html">
         <i class="fas fa-clock"></i>
         Activity Logs
       </a>
       </div>
+
+      <div class="nav-item active" data-section="followups">
+        <a href="../followupadmin/followupadmin.html">
+        <i class="fas fa-comments"></i>
+        Follow-Up
+      </a>
+      </div>
     </div>
+ 
 
     <!--Main Content-->
     <div class="main-content">
       <!-- Header -->
-<!-- Pagination controls -->
-<div class="pagination-controls">
-  <button id="prevPage" class="pagination-btn" disabled>
-    <i class="fas fa-chevron-left"></i> Previous
-  </button>
-  <span id="pageInfo">Page 1 of 1</span>
-  <button id="nextPage" class="pagination-btn" disabled>
-    Next <i class="fas fa-chevron-right"></i>
-  </button>
-</div>
-
-<!-- Sort dropdown (should be in your header) -->
-<div class="sort-dropdown">
-  <button class="sort-btn">
-    <i class="fas fa-sort"></i> Sort
-  </button>
-  <div class="sort-options">
-    <div class="sort-option" data-sort="name-asc">Name (A-Z)</div>
-    <div class="sort-option" data-sort="name-desc">Name (Z-A)</div>
-    <div class="sort-option" data-sort="id-asc">ID (Low to High)</div>
-    <div class="sort-option" data-sort="id-desc">ID (High to Low)</div>
-    <div class="sort-divider"></div>
-    <div class="sort-option" data-sort="status-pending">Pending Review</div>
-    <div class="sort-option" data-sort="status-under-assessment">Under Assessment</div>
-    <div class="sort-option" data-sort="status-evaluated-pass">Evaluated-Pass</div>
-    <div class="sort-option" data-sort="status-evaluated-failed">Evaluated-Failed</div>
+      <!-- Header -->
+<div class="header">
+  <div class="search-bar">
+    <i class="fas fa-search"></i>
+    <input type="text" placeholder="Search..." id="searchInput" />
+    <div class="sort-dropdown">
+      <button class="sort-btn">
+        <i class="fas fa-sort"></i> Sort
+      </button>
+      <div class="sort-options">
+        <div class="sort-option" data-sort="name-asc">Name (A-Z)</div>
+        <div class="sort-option" data-sort="name-desc">Name (Z-A)</div>
+        <div class="sort-option" data-sort="id-asc">ID (Low to High)</div>
+        <div class="sort-option" data-sort="id-desc">ID (High to Low)</div>
+        <div class="sort-divider"></div>
+        <div class="sort-option" data-sort="status-pending">Pending Review</div>
+        <div class="sort-option" data-sort="status-under-assessment">Under Assessment</div>
+        <div class="sort-option" data-sort="status-evaluated-pass">Evaluated-Pass</div>
+        <div class="sort-option" data-sort="status-evaluated-failed">Evaluated-Failed</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="user-profile">
+    <div class="profile-dropdown">
+      <div class="user-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <span class="username">Admin</span>
+      <i class="fas fa-caret-down dropdown-toggle"></i>
+      <div class="dropdown-menu">
+        <a href="#" class="dropdown-item">
+          <i class="fas fa-user"></i>
+          Profile
+        </a>
+        <a href="#" class="dropdown-item">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+         <a href="/client/applicant/login/login.html" class="dropdown-item" id="logoutLink">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </a>
+      </div>
+    </div>
   </div>
 </div>
-  
-
-      <!-- students Section -->
+      <!-- Applicants Section -->
       <div id="studentsSection" class="section active">
         <div class="student-list">
           <div class="table-header">
-  <h2>All Applicants</h2>
-  <button id="export-btn" class="export-button">
-    <i class="fas fa-file-export"></i> Export
-  </button>
-</div>
+            <h2>All Applicants</h2>
+            <button id="export-btn" class="export-button">
+              <i class="fas fa-file-export"></i> Export
+            </button>
+          </div>
           <table>
             <thead>
               <tr>
@@ -122,20 +143,28 @@
               <!-- Will be populated dynamically -->
             </tbody>
           </table>
+
+          <div class="pagination-controls">
+      <button id="prevPage" class="pagination-btn" disabled>
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+      <span id="pageInfo">Page 1 of 1</span>
+      <button id="nextPage" class="pagination-btn" disabled>
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
         </div>
       </div>
 
+      <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+      </div>
 
+      <div class="notification" id="notification" style="display: none;"></div>
 
-<div class="loading-spinner" id="loadingSpinner">
-  <div class="spinner"></div>
-</div>
-
-<div class="notification" id="notification" style="display: none;"></div>
-
-<script type="module" src="../../shared/js/auth.js"></script>
-  <script src="applicants.js"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-  
+      <script type="module" src="../../shared/js/auth.js"></script>
+      <script src="./applicants.js"></script>
+      <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    </div>
+  </div>
 </body>
 </html>
