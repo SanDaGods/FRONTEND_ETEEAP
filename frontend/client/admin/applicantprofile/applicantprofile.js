@@ -1046,3 +1046,83 @@ function updateStatus() {
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
 }
+
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    // Extract applicant ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const applicantId = urlParams.get('id');
+    
+    if (!applicantId) {
+      throw new Error("No applicant ID provided");
+    }
+
+    // Fetch applicant data
+    const response = await fetch(`/api/admin/applicants/${applicantId}`, {
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      throw new Error("Failed to fetch applicant data");
+    }
+
+    const applicantData = await response.json();
+    
+    // Populate profile data
+    populateProfile(applicantData);
+    
+    // Load profile picture
+    await loadProfilePicture(applicantId);
+    
+    // Load documents
+    await loadDocuments(applicantId);
+    
+  } catch (error) {
+    console.error("Error:", error);
+    showNotification("Failed to load applicant data", "error");
+  }
+});
+
+async function loadProfilePicture(applicantId) {
+  try {
+    const response = await fetch(`/api/profile-pic/${applicantId}`, {
+      credentials: 'include'
+    });
+    
+    if (response.ok) {
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      
+      // Create img element if it doesn't exist
+      const profilePicContainer = document.querySelector(".profile-pic-container .profile-pic");
+      if (profilePicContainer) {
+        // Remove the icon if it exists
+        const icon = profilePicContainer.querySelector("i");
+        if (icon) icon.remove();
+        
+        // Create and append img element
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = "Applicant Profile Picture";
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.borderRadius = "50%";
+        img.style.objectFit = "cover";
+        profilePicContainer.appendChild(img);
+      }
+    } else {
+      // Keep the default icon if no profile picture exists
+      console.log("No profile picture found for this applicant");
+    }
+  } catch (error) {
+    console.error("Error loading profile picture:", error);
+    // Keep the default icon if there's an error
+  }
+}
+
+function populateProfile(userData) {
+  if (!userData) {
+    console.error("No user data received");
+    showNotification("No profile data available");
+    return;
+  }}
