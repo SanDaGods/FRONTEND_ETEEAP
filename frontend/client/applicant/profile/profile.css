@@ -269,13 +269,11 @@ body {
 }
 
 .profile-pic {
-  position: relative;
   width: 110px;
   height: 110px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--main-color);
-  transition: transform 0.3s ease;
 }
 
 .profile-pic:hover {
@@ -285,6 +283,7 @@ body {
 .profile-pic-container {
   position: relative;
   display: inline-block;
+  margin-right: 20px;
 }
 
 .upload-icon {
@@ -483,4 +482,8 @@ body {
 .notification.info {
   background-color: #2196f3;
 }
+
+
+
+
 
