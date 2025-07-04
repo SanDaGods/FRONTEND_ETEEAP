@@ -92,6 +92,11 @@
     flex: 1;
     padding: 20px;
     background-color: var(--background-color);
+    
+    background-image: url('/frontend/images/background.png'); /* 🔁 Replace with your image path */
+    background-size: cover; /* Makes the image cover the whole area */
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* Header Styles */
