@@ -604,3 +604,94 @@
         justify-content: center;
     }
 }
+
+
+/*File Modal*/
+
+/* File Viewer Modal Styles */
+#fileModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#fileModal .modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    padding: 20px;
+    position: relative;
+}
+
+#fileModal .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+#fileModal .file-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+#fileModal .file-viewer-container {
+    width: 100%;
+    height: calc(80vh - 100px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#fileModal .modal-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+#fileModal .modal-nav button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#fileModal .modal-nav button:hover {
+    background-color: var(--secondary-color);
+}
+
+#fileModal .modal-nav button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#fileViewer, #imageViewer {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#imageViewer {
+    object-fit: contain;
+}
