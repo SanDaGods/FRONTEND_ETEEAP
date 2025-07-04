@@ -517,11 +517,13 @@ async function updateProfile(formData) {
 }
 
 async function loadProfilePicture() {
+  const userId = localStorage.getItem("userId");
+  if (!userId) return;
+
   try {
-    const response = await fetch(`${API_BASE_URL}/api/profile-pic`, {
+    const response = await fetch(`${API_BASE_URL}/api/profile-pic/${userId}`, {
       credentials: 'include'
     });
-    
     if (response.ok) {
       const blob = await response.blob();
       const imageUrl = URL.createObjectURL(blob);
@@ -532,23 +534,10 @@ async function loadProfilePicture() {
 
       if (profilePic) profilePic.src = imageUrl;
       if (navProfilePic) navProfilePic.src = imageUrl;
-    } else {
-      // Use default image if no profile pic exists
-      setDefaultProfilePic();
     }
   } catch (error) {
     console.error("Error loading profile picture:", error);
-    setDefaultProfilePic();
   }
-}
-
-function setDefaultProfilePic() {
-  const defaultPic = "../img/default.png";
-  const profilePic = document.querySelector(".profile-pic");
-  const navProfilePic = document.getElementById("nav-profile-pic");
-  
-  if (profilePic) profilePic.src = defaultPic;
-  if (navProfilePic) navProfilePic.src = defaultPic;
 }
 
 function setupProfilePicUpload() {
