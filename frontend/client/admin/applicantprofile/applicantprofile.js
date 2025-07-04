@@ -128,29 +128,13 @@ async function showFile(index) {
 }
 
 // View a specific file
-async function viewFile(fileId, sectionFiles) {
-  try {
-    currentFiles = sectionFiles;
-    currentFileIndex = currentFiles.findIndex(file => file._id === fileId);
+function viewFile(fileId, sectionFiles) {
+  if (!fileId || !sectionFiles || sectionFiles.length === 0) return; // ✅ Safety
+  const modal = document.getElementById("fileModal");
+  if (!modal) return;
 
-    if (currentFileIndex === -1) {
-      throw new Error("File not found in this section");
-    }
-
-    const modal = document.getElementById("fileModal");
-
-    // Step 1: Set display to "block"
-    modal.style.display = "block";
-
-    // Step 2: Force reflow and ensure it becomes flex (centering kicks in)
-    modal.offsetHeight; // Triggers reflow
-    modal.style.display = "flex"; // Now apply flex for centering
-
-    await showFile(currentFileIndex);
-  } catch (error) {
-    console.error("Error viewing file:", error);
-    showNotification(`Error viewing file: ${error.message}`, "error");
-  }
+  modal.style.display = "flex"; // ✅ Only here
+  showFile(currentFileIndex);   // assuming this is safe
 }
 
 // Fetch and display user files
