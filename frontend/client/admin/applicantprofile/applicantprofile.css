@@ -663,7 +663,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 1000;
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -676,6 +676,10 @@
     max-height: 90vh;
     padding: 20px;
     position: relative;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3); /* Optional: visual depth */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #fileModal .close-modal {
