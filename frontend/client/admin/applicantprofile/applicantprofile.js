@@ -449,7 +449,7 @@ async function loadApplicantData() {
     }
     
     currentApplicant = data.data;
-    displayApplicantData(data.data);
+    await displayApplicantData(data.data); // Make this await
     
   } catch (error) {
     console.error('Error loading applicant data:', error);
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Update the displayApplicantData function to include file fetching
-function displayApplicantData(applicant) {
+async function displayApplicantData(applicant) {
   if (!applicant) return;
   
   // Basic info
@@ -618,6 +618,13 @@ function displayApplicantData(applicant) {
   setTextContent('email', applicant.email);
   updateStatusBadge(applicant.status);
   setTextContent('createdAt', formatDate(applicant.createdAt));
+  
+  // Load and display profile picture
+  const profilePicUrl = await loadApplicantProfilePic(applicant._id);
+  const profilePic = document.querySelector(".profile-pic");
+  if (profilePic) {
+    profilePic.src = profilePicUrl || "/frontend/client/applicant/img/default.png";
+  }
   
   // Personal info section
   if (applicant.personalInfo) {
@@ -664,7 +671,6 @@ function displayApplicantData(applicant) {
   // Fetch and display documents
   fetchAndDisplayFiles();
 }
-
 
 // Add these functions to ApplicantProfile.js
 
@@ -1066,16 +1072,11 @@ async function loadApplicantProfilePic(userId) {
     
     if (response.ok) {
       const blob = await response.blob();
-      const imageUrl = URL.createObjectURL(blob);
-      
-      // Update profile picture
-      const profilePic = document.querySelector(".profile-pic");
-      if (profilePic) profilePic.src = imageUrl;
+      return URL.createObjectURL(blob);
     }
+    return null;
   } catch (error) {
     console.error("Error loading profile picture:", error);
-    // Fall back to default image if there's an error
-    const profilePic = document.querySelector(".profile-pic");
-    if (profilePic) profilePic.src = "/frontend/client/applicant/img/default.png";
+    return null;
   }
 }
