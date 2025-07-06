@@ -153,60 +153,123 @@ async function loadAssignedApplicants() {
   }
 }
 
+// ========================
+// TABLE FUNCTIONS
+// ========================
+
 function renderApplicantTable(applicantsToRender) {
-  applicantTableBody.innerHTML = "";
+  const table = applicantTableBody;
+  
+  if (!table) return;
+
+  table.innerHTML = "";
 
   if (applicantsToRender.length === 0) {
-    applicantTableBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="empty-state">
-                    <i class="fas fa-users"></i>
-                    <h3>No Applicants Assigned to You</h3>
-                    <p>Applicants assigned to you will appear here</p>
-                </td>
-            </tr>
-        `;
+    table.innerHTML = `
+      <tr>
+        <td colspan="7" class="empty-state">
+          <i class="fas fa-users"></i>
+          <h3>No Applicants Assigned to You</h3>
+          <p>Applicants assigned to you will appear here</p>
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  applicantsToRender.forEach((applicant) => {
-    const statusClass = applicant.status.toLowerCase().replace(" ", "-");
-
+  applicantsToRender.forEach(applicant => {
+    const statusClass = applicant.status.toLowerCase().replace(/\s+/g, '-');
+    
     const row = document.createElement("tr");
     row.innerHTML = `
-            <td>${applicant.applicantId || applicant._id}</td>
-            <td>${escapeHtml(applicant.name)}</td>
-            <td>${escapeHtml(applicant.course)}</td>
-            <td>${formatDate(applicant.applicationDate)}</td>
-            <td>
-                <span class="status-badge status-${statusClass}">
-                    ${formatStatus(applicant.status)}
-                </span>
-            </td>
-            <td>${
-              applicant.score || applicant.score === 0 ? applicant.score : "0"
-            }</td>
-            <td class="action-buttons">
-                <button class="action-btn view-btn" onclick="viewApplicant('${
-                  applicant._id
-                }')">
-                    <i class="fas fa-eye"></i> View
-                </button>
-                <button class="action-btn reject-btn" onclick="rejectApplicant('${
-                  applicant._id
-                }', event)" 
-                    ${
-                      applicant.status.toLowerCase().includes("rejected")
-                        ? "disabled"
-                        : ""
-                    }>
-                    <i class="fas fa-times"></i> Reject
-                </button>
-            </td>
-        `;
-    applicantTableBody.appendChild(row);
+      <td>${applicant.applicantId || applicant._id}</td>
+      <td>${escapeHtml(applicant.name)}</td>
+      <td>${escapeHtml(applicant.course)}</td>
+      <td>${formatDate(applicant.applicationDate)}</td>
+      <td>
+        <span class="status-badge status-${statusClass}">
+          ${formatStatus(applicant.status)}
+        </span>
+      </td>
+      <td>${applicant.score || applicant.score === 0 ? applicant.score : '0'}</td>
+      <td class="action-buttons">
+        <button class="action-btn view-btn" onclick="viewApplicant('${applicant._id}')">
+          <i class="fas fa-eye"></i> View
+        </button>
+        <button class="action-btn reject-btn" onclick="rejectApplicant('${applicant._id}', event)"
+          ${applicant.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
+          <i class="fas fa-times"></i> Reject
+        </button>
+        <button class="action-btn delete-btn" onclick="deleteApplicant('${applicant._id}', event)">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </td>
+    `;
+    table.appendChild(row);
   });
 }
+
+
+async function deleteApplicant(applicantId, event) {
+  if (event) event.preventDefault();
+  
+  if (!confirm('Are you sure you want to permanently delete this applicant? This will remove all their data and cannot be undone.')) {
+    return;
+  }
+
+  showLoading();
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      showNotification('Applicant deleted successfully', 'success');
+      await loadAssignedApplicants();
+    } else {
+      throw new Error(data.error || 'Failed to delete applicant');
+    }
+  } catch (error) {
+    console.error('Error deleting applicant:', error);
+    showNotification(error.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Utility functions (same as dashboard.js)
+function formatStatus(status) {
+  return status.split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatDate(dateString) {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  } catch {
+    return 'N/A';
+  }
+}
+
 
 function viewApplicant(applicantId) {
   const applicant = applicants.find((a) => a._id === applicantId);
@@ -415,7 +478,9 @@ async function handleLogout() {
   }
 }
 
+
 // Make functions available globally
+window.deleteApplicant = deleteApplicant;
 window.viewApplicant = viewApplicant;
 window.rejectApplicant = rejectApplicant;
 window.handleLogout = handleLogout;

@@ -552,58 +552,7 @@ if (logoutLink) {
     });
 }
 
-// Update the renderStudentTables function to fix the view button
-// Update the renderStudentTables function to fix the view button navigation
-function renderStudentTables(studentsToRender) {
-    const tables = [studentTableBody, allStudentsTableBody];
 
-    tables.forEach(table => {
-        if (!table) return;
-
-        table.innerHTML = "";
-
-        if (studentsToRender.length === 0) {
-            const colSpan = table.closest("table").querySelectorAll("th").length;
-            table.innerHTML = `
-                <tr>
-                    <td colspan="${colSpan}" class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>No Applicants Assigned to You</h3>
-                        <p>Applicants assigned to you will appear here</p>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        studentsToRender.forEach(student => {
-            const statusClass = student.status.toLowerCase().replace(' ', '-');
-            
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${student.applicantId || 'N/A'}</td>
-                <td>${escapeHtml(student.name)}</td>
-                <td>${escapeHtml(student.course)}</td>
-                <td>
-                    <span class="status-badge status-${statusClass}">
-                        ${formatStatus(student.status)}
-                    </span>
-                </td>
-                <td>${student.score || student.score === 0 ? student.score : 'N/A'}</td>
-                <td>${formatDate(student.applicationDate)}</td>
-                <td class="action-buttons">
-                    <button class="action-btn view-btn" onclick="viewStudent('${student._id}')">
-                        <i class="fas fa-eye"></i> View
-                    </button>
-                    <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                </td>
-            `;
-            table.appendChild(row);
-        });
-    });
-}
 
 // Update the rejectStudent function to prevent default behavior
 async function rejectStudent(applicantId, event) {
@@ -728,8 +677,11 @@ function renderStudentTables(studentsToRender) {
                     <button class="action-btn view-btn" onclick="viewStudent('${student._id}')">
                         <i class="fas fa-eye"></i> View
                     </button>
-                    <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}')">
+                    <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)">
                         <i class="fas fa-times"></i> Reject
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteApplicant('${student._id}', event)">
+                        <i class="fas fa-trash"></i> Delete
                     </button>
                 </td>
             `;
@@ -746,34 +698,6 @@ function formatStatus(status) {
 }
 
 
-async function rejectStudent(applicantId) {
-    if (!confirm('Are you sure you want to reject this applicant? This action cannot be undone.')) {
-        return;
-    }
-
-    showLoading();
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/reject`, {
-            method: 'POST',
-            credentials: 'include'
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            showNotification('Applicant rejected successfully', 'success');
-            // Refresh the data to ensure we have the latest statuses
-            await loadAssignedApplicants();
-        } else {
-            throw new Error(data.error || 'Failed to reject applicant');
-        }
-    } catch (error) {
-        console.error('Error rejecting applicant:', error);
-        showNotification(error.message, 'error');
-    } finally {
-        hideLoading();
-    }
-}
 
 
 // First, add this function to your script
@@ -803,6 +727,42 @@ row.innerHTML = `
 
 
 
-// Make function available globally
+
+
+// Add this function to both dashboard.js and applicants.js
+async function deleteApplicant(applicantId, event) {
+  if (event) event.preventDefault();
+  
+  if (!confirm('Are you sure you want to permanently delete this applicant? This action cannot be undone.')) {
+    return;
+  }
+
+  showLoading();
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      showNotification('Applicant deleted successfully', 'success');
+      await loadAssignedApplicants(); // Refresh the table
+      await updateDashboardStats(); // Update dashboard counts
+    } else {
+      throw new Error(data.error || 'Failed to delete applicant');
+    }
+  } catch (error) {
+    console.error('Error deleting applicant:', error);
+    showNotification(error.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+
+// Add to global scope
+window.deleteApplicant = deleteApplicant;
 window.handleLogout = handleLogout;
 window.rejectStudent = rejectStudent;

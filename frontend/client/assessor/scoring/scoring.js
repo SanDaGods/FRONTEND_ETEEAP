@@ -572,33 +572,28 @@ async function finalizeEvaluation() {
     if (finalComments === null) return; // User cancelled
 
     try {
-        showLoading();
-        
-        // First save any unsaved changes
-        const saved = await saveEvaluation();
-        if (!saved) return;
+    showLoading();
+    const saved = await saveEvaluation();
+    if (!saved) return;
 
-        const response = await fetch(`${API_BASE_URL}/api/evaluations/finalize`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                applicantId: currentApplicantId,
-                comments: finalComments
-            })
-        });
+    const response = await fetch(`${API_BASE_URL}/api/evaluations/finalize`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        applicantId: currentApplicantId,
+        comments: finalComments
+      })
+    });
 
-        const data = await response.json();
-        
-        if (data.success) {
-            showNotification('Evaluation finalized successfully!', 'success');
-            // Redirect back to applicant list after 2 seconds
-            setTimeout(() => {
-                window.location.href = '/frontend/client/assessor/applicants/applicants.html';
-            }, 2000);
-        } else {
+    const data = await response.json();
+    
+    if (data.success) {
+      showNotification('Evaluation finalized successfully!', 'success');
+      // Just refresh the data instead of redirecting
+      await loadAssignedApplicants();
+      await updateDashboardStats();
+    } else {
             showNotification(data.error || 'Failed to finalize evaluation', 'error');
         }
     } catch (error) {

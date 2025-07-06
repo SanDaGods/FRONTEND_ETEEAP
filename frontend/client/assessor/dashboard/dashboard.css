@@ -741,3 +741,33 @@ th {
     color: #1e40af;
 }
 
+/* Add to both dashboard.css and applicants.css */
+.delete-btn {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.delete-btn:hover {
+  background-color: #fecaca;
+}
+
+.delete-btn i {
+  font-size: 12px;
+}
+
+/* Update action-buttons to accommodate 3 buttons */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
