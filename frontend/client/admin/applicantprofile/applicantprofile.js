@@ -472,6 +472,9 @@ function displayApplicantData(applicant) {
   updateStatusBadge(applicant.status);
   setTextContent('createdAt', formatDate(applicant.createdAt));
   
+  // Load profile picture
+  loadApplicantProfilePic(applicant._id);
+  
   // Personal info section
   if (applicant.personalInfo) {
     const info = applicant.personalInfo;
@@ -1051,4 +1054,28 @@ function updateStatus() {
     body: JSON.stringify({ status })
   }).then(res => res.json())
     .then(data => alert('Status updated to ' + data.status));
+}
+
+async function loadApplicantProfilePic(userId) {
+  if (!userId) return;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/profile-pic/${userId}`, {
+      credentials: 'include'
+    });
+    
+    if (response.ok) {
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      
+      // Update profile picture
+      const profilePic = document.querySelector(".profile-pic");
+      if (profilePic) profilePic.src = imageUrl;
+    }
+  } catch (error) {
+    console.error("Error loading profile picture:", error);
+    // Fall back to default image if there's an error
+    const profilePic = document.querySelector(".profile-pic");
+    if (profilePic) profilePic.src = "/frontend/client/applicant/img/default.png";
+  }
 }

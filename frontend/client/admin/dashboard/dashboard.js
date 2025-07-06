@@ -145,7 +145,7 @@ function renderApplicantsTable(applicantsToRender) {
       <td>${applicant.score || applicant.currentScore || 0}</td>
       <td>${formattedDate}</td>
       <td class="action-buttons">
-        <a href="/client/admin/applicantprofile/applicantprofile.html?id=${
+        <a href=/frontend/client/admin/applicantprofile/applicantprofile.html?id=${
           applicant._id
         }" class="action-btn view-btn">
           <i class="fas fa-eye"></i> View
