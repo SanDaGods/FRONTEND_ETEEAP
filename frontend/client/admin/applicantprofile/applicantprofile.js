@@ -156,18 +156,28 @@ async function viewFile(fileId, sectionFiles) {
 // Fetch and display user files
 async function fetchAndDisplayFiles() {
   try {
-    // Hide empty state and show loading
-    document.getElementById('no-documents').style.display = 'none';
-    document.getElementById('documents-grid').style.display = 'none';
-    document.getElementById('documents-loading').style.display = 'flex';
+    // Cache DOM elements
+    const loadingEl = document.getElementById('documents-loading');
+    const emptyEl = document.getElementById('no-documents');
+    const gridEl = document.getElementById('documents-grid');
+    
+    loadingEl.style.display = 'flex';
+    emptyEl.style.display = 'none';
+    gridEl.style.display = 'none';
+
+    // Use AbortController for better timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
     const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}/documents`, {
-      credentials: 'include'
+      credentials: 'include',
+      signal: controller.signal
     });
     
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `Failed to fetch documents: ${response.status}`);
+      throw new Error(`Failed to fetch documents: ${response.status}`);
     }
 
     const data = await response.json();
@@ -176,74 +186,41 @@ async function fetchAndDisplayFiles() {
       throw new Error(data.error || 'Failed to fetch documents');
     }
 
-    const documentsContainer = document.getElementById('documents-grid');
-    documentsContainer.innerHTML = '';
-
-    // Get all files as a flat array for the viewer
+    // Process files in batches
     const allFiles = Object.values(data.files).flat();
+    if (allFiles.length === 0) {
+      loadingEl.style.display = 'none';
+      emptyEl.style.display = 'flex';
+      return;
+    }
 
-    // Create sections for each file group
+    // Use document fragment for batch DOM insertion
+    const fragment = document.createDocumentFragment();
+    
     for (const [label, files] of Object.entries(data.files)) {
-      const sectionTitle = getSectionTitle(label);
       const sectionDiv = document.createElement('div');
       sectionDiv.className = 'document-section';
-      sectionDiv.innerHTML = `<h4>${sectionTitle}</h4>`;
+      sectionDiv.innerHTML = `<h4>${getSectionTitle(label)}</h4>`;
       
       const filesGrid = document.createElement('div');
       filesGrid.className = 'files-grid';
       
       files.forEach(file => {
-        const fileCard = document.createElement('div');
-        fileCard.className = 'file-card';
-        fileCard.innerHTML = `
-        <div class="file-card-header">
-          <div class="file-icon">
-            <i class="${getFileIcon(file.contentType)}"></i>
-          </div>
-          <div class="file-info">
-            <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
-          </div>
-        </div>
-        <div class="file-actions">
-          <button class="btn view-btn" data-file-id="${file._id}">
-            <i class="fas fa-eye"></i> View
-          </button>
-          <button class="btn download-btn" data-file-id="${file._id}" data-file-name="${file.filename}">
-            <i class="fas fa-download"></i> Download
-          </button>
-        </div>
-      `;
-        filesGrid.appendChild(fileCard);
+        filesGrid.appendChild(createFileCard(file));
       });
       
       sectionDiv.appendChild(filesGrid);
-      documentsContainer.appendChild(sectionDiv);
+      fragment.appendChild(sectionDiv);
     }
 
-    // Set up event listeners for view buttons
-    document.querySelectorAll('.view-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const fileId = e.currentTarget.getAttribute('data-file-id');
-        viewFile(fileId, allFiles);
-      });
-    });
-
-    // Set up event listeners for download buttons
-    document.querySelectorAll('.download-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const fileId = e.currentTarget.getAttribute('data-file-id');
-        const fileName = e.currentTarget.getAttribute('data-file-name');
-        downloadFile(fileId, fileName);
-      });
-    });
-
-    // Show appropriate state
-    document.getElementById('documents-loading').style.display = 'none';
-    if (allFiles.length > 0) {
-      documentsContainer.style.display = 'grid';
-    } else {
-      document.getElementById('no-documents').style.display = 'flex';
-    }
+    gridEl.innerHTML = '';
+    gridEl.appendChild(fragment);
+    
+    loadingEl.style.display = 'none';
+    gridEl.style.display = 'grid';
+    
+    // Delegate event listeners
+    gridEl.addEventListener('click', handleFileActions);
 
   } catch (error) {
     console.error("Error fetching files:", error);
@@ -253,11 +230,51 @@ async function fetchAndDisplayFiles() {
   }
 }
 
+function createFileCard(file) {
+  const card = document.createElement('div');
+  card.className = 'file-card';
+  card.innerHTML = `
+    <div class="file-card-header">
+      <div class="file-icon">
+        <i class="${getFileIcon(file.contentType)}"></i>
+      </div>
+      <div class="file-info">
+        <p class="file-name" title="${file.filename}">${truncateFileName(file.filename)}</p>
+      </div>
+    </div>
+    <div class="file-actions">
+      <button class="btn view-btn" data-file-id="${file._id}">
+        <i class="fas fa-eye"></i> View
+      </button>
+      <button class="btn download-btn" data-file-id="${file._id}" data-file-name="${file.filename}">
+        <i class="fas fa-download"></i> Download
+      </button>
+    </div>
+  `;
+  return card;
+}
+
+function handleFileActions(event) {
+  const target = event.target.closest('.view-btn') || event.target.closest('.download-btn');
+  if (!target) return;
+
+  const fileId = target.getAttribute('data-file-id');
+  const fileName = target.getAttribute('data-file-name');
+  
+  if (target.classList.contains('view-btn')) {
+    viewFile(fileId, currentFiles);
+  } else if (target.classList.contains('download-btn')) {
+    downloadFile(fileId, fileName);
+  }
+}
+
 // Helper function to truncate long file names
 function truncateFileName(filename, maxLength = 30) {
   if (filename.length <= maxLength) return filename;
   return filename.substring(0, maxLength) + '...';
 }
+
+
 
 async function downloadFile(fileId, fileName) {
   try {
@@ -423,33 +440,35 @@ async function loadApplicantData() {
   showLoading();
   
   try {
-    // Verify admin is authenticated first
-    const authResponse = await fetch(`${API_BASE_URL}/admin/auth-status`, {
-      credentials: 'include'
-    });
-    
+    // Run authentication check and data fetch in parallel
+    const [authResponse, applicantResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/admin/auth-status`, { credentials: 'include' }),
+      fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, { credentials: 'include' })
+    ]);
+
     if (!authResponse.ok) {
       window.location.href = '/frontend/client/applicant/login/login.html';
       return;
     }
-    
-    // Fetch applicant data
-    const response = await fetch(`${API_BASE_URL}/api/admin/applicants/${applicantId}`, {
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch applicant: ${response.status}`);
+
+    if (!applicantResponse.ok) {
+      throw new Error(`Failed to fetch applicant: ${applicantResponse.status}`);
     }
-    
-    const data = await response.json();
+
+    const data = await applicantResponse.json();
     
     if (!data.success || !data.data) {
       throw new Error(data.error || 'Failed to load applicant data');
     }
-    
+
     currentApplicant = data.data;
-    await displayApplicantData(data.data); // Make this await
+    
+    // Load profile picture and documents in parallel
+    await Promise.all([
+      displayProfilePicture(data.data._id),
+      displayApplicantData(data.data),
+      fetchAndDisplayFiles()
+    ]);
     
   } catch (error) {
     console.error('Error loading applicant data:', error);
@@ -461,6 +480,78 @@ async function loadApplicantData() {
     hideLoading();
   }
 }
+
+async function displayProfilePicture(userId) {
+  const profilePic = document.querySelector(".profile-pic");
+  if (!profilePic) return;
+
+  try {
+    // Add lazy loading and size parameters
+    const response = await fetch(`${API_BASE_URL}/api/profile-pic/${userId}?size=200`, {
+      credentials: 'include'
+    });
+    
+    if (response.ok) {
+      const blob = await response.blob();
+      
+      // Create a compressed version for display
+      const compressedBlob = await compressImage(blob, {
+        maxWidth: 200,
+        maxHeight: 200,
+        quality: 0.8
+      });
+      
+      profilePic.src = URL.createObjectURL(compressedBlob);
+    } else {
+      throw new Error('Profile picture not found');
+    }
+  } catch (error) {
+    console.error("Error loading profile picture:", error);
+    profilePic.src = "/frontend/client/applicant/img/default.png";
+  }
+}
+
+// Image compression helper
+async function compressImage(blob, options) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
+    
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Calculate new dimensions
+      let width = img.width;
+      let height = img.height;
+      
+      if (width > options.maxWidth) {
+        height = Math.round((height * options.maxWidth) / width);
+        width = options.maxWidth;
+      }
+      
+      if (height > options.maxHeight) {
+        width = Math.round((width * options.maxHeight) / height);
+        height = options.maxHeight;
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      canvas.toBlob(
+        (compressedBlob) => resolve(compressedBlob || blob),
+        'image/jpeg',
+        options.quality
+      );
+      
+      URL.revokeObjectURL(url);
+    };
+    
+    img.src = url;
+  });
+}
+
 
 // Display applicant data in the UI
 function displayApplicantData(applicant) {
@@ -1078,5 +1169,28 @@ async function loadApplicantProfilePic(userId) {
   } catch (error) {
     console.error("Error loading profile picture:", error);
     return null;
+  }
+}
+
+
+function showLoading() {
+  const spinner = document.getElementById('loadingSpinner');
+  if (spinner) {
+    spinner.style.display = 'flex';
+    // Add skeleton loading for main content
+    document.querySelectorAll('.info-item span:last-child').forEach(el => {
+      el.classList.add('skeleton');
+    });
+  }
+}
+
+function hideLoading() {
+  const spinner = document.getElementById('loadingSpinner');
+  if (spinner) {
+    spinner.style.display = 'none';
+    // Remove skeleton loading
+    document.querySelectorAll('.skeleton').forEach(el => {
+      el.classList.remove('skeleton');
+    });
   }
 }
