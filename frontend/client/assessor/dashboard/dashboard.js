@@ -634,9 +634,6 @@ async function loadAssignedApplicants() {
 // Update the renderStudentTables function //
 function renderStudentTables(studentsToRender) {
     const table = studentTableBody;
-    
-    if (!table) return;
-
     table.innerHTML = "";
 
     if (studentsToRender.length === 0) {
@@ -653,12 +650,14 @@ function renderStudentTables(studentsToRender) {
     }
 
     studentsToRender.forEach(student => {
-        const statusClass = student.status.toLowerCase().replace(/\s+/g, '-');
+        const statusClass = student.status.toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
         
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${student.applicantId || student._id}</td>
-            <td>${escapeHtml(student.name)}</td>
+            <td>${escapeHtml(formatName(student.name))}</td>
             <td>${escapeHtml(student.course)}</td>
             <td>${formatDate(student.applicationDate)}</td>
             <td>
@@ -666,13 +665,14 @@ function renderStudentTables(studentsToRender) {
                     ${formatStatus(student.status)}
                 </span>
             </td>
-            <td>${student.score || student.score === 0 ? student.score : '0'}</td>
+            <td class="score-cell">${student.score || student.score === 0 ? student.score : '0'}</td>
             <td class="action-buttons">
                 <button class="action-btn view-btn" onclick="viewStudent('${student._id}')">
                     <i class="fas fa-eye"></i> View
                 </button>
                 <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)"
-                    ${student.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
+                    ${student.status.toLowerCase().includes("rejected") || 
+                      student.status.toLowerCase().includes("evaluated") ? "disabled" : ""}>
                     <i class="fas fa-times"></i> Reject
                 </button>
                 <button class="action-btn remove-btn" onclick="unassignApplicant('${student._id}', event)">
@@ -682,6 +682,15 @@ function renderStudentTables(studentsToRender) {
         `;
         table.appendChild(row);
     });
+}
+
+// Helper function to format names as "Last, First"
+function formatName(name) {
+    if (!name) return '';
+    const parts = name.split(' ');
+    if (parts.length === 1) return name;
+    const lastName = parts.pop();
+    return `${lastName}, ${parts.join(' ')}`;
 }
 
 // Add this helper function

@@ -266,14 +266,18 @@
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* Ensures consistent column widths */
         }
 
         th, td {
-            padding: 12px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         th {
@@ -290,14 +294,11 @@
         /* Column Width Adjustments */
         th:nth-child(1), td:nth-child(1) { width: 10%; }  /* ID */
         th:nth-child(2), td:nth-child(2) { width: 20%; }  /* Name */
-        th:nth-child(3), td:nth-child(3) { width: 15%; }  /* Course */
-        th:nth-child(4), td:nth-child(4) { width: 12%; }  /* Status */
-        th:nth-child(5), td:nth-child(5) { width: 8%; }   /* Score */
-        th:nth-child(6), td:nth-child(6) { width: 15%; }  /* Date */
-        th:nth-child(7), td:nth-child(7) {
-        width: 20%;
-        min-width: 180px;
-        }
+        th:nth-child(3), td:nth-child(3) { width: 20%; }  /* Course */
+        th:nth-child(4), td:nth-child(4) { width: 15%; }  /* Date */
+        th:nth-child(5), td:nth-child(5) { width: 15%; }  /* Status */
+        th:nth-child(6), td:nth-child(6) { width: 8%; }   /* Score */
+        th:nth-child(7), td:nth-child(7) { width: 12%; }  /* Actions */
 
 
        /* Status badges */
