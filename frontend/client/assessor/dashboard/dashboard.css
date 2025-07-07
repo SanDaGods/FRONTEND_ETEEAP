@@ -266,36 +266,19 @@
         }
 
         table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed; /* Ensures consistent column widths */
+            width: 100%;
+            border-collapse: collapse;
         }
 
         th, td {
-            padding: 12px 15px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         th {
-            font-weight: 600;
-            color: #64748b;
             background-color: #f8fafc;
-            position: sticky;
-            top: 0;
-        }
-
-        td {
-            vertical-align: middle;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
-
-        .score-cell {
-            text-align: center;
+            color: #64748b;
             font-weight: 600;
         }
 
@@ -307,22 +290,22 @@
         /* Column Width Adjustments */
         th:nth-child(1), td:nth-child(1) { width: 10%; }  /* ID */
         th:nth-child(2), td:nth-child(2) { width: 20%; }  /* Name */
-        th:nth-child(3), td:nth-child(3) { width: 20%; }  /* Course */
-        th:nth-child(4), td:nth-child(4) { width: 15%; }  /* Date */
-        th:nth-child(5), td:nth-child(5) { width: 15%; }  /* Status */
-        th:nth-child(6), td:nth-child(6) { width: 8%; }   /* Score */
-        th:nth-child(7), td:nth-child(7) { width: 12%; }  /* Actions */
+        th:nth-child(3), td:nth-child(3) { width: 15%; }  /* Course */
+        th:nth-child(4), td:nth-child(4) { width: 12%; }  /* Status */
+        th:nth-child(5), td:nth-child(5) { width: 8%; }   /* Score */
+        th:nth-child(6), td:nth-child(6) { width: 15%; }  /* Date */
+        th:nth-child(7), td:nth-child(7) {
+        width: 20%;
+        min-width: 180px;
+        }
 
 
        /* Status badges */
         .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 5px 10px;
+            border-radius: 15px;
             font-size: 12px;
             font-weight: 500;
-            text-align: center;
-            min-width: 100px;
         }
 
         .status-pending {
@@ -345,78 +328,67 @@
             color: #1e40af;
         }
 
-        /* Status colors */
-        .status-evaluated---passed {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .status-under-assessment {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-evaluated---failed {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-
 
         /* Action Buttons Container */
 
-            .action-buttons {
-                display: flex;
-                gap: 6px;
-            }
+        .action-buttons {
+    display: flex;
+    gap: 8px;
+}
 
-            .action-btn {
-                padding: 5px 8px;
-                font-size: 12px;
-                white-space: nowrap;
-            }
+.action-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 
-            .action-btn i {
-                margin-right: 3px;
-            }
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
-            .view-btn {
-                background-color: #dbeafe;
-                color: #1d4ed8;
-            }
+.view-btn {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
 
-            .reject-btn {
-                background-color: #fee2e2;
-                color: #b91c1c;
-            }
+.reject-btn {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
 
-            /* Style for the remove button */
-            .action-btn.remove-btn {
-                background-color: #f39c12;
-                color: white;
-            }
+/* Style for the remove button */
+.action-btn.remove-btn {
+    background-color: #f39c12;
+    color: white;
+}
 
-            .action-btn.remove-btn:hover {
-                background-color: #e67e22;
-            }
+.action-btn.remove-btn:hover {
+    background-color: #e67e22;
+}
 
-            /* Empty State */
-            .empty-state {
-                text-align: center;
-                padding: 40px 20px;
-                color: #64748b;
-            }
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+}
 
-            .empty-state i {
-                font-size: 48px;
-                margin-bottom: 20px;
-                color: #94a3b8;
-            }
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #94a3b8;
+}
 
-            .empty-state h3 {
-                margin-bottom: 10px;
-                color: #1e293b;
-            }
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #1e293b;
+}
 
 
         /* Responsive fallback */
