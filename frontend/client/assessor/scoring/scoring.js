@@ -510,68 +510,67 @@ function disableScoringForm() {
 // ========================
 
 async function saveEvaluation() {
-    try {
-        const scores = {
-            educationalQualification: {
-                score: parseInt(document.getElementById('eduAccumulated').textContent) || 0,
-                comments: document.getElementById('eduComment').value || '',
-                breakdown: [] // Add actual breakdown if you have criteria
-            },
-            workExperience: {
-                score: parseInt(document.getElementById('workAccumulated').textContent) || 0,
-                comments: document.getElementById('workComment').value || '',
-                breakdown: []
-            },
-            professionalAchievements: {
-                score: parseInt(document.getElementById('achieveAccumulated').textContent) || 0,
-                comments: document.getElementById('achieveComment').value || '',
-                breakdown: []
-            },
-            interview: {
-                score: parseInt(document.getElementById('interviewAccumulated').textContent) || 0,
-                comments: document.getElementById('interviewComment').value || '',
-                breakdown: []
-            }
-        };
+  try {
+    const scores = {
+      educationalQualification: {
+        score: parseInt(document.getElementById('eduAccumulated').textContent) || 0,
+        comments: document.getElementById('eduComment').value || '',
+        breakdown: []
+      },
+      workExperience: {
+        score: parseInt(document.getElementById('workAccumulated').textContent) || 0,
+        comments: document.getElementById('workComment').value || '',
+        breakdown: []
+      },
+      professionalAchievements: {
+        score: parseInt(document.getElementById('achieveAccumulated').textContent) || 0,
+        comments: document.getElementById('achieveComment').value || '',
+        breakdown: []
+      },
+      interview: {
+        score: parseInt(document.getElementById('interviewAccumulated').textContent) || 0,
+        comments: document.getElementById('interviewComment').value || '',
+        breakdown: []
+      }
+    };
 
-        const response = await fetch(`${API_BASE_URL}/api/evaluations`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                applicantId: currentApplicantId,
-                scores
-            })
-        });
+    // First save the evaluation
+    const evalResponse = await fetch(`${API_BASE_URL}/api/evaluations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        applicantId: currentApplicantId,
+        scores
+      })
+    });
 
-        const data = await response.json();
-        
-        if (data.success) {
-            showNotification('Evaluation saved successfully', 'success');
-            currentEvaluation = data.data.evaluation;
-            return true;
-        } else {
-            showNotification(data.error || 'Failed to save evaluation', 'error');
-            return false;
-        }
-    } catch (error) {
-        console.error('Error saving evaluation:', error);
-        showNotification('Failed to save evaluation', 'error');
-        return false;
+    const evalData = await evalResponse.json();
+    
+    if (evalData.success) {
+      showNotification('Evaluation saved successfully', 'success');
+      currentEvaluation = evalData.data.evaluation;
+      return true;
+    } else {
+      showNotification(evalData.error || 'Failed to save evaluation', 'error');
+      return false;
     }
+  } catch (error) {
+    console.error('Error saving evaluation:', error);
+    showNotification('Failed to save evaluation', 'error');
+    return false;
+  }
 }
 
 async function finalizeEvaluation() {
-    if (!confirm('Are you sure you want to finalize this evaluation? This action cannot be undone.')) {
-        return;
-    }
+  if (!confirm('Are you sure you want to finalize this evaluation? This action cannot be undone.')) {
+    return;
+  }
 
-    const finalComments = prompt('Please enter your final comments for this evaluation:');
-    if (finalComments === null) return; // User cancelled
+  const finalComments = prompt('Please enter your final comments for this evaluation:');
+  if (finalComments === null) return; // User cancelled
 
-    try {
+  try {
     showLoading();
     const saved = await saveEvaluation();
     if (!saved) return;
@@ -589,71 +588,172 @@ async function finalizeEvaluation() {
     const data = await response.json();
     
     if (data.success) {
-      showNotification('Evaluation finalized successfully!', 'success');
-      // Just refresh the data instead of redirecting
-      await loadAssignedApplicants();
-      await updateDashboardStats();
+      showNotification('Evaluation finalized successfully! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = '/frontend/client/assessor/applicants/applicants.html';
+      }, 1500);
     } else {
-            showNotification(data.error || 'Failed to finalize evaluation', 'error');
-        }
-    } catch (error) {
-        console.error('Error finalizing evaluation:', error);
-        showNotification('Failed to finalize evaluation', 'error');
-    } finally {
-        hideLoading();
+      showNotification(data.error || 'Failed to finalize evaluation', 'error');
     }
+  } catch (error) {
+    console.error('Error finalizing evaluation:', error);
+    showNotification('Failed to finalize evaluation', 'error');
+  } finally {
+    hideLoading();
+  }
 }
 
-function addEduPoints() {
+// ========================
+// UPDATED POINT ADDITION FUNCTIONS
+// ========================
+
+async function addEduPoints() {
+  try {
     const points = parseInt(document.getElementById('eduPoints').value) || 0;
     if (points < 0 || points > 20) {
-        showNotification('Please enter points between 0-20', 'error');
-        return;
+      showNotification('Please enter points between 0-20', 'error');
+      return;
     }
+
     const current = parseInt(document.getElementById('eduAccumulated').textContent) || 0;
     const newTotal = Math.min(current + points, 20);
     document.getElementById('eduAccumulated').textContent = newTotal;
+    
+    // Record the points immediately
+    const success = await recordPoints('educationalQualification', points, document.getElementById('eduComment').value);
+    if (!success) {
+      // Revert if recording failed
+      document.getElementById('eduAccumulated').textContent = current;
+      throw new Error('Failed to record points');
+    }
+
     updateOverallScore();
     document.getElementById('eduPoints').value = '';
+    showNotification('Education points added successfully', 'success');
+  } catch (error) {
+    console.error('Error adding education points:', error);
+    showNotification(error.message || 'Failed to add education points', 'error');
+  }
 }
 
-function addWorkPoints() {
+async function addWorkPoints() {
+  try {
     const points = parseInt(document.getElementById('workPoints').value) || 0;
     if (points < 0 || points > 40) {
-        showNotification('Please enter points between 0-40', 'error');
-        return;
+      showNotification('Please enter points between 0-40', 'error');
+      return;
     }
+
     const current = parseInt(document.getElementById('workAccumulated').textContent) || 0;
     const newTotal = Math.min(current + points, 40);
     document.getElementById('workAccumulated').textContent = newTotal;
+    
+    // Record the points immediately
+    const success = await recordPoints('workExperience', points, document.getElementById('workComment').value);
+    if (!success) {
+      // Revert if recording failed
+      document.getElementById('workAccumulated').textContent = current;
+      throw new Error('Failed to record points');
+    }
+
     updateOverallScore();
     document.getElementById('workPoints').value = '';
+    showNotification('Work experience points added successfully', 'success');
+  } catch (error) {
+    console.error('Error adding work experience points:', error);
+    showNotification(error.message || 'Failed to add work experience points', 'error');
+  }
 }
 
-function addAchievePoints() {
+async function addAchievePoints() {
+  try {
     const points = parseInt(document.getElementById('achievePoints').value) || 0;
     if (points < 0 || points > 25) {
-        showNotification('Please enter points between 0-25', 'error');
-        return;
+      showNotification('Please enter points between 0-25', 'error');
+      return;
     }
+
     const current = parseInt(document.getElementById('achieveAccumulated').textContent) || 0;
     const newTotal = Math.min(current + points, 25);
     document.getElementById('achieveAccumulated').textContent = newTotal;
+    
+    // Record the points immediately
+    const success = await recordPoints('professionalAchievements', points, document.getElementById('achieveComment').value);
+    if (!success) {
+      // Revert if recording failed
+      document.getElementById('achieveAccumulated').textContent = current;
+      throw new Error('Failed to record points');
+    }
+
     updateOverallScore();
     document.getElementById('achievePoints').value = '';
+    showNotification('Achievement points added successfully', 'success');
+  } catch (error) {
+    console.error('Error adding achievement points:', error);
+    showNotification(error.message || 'Failed to add achievement points', 'error');
+  }
 }
 
-function addInterviewPoints() {
+async function addInterviewPoints() {
+  try {
     const points = parseInt(document.getElementById('interviewPoints').value) || 0;
     if (points < 0 || points > 15) {
-        showNotification('Please enter points between 0-15', 'error');
-        return;
+      showNotification('Please enter points between 0-15', 'error');
+      return;
     }
+
     const current = parseInt(document.getElementById('interviewAccumulated').textContent) || 0;
     const newTotal = Math.min(current + points, 15);
     document.getElementById('interviewAccumulated').textContent = newTotal;
+    
+    // Record the points immediately
+    const success = await recordPoints('interview', points, document.getElementById('interviewComment').value);
+    if (!success) {
+      // Revert if recording failed
+      document.getElementById('interviewAccumulated').textContent = current;
+      throw new Error('Failed to record points');
+    }
+
     updateOverallScore();
     document.getElementById('interviewPoints').value = '';
+    showNotification('Interview points added successfully', 'success');
+  } catch (error) {
+    console.error('Error adding interview points:', error);
+    showNotification(error.message || 'Failed to add interview points', 'error');
+  }
+}
+
+// Improved recordPoints function
+async function recordPoints(category, points, comments) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/record-points`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        applicantId: currentApplicantId,
+        category,
+        points,
+        comments: comments || ''
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to record points');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error recording points:', error);
+    return false;
+  }
 }
 
 function updateOverallScore() {
@@ -903,8 +1003,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(saveEvaluation, 120000);
 });
 
-
-
 function redirectToLogin() {
   window.location.href = '/frontend/client/applicant/login/login.html';
 }
@@ -1009,51 +1107,25 @@ function getApplicantIdFromVariousSources() {
     return applicantId;
   }
 
-  // Add this function to scoring.js to handle point recording
-async function recordPoints(category, points, comments) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/record-points`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                applicantId: currentApplicantId,
-                category,
-                points,
-                comments
-            })
-        });
 
-        const data = await response.json();
-        return data.success;
-    } catch (error) {
-        console.error('Error recording points:', error);
-        return false;
-    }
-}
 
-// Modify your existing point addition functions to record points:
-function addEduPoints() {
-    const points = parseInt(document.getElementById('eduPoints').value) || 0;
-    if (points < 0 || points > 20) {
-        showNotification('Please enter points between 0-20', 'error');
-        return;
-    }
-    const current = parseInt(document.getElementById('eduAccumulated').textContent) || 0;
-    const newTotal = Math.min(current + points, 20);
-    document.getElementById('eduAccumulated').textContent = newTotal;
+// Add to scoring.js
+async function loadAssignedApplicants() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants`, {
+      credentials: 'include'
+    });
     
-    // Record the points
-    const comments = document.getElementById('eduComment').value;
-    recordPoints('educationalQualification', points, comments);
+    if (!response.ok) {
+      throw new Error('Failed to fetch assigned applicants');
+    }
     
-    updateOverallScore();
-    document.getElementById('eduPoints').value = '';
+    return await response.json();
+  } catch (error) {
+    console.error('Error loading assigned applicants:', error);
+    return { success: false, error: error.message };
+  }
 }
-
-// Similarly modify the other point addition functions (addWorkPoints, addAchievePoints, addInterviewPoints)
 
 
 // Global exports
