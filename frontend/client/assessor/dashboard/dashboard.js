@@ -681,15 +681,24 @@ function renderStudentTables(studentsToRender) {
         `;
         table.appendChild(row);
     });
-}
+}  
 
 // Helper function to format names as "Last, First"
 function formatName(name) {
     if (!name) return '';
+    
+    // Remove any existing commas and trim whitespace
+    name = name.replace(/,/g, '').trim();
+    
     const parts = name.split(' ');
     if (parts.length === 1) return name;
+    
+    // Take the last part as last name
     const lastName = parts.pop();
-    return `${lastName}, ${parts.join(' ')}`;
+    // Join remaining parts as first name
+    const firstName = parts.join(' ');
+    
+    return `${lastName}, ${firstName}`;
 }
 
 // Add this helper function
