@@ -564,7 +564,7 @@ input:checked + label .text-bx {
 /* Footer */
 .footer {
     background: linear-gradient(to top, #532989, #dfd9eccc),
-        url("../img/background-footer.png") no-repeat top center;
+        url("/frontend//client/applicant/img/background-footer.png") no-repeat top center;
     background-size: cover;
     padding: 35px 0 8px;
     position: relative;
