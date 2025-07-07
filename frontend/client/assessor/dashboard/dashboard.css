@@ -298,7 +298,7 @@
         th:nth-child(4), td:nth-child(4) { width: 12%; } /* Status */
         th:nth-child(5), td:nth-child(5) { width: 8%; } /* Score */
         th:nth-child(6), td:nth-child(6) { width: 15%; } /* Date */
-        th:nth-child(7), td:nth-child(7) { width: 20%; min-width: 180px; } 
+        th:nth-child(7), td:nth-child(7) { width: 24%; min-width: 240px;} 
 
         th {
             background-color: #f8fafc;
@@ -349,19 +349,10 @@
 
         /* Base Button Styles */
         .action-btn {
-            padding: 4px 6px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-            min-width: 26px;
-            max-width: 90px;
+            padding: 4px 5px; /* tighter padding */
+            font-size: 10px;  /* slightly smaller text */
+            min-width: auto;
+            max-width: 85px;
         }
 
         /* Icon inside button */
