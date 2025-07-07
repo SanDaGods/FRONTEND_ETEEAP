@@ -714,12 +714,12 @@ tr:nth-child(even) {
 }
 
 .view-btn {
-    background-color: #10b981;
+    background-color: #532989;
     color: white;
 }
 
 .view-btn:hover {
-    background-color: #059669;
+    background-color: #532989;
 }
 
 /* Status Badges */
