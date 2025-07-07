@@ -8,35 +8,57 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="../frontend/client/img/RTU Logo.png">
+    <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
 </head>
-
 <body>
-    <header>
-        <div class="logo-container">
-            <img src="../frontend/client/img/RTU Logo.png" class="logo1">
-            <img src="../frontend/client/img/IFLDE Logo.png" class="logo2">
-            <div class="logo-text-container">
-                <h2 class="logo-text">Rizal Technological University</h2>
-                <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
-            </div>
-        </div>
-               <nav class="nav">
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="frontend/client/applicant/about/about.html">About Us</a></li>
-                <li><a href="frontend/client/applicant/downloads/downloads.html">Downloads</a></li>
-                <li><a href="frontend/client/applicant/news/news.html">News</a></li>
-                <button class="btnLogin-popup" onclick="window.location.href='frontend/client/applicant/login/login.html';">Login</button>
-            </ul>
-        </nav>
+  <header>
+  <div class="header-container">
+    <div class="logo-container">
+      <img src="/frontend/client/applicant/img/RTU Logo.png" class="logo1" alt="RTU Logo">
+      <img src="/frontend/client/applicant/img/IFLDE Logo.png" class="logo2" alt="IFLDE Logo">
+      <div class="logo-text-container">
+          <h2 class="logo-text">Rizal Technological University</h2>
+          <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+      </div>
+    </div>
+    
+   <!-- Mobile Navigation -->
+   <div class="mobile-nav-container">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+          <span class="hamburger-icon"></span>
+      </button>
+      <button class="btnLogin-popup mobile-login" onclick="window.location.href='../login/login.html';">SIGN IN</button>
+  </div>
+  </div>
+
+  <!-- Desktop Navigation -->
+  <nav class="nav">
+      <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="/frontend/client/applicant/about/about.html">About Us</a></li>
+          <li><a href="/frontend/client/applicant/downloads/downloads.html">Downloads</a></li>
+          <li><a href="/frontend/client/applicant/news/news.html">News</a></li>
+          <button class="btnLogin-popup" onclick="window.location.href='../login/login.html';">SIGN IN</button>
+      </ul>
+  </nav>
+</header>
+ <!-- Mobile Navigation Menu -->
+    <nav class="mobile-nav" id="mobileNav">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="/frontend/client/applicant/About/about.html">About Us</a></li>
+            <li><a href="/frontend/client/applicant/Downloads/downloads.html">Downloads</a></li>
+            <li><a href="/frontend/client/applicant/News/news.html">News</a></li>
+        </ul>
+    </nav>
     </header>
+  
     
     <section id="home">
         <div class="sec-01">
             <div class="container">
                 <div class="logo-title">
-                    <img src="../frontend/client/img/RTU Logo.png" alt="RTU Logo" class="rtu-logo">
+                    <img src="/frontend/client/applicant/img/RTU Logo.png" alt="RTU Logo" class="rtu-logo">
                     <h2 class="title">Rizal Technological University</h2>
                 </div>
                     <h1 class="main-title">Expanded Tertiary Education Equivalency <br> and Accreditation Program</h1>
@@ -45,29 +67,29 @@
                     <p class="subtext">Rizal Technological University (RTU) offers the Expanded
                     Tertiary Education Equivalency and Accreditation Program (ETEEAP).
                     Take the next step in your education journey with ETEEAP at RTU! Apply now online!</p>
-                    <button class="apply-now-btn" onclick="window.location.href='frontend/client/applicant/login/login.html';">Apply Now</button>
+                    <button class="apply-now-btn" onclick="window.location.href='../login/login.html';">Apply Now</button>
                 </div>
             </div>
         </div>   
     
-        <div class="sec-02">
-            <div class="container">
-                <div class="logo">
-                    <img src="../frontend/client/img/ETEEAP Logo.png" alt="ETEEAP Logo" class="eteeap-logo">
-                </div>
-                <div class="content">
-                    <h2>What is ETEEAP?</h2>
-                    <p>Expanded Tertiary Education Equivalency and Accreditation Program is a comprehensive 
-                        educational assessment program at the tertiary level that recognizes, accredits and gives equivalencies 
-                        to knowledge, skills, attitudes and values gained by individuals from relevant work. It is implemented 
-                        through deputized higher education institutions that shall award the appropriate college degree.</p>
-                    <p>Beneficiaries must be Filipinos who are at least high school graduates. They must 
-                        have worked for at least 5 years in the field or industry related to the academic program they are 
-                        obtaining an equivalency. They must also be able to show proof of proficiency, capability and thorough 
-                        knowledge in the field applied for equivalency.</p>
-                </div>
-            </div>
+       <div class="sec-02">
+    <div class="container">
+        <div class="logo">
+            <img src="/frontend/client/applicant/img/ETEEAP Logo.png" alt="ETEEAP Logo" class="eteeap-logo">
         </div>
+        <div class="content">
+            <h2>What is ETEEAP?</h2>
+            <p>Expanded Tertiary Education Equivalency and Accreditation Program is a comprehensive 
+                educational assessment program at the tertiary level that recognizes, accredits and gives equivalencies 
+                to knowledge, skills, attitudes and values gained by individuals from relevant work. It is implemented 
+                through deputized higher education institutions that shall award the appropriate college degree.</p>
+            <p>Beneficiaries must be Filipinos who are at least high school graduates. They must 
+                have worked for at least 5 years in the field or industry related to the academic program they are 
+                obtaining an equivalency. They must also be able to show proof of proficiency, capability and thorough 
+                knowledge in the field applied for equivalency.</p>
+        </div>
+    </div>
+</div>
 
         <div class="sec-03">
             <h1 class="title">Degrees offered by ETEEAP</h1>
@@ -75,7 +97,7 @@
             <div class="container">
                 <div class="card">
                     <div class="imgBx">
-                        <img src="../frontend/client/img/ICS Logo.png" class="ics-logo">
+                        <img src="/frontend/client/applicant/img/ICS Logo.png" class="ics-logo" alt="ICS Logo">
                     </div>
                     <div class="content">
                         <h2>Institute of Computer Studies</h2>
@@ -84,7 +106,7 @@
                 </div>
                 <div class="card">
                     <div class="imgBx">
-                        <img src="../frontend/client/img/CBEA.png" class="cbea-logo">
+                        <img src="/frontend/client/applicant/img/CBEA.png" class="cbea-logo" alt="CBEA Logo">
                     </div>
                     <div class="content">
                         <h2>College of Business, Entrepreneurship and Accountancy</h2>
@@ -98,7 +120,7 @@
                 </div>
                 <div class="card">
                     <div class="imgBx">
-                        <img src="../frontend/client/img/CAS.png" class="cas-logo">
+                        <img src="/frontend/client/applicant/img/CAS.png" class="cas-logo" alt="CAS Logo">
                     </div>
                     <div class="content">
                         <h2>College of Arts and Sciences</h2>
@@ -140,7 +162,7 @@
                         </div>
                         <div class="text-bx">
                             <h4>What do I need to submit?</h4>
-                            <h5>For Initial Screening:</h3>
+                            <h5>For Initial Screening:</h5>
                             <p>1. Accomplished ETEEAP Application Form from CHED Website</p>
                             <p>2. Diploma or Transcript of Records (TOR)</p>
                             <p>3. 1x1 ID Picture</p>
@@ -150,7 +172,7 @@
                             <p>7. Certificate of Employment (Notarized)</p>
                             <p>8. Certificates of Training</p>
                             <p>9. Other supporting documents that qualifies your application in the ETEEAP Program.</p>
-                            <h5>Additional documents for unemployed:</h3>
+                            <h5>Additional documents for unemployed:</h5>
                             <p>• Income Tax Return (ITR)</p>
                             <p>• SSS</p>
                             <p>• PhilHealth</p>
@@ -169,11 +191,11 @@
                             <h4>How do I apply for ETEEAP?</h4>
                             <p>1. Download and fill up the ETEEAP application from <a href="http://www.rtu.edu.ph/iflde" target="_blank">www.rtu.edu.ph/iflde</a> or from <a href="https://ched.gov.ph/" target="_blank">www.ched.gov.ph</a>.</p>
                             <p>2. Go to ETEEAP Tracking System<a href="https://www.rtu.edu.ph/eteeap" target="_blank">www.rtu.edu.ph/eteeap</a>.</p>
-                            <p>3. Register an account and submit the accomplished ETEEAP application form along with the supporting documents that qualifies your application as well as the receipt of payment of fee.<a href="/frontend/client/img/ApplicationFee.jpg" onclick="openImage()">Application fee</a></p>
+                            <p>3. Register an account and submit the accomplished ETEEAP application form along with the supporting documents that qualifies your application as well as the receipt of payment of fee.<a href="../img/ApplicationFee.jpg" onclick="openImage()">Application fee</a></p>
                             <p>4. Once all submitted documents are reviewed by the RTU ETEEAP Chief, you will be invited for an interview to further assess your suitability for the program.</p>
                             <p>5. After the interview, you will be formally notified in writing regarding the outcome of your interview, the following writing must be also submitted in <a href="https://www.rtu.edu.ph/eteeap" target="_blank">www.rtu.edu.ph/eteeap</a> along with your portfolio as instructed by the ETEEAP office.</p>
                             <p>6. Once submitted, your portfolio will be forwarded to qualified panels of assessors. The evaluation may include: Interviews from the internal assessor, demonstrations of skills, written examinations and other relevant materials.</p>
-                            <p>7. After evaluation, you will be notified of the real time result of  your application including the subjects you need to enroll if you are qualified in the ETEEAP Program. Confirm by paying the enrollment fee.<a href="/frontend/client/img/EnrollmentFee.jpg" onclick="openImage()">Enrollment fee</a></p>
+                            <p>7. After evaluation, you will be notified of the real time result of  your application including the subjects you need to enroll if you are qualified in the ETEEAP Program. Confirm by paying the enrollment fee.<a href="../img/EnrollmentFee.jpg" onclick="openImage()">Enrollment fee</a></p>
                         </div>
                     </div>
                 </label>
@@ -189,27 +211,34 @@
         </div>
     </section>
 
-      <footer class="footer">
+    <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="footer-col logo-left">
-                    <img src="../frontend/client/img/Bagong Pilipinas Logo.png" alt="Left Logo">
+                    <img src="/frontend/client/applicant/img/Bagong Pilipinas Logo.png" alt="Left Logo">
                 </div>
                 <div class="footer-col">
                     <h4>Contact Us</h4>
-                    <div><i class="fa-solid fa-location-dot"></i>
+                    <div>
+                        <i class="fa-solid fa-location-dot"></i>
                         <p>Room 5021, Main Academic Building, RTU Main Campus, Boni Ave., Mandaluyong.</p>
                     </div>
-                    <div><i class="fa fa-phone"></i><p>(02) 8534-8267 local 1240</p></div>
-                    <div><i class="fa fa-envelope"></i><p>iflde@rtu.edu.ph</p></div>
+                    <div>
+                        <i class="fa fa-phone"></i>
+                        <p>(02) 8534-8267 local 1240</p>
+                    </div>
+                    <div>
+                        <i class="fa fa-envelope"></i>
+                        <p>iflde@rtu.edu.ph</p>
+                    </div>
                 </div>
                 <div class="footer-col">
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="index.html">Home</a></li>
-                        <li><a href="../frontend/client/applicant/about/about.html">About Us</a></li>
-                        <li><a href="../frontend/client/applicant/downloads/downloads.html">Downloads</a></li>
-                        <li><a href="../frontend/client/applicant/news/news.html">News</a></li>
+                        <li><a href="/frontend/client/applicant/about/about.html">About Us</a></li>
+                        <li><a href="/frontend/client/applicant/downloads/downloads.html">Downloads</a></li>
+                        <li><a href="/frontend/client/applicant/news/news.html">News</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -219,18 +248,37 @@
                     </div>
                 </div>
                 <div class="footer-col logo-right">
-                    <img src="../frontend/client/img/Republika ng Pilipinas.png" alt="Right Logo">
+                    <img src="../img/Republika ng Pilipinas.png" alt="Right Logo">
                 </div>
             </div>
         </div>
         <div class="copyrightText">
             <p>Copyright © 2024. All Rights Reserved</p>
         </div>
-    </footer>     
+    </footer>    
 
-    <!-- Home Page Animation -->
- <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
     <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mobileNav.classList.toggle('active');
+            mobileMenuBtn.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileNav.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileNav.classList.remove('active');
+                mobileMenuBtn.classList.remove('active');
+            }
+        });
+
+        
+
         // Scroll to the top on page refresh
         window.addEventListener("beforeunload", () => {
             window.scrollTo(0, 0);
@@ -244,39 +292,26 @@
             delay: 400
         });
 
+        // Define elements with their respective animation origins
         const revealElements = [
-            { selector: '.main-title, .rtu-logo, .sec-01 .title, .sec-01 .text, .sec-01 .subtext, .apply-now-btn, .eteeap-logo, .sec-02 .content .eteeap-logo, .sec-03 .title, .sec-03 .subtitle, .sec-04 h2, .sec-05 .content', options: { origin: 'bottom', delay: 50 } },
-            { selector: '.sec-01 .text, .sec-01 .subtext, .apply-now-btn', options: { origin: 'left', delay: 50 } },
-            { selector: '.sec-02 .content', options: { origin: 'right', delay: 50 } }
+            { 
+                selector: '.main-title, .rtu-logo, .sec-01 .title, .sec-01 .text, .sec-01 .subtext, .apply-now-btn, .eteeap-logo, .sec-02 .content .eteeap-logo, .sec-03 .title, .sec-03 .subtitle, .sec-04 h2, .sec-05 .content', 
+                options: { origin: 'bottom', delay: 50 }
+            },
+            { 
+                selector: '.sec-01 .text, .sec-01 .subtext, .apply-now-btn', 
+                options: { origin: 'left', delay: 50 }
+            },
+            { 
+                selector: '.sec-02 .content', 
+                options: { origin: 'right', delay: 50 }
+            }
         ];
         
+        // Apply ScrollReveal to all elements
         revealElements.forEach(({ selector, options }) => {
             sr.reveal(selector, options);
         });
     </script>
-  <script>
-    async function callBackend() {
-        const backendURL = 
-            window.location.hostname === "localhost" 
-            ? "https://eteeapbackend-production.up.railway.app/frontend/api/" 
-            : "https://eteeapbackend-production.up.railway.app/frontend/api/";
-
-        try {
-            const response = await fetch(`${backendURL}/api/test`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const result = await response.json();
-            console.log("Backend response:", result);
-        } catch (err) {
-            console.error("Error connecting to backend:", err);
-        }
-    }
-
-    window.onload = callBackend;
-</script>
 </body>
 </html>
