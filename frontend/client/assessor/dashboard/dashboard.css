@@ -279,26 +279,16 @@
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
-            min-width: 900px; /* Minimum width to prevent squeezing */
+            min-width: 900px;
         }
 
         th, td {
-            padding: 12px 10px; /* Slightly reduced padding */
+            padding: 12px;
             text-align: left;
-            vertical-align: middle;
             border-bottom: 1px solid #e2e8f0;
             word-wrap: break-word;
+            vertical-align: middle;
         }
-        
-        /* Column Width Adjustments */
-        /* Column Width Adjustments */
-        th:nth-child(1), td:nth-child(1) { width: 10%; } /* ID */
-        th:nth-child(2), td:nth-child(2) { width: 20%; } /* Name */
-        th:nth-child(3), td:nth-child(3) { width: 15%; } /* Course */
-        th:nth-child(4), td:nth-child(4) { width: 12%; } /* Status */
-        th:nth-child(5), td:nth-child(5) { width: 8%; } /* Score */
-        th:nth-child(6), td:nth-child(6) { width: 15%; } /* Date */
-        th:nth-child(7), td:nth-child(7) { width: 24%; min-width: 240px;} 
 
         th {
             background-color: #f8fafc;
@@ -311,94 +301,125 @@
         tr:hover {
             background-color: #f8fafc;
         }
+        
+        /* Column Width Adjustments */
+        /* Column Width Adjustments */
+        th:nth-child(1), td:nth-child(1) { width: 10%; }  /* ID */
+        th:nth-child(2), td:nth-child(2) { width: 20%; }  /* Name */
+        th:nth-child(3), td:nth-child(3) { width: 15%; }  /* Course */
+        th:nth-child(4), td:nth-child(4) { width: 12%; }  /* Status */
+        th:nth-child(5), td:nth-child(5) { width: 8%; }   /* Score */
+        th:nth-child(6), td:nth-child(6) { width: 15%; }  /* Date */
+        th:nth-child(7), td:nth-child(7) {
+        width: 20%;
+        min-width: 180px;
+        }
 
+
+        /* Status badges */
         .status-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
         }
 
         .status-active {
-            background-color: #dcfce7;
-            color: #166534;
+        background-color: #dcfce7;
+        color: #166534;
         }
 
         .status-inactive {
-            background-color: #fee2e2;
-            color: #991b1b;
+        background-color: #fee2e2;
+        color: #991b1b;
         }
+
+        .status-pending {
+        background-color: #fef9c3;
+        color: #854d0e;
+        }
+
+        .status-approved {
+        background-color: #dcfce7;
+        color: #166534;
+        }
+
+        .status-rejected {
+        background-color: #fee2e2;
+        color: #991b1b;
+        }
+
+        .status-in-progress {
+        background-color: #dbeafe;
+        color: #1e40af;
+        }
+
 
         /* Action Buttons Container */
 
+        /* Action buttons */
         .action-buttons {
-            display: flex;
-            gap: 6px;
-            flex-wrap: nowrap;
-            justify-content: flex-start;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
         }
 
-        /* Base Button Styles */
-        /* Action Buttons Container */
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            gap: 4px;
-        }
-
-        /* Base Button Styles */
         .action-btn {
-            padding: 4px 5px; /* tighter padding */
-            font-size: 10px;  /* slightly smaller text */
-            min-width: auto;
-            max-width: 85px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+        transition: all 0.2s ease;
         }
 
-        /* Icon inside button */
         .action-btn i {
-            font-size: 11px;
+        font-size: 12px;
         }
 
         /* View Button */
         .view-btn {
-            background-color: #dbeafe;
-            color: #1d4ed8;
+        background-color: #dbeafe;
+        color: #1d4ed8;
         }
         .view-btn:hover {
-            background-color: #bfdbfe;
+        background-color: #bfdbfe;
         }
 
         /* Reject Button */
         .reject-btn {
-            background-color: #fee2e2;
-            color: #b91c1c;
+        background-color: #fee2e2;
+        color: #b91c1c;
         }
         .reject-btn:hover {
-            background-color: #fecaca;
+        background-color: #fecaca;
         }
 
         /* Remove Button */
         .remove-btn {
-            background-color: #f39c12;
-            color: white;
+        background-color: #f39c12;
+        color: white;
         }
         .remove-btn:hover {
-            background-color: #e67e22;
+        background-color: #e67e22;
         }
 
 
+        /* Responsive fallback */
         @media (max-width: 1200px) {
-            .student-list {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            table {
-                min-width: 900px; /* Ensures table doesn't shrink too much */
-            }
+        .student-list {
+            overflow-x: auto;
         }
-    
+
+        table {
+            min-width: 900px;
+        }
+        }
 
         /* Notification */
         .notification {
@@ -515,36 +536,11 @@
             }
         }
 
-        /* Delete Confirmation Modal */
-        #deleteConfirmationModal .modal-content {
-            width: 400px;
-        }
-
-
-        /* Status badges */
-        .status-pending {
-            background-color: #fef9c3;
-            color: #854d0e;
-        }
         
-        .status-approved {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-        
-        .status-rejected {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .status-in-progress {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-        
+        /* Disabled */
         .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        opacity: 0.5;
+        cursor: not-allowed;
         }
 
         .notification {
