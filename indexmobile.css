@@ -265,7 +265,7 @@
     
     /* Section 2 adjustments */
 
-    .sec-02 {
+.sec-02 {
     position: relative;
     display: flex;
     justify-content: center;
@@ -276,44 +276,64 @@
 
 .sec-02 .container {
     background: linear-gradient(to left, #532989, #946eca);
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     max-width: 900px;
-    padding: 15px;
+    padding: 20px;
 }
 
 .sec-02 .eteeap-logo {
     width: 100%;
-    max-width: 150px;
+    max-width: 140px;
     height: auto;
     display: block;
     margin: 0 auto 20px;
     filter: drop-shadow(1px 1px 5px black);
-    margin-bottom: 15px;
 }
 
 .sec-02 .content {
-    padding: 0;
     width: 100%;
-}
-
-.sec-02 h2 {
-    font-size: 1.5rem;
-    color: #fff;
-    margin-bottom: 15px;
+    padding: 0 10px;
     text-align: center;
 }
 
-.sec-02 p {
-    font-size: 0.9rem;
+.sec-02 h2 {
+    font-size: 1.6rem;
     color: #fff;
     margin-bottom: 15px;
-    line-height: 1.5;
 }
+
+.sec-02 p {
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+/* Responsive media query for smaller devices */
+@media (max-width: 480px) {
+    .sec-02 .container {
+        padding: 15px 10px;
+    }
+
+    .sec-02 h2 {
+        font-size: 1.3rem;
+    }
+
+    .sec-02 p {
+        font-size: 0.95rem;
+    }
+
+    .sec-02 .eteeap-logo {
+        max-width: 120px;
+        margin-bottom: 12px;
+    }
+}
+
     
     /* Section 3 adjustments */
      .sec-03 {
