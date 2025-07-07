@@ -193,56 +193,55 @@ function renderApplicantTable(applicantsToRender) {
       </td>
       <td>${applicant.score || applicant.score === 0 ? applicant.score : '0'}</td>
       <td class="action-buttons">
-        <button class="action-btn view-btn" onclick="viewApplicant('${applicant._id}')">
-          <i class="fas fa-eye"></i> View
-        </button>
-        <button class="action-btn reject-btn" onclick="rejectApplicant('${applicant._id}', event)"
-          ${applicant.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
-          <i class="fas fa-times"></i> Reject
-        </button>
-        <button class="action-btn delete-btn" onclick="deleteApplicant('${applicant._id}', event)">
-          <i class="fas fa-trash"></i> Delete
-        </button>
-      </td>
-    `;
+      <button class="action-btn view-btn" onclick="viewApplicant('${applicant._id}')">
+        <i class="fas fa-eye"></i> View
+      </button>
+      <button class="action-btn reject-btn" onclick="rejectApplicant('${applicant._id}', event)"
+        ${applicant.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
+        <i class="fas fa-times"></i> Reject
+      </button>
+      <button class="action-btn remove-btn" onclick="unassignApplicant('${applicant._id}', event)">
+        <i class="fas fa-user-minus"></i> Remove
+      </button>
+    </td>
+  `;
     table.appendChild(row);
   });
 }
 
 
-async function deleteApplicant(applicantId, event) {
+async function unassignApplicant(applicantId, event) {
   if (event) event.preventDefault();
   
-  if (!confirm('Are you sure you want to permanently delete this applicant? This will remove all their data and cannot be undone.')) {
+  if (!confirm('Are you sure you want to unassign this applicant? They will be removed from your list but their account will remain.')) {
     return;
   }
 
   showLoading();
   try {
-    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}`, {
-      method: 'DELETE',
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/unassign`, {
+      method: 'PATCH',
       credentials: 'include'
     });
 
     const data = await response.json();
     
     if (!response.ok) {
-      // Handle specific error cases
       if (response.status === 404) {
         throw new Error('Applicant not found or not assigned to you');
       } else {
-        throw new Error(data.error || 'Failed to delete applicant');
+        throw new Error(data.error || 'Failed to unassign applicant');
       }
     }
 
     if (data.success) {
-      showNotification('Applicant deleted successfully', 'success');
+      showNotification('Applicant unassigned successfully', 'success');
       await loadAssignedApplicants();
     } else {
-      throw new Error(data.error || 'Failed to delete applicant');
+      throw new Error(data.error || 'Failed to unassign applicant');
     }
   } catch (error) {
-    console.error('Error deleting applicant:', error);
+    console.error('Error unassigning applicant:', error);
     showNotification(error.message, 'error');
   } finally {
     hideLoading();
@@ -489,7 +488,7 @@ async function handleLogout() {
 
 
 // Make functions available globally
-window.deleteApplicant = deleteApplicant;
+window.unassignApplicant = unassignApplicant;
 window.viewApplicant = viewApplicant;
 window.rejectApplicant = rejectApplicant;
 window.handleLogout = handleLogout;
