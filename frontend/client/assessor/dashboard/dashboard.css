@@ -419,6 +419,15 @@
             background-color: #2196f3;
         }
 
+        .course-list,
+        .student-list {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
         .section {
             display: none;
         }
