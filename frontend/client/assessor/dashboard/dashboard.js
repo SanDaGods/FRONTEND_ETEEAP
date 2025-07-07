@@ -631,7 +631,7 @@ async function loadAssignedApplicants() {
     }
 }
 
-// Update the renderStudentTables function
+// Update the renderStudentTables function //
 function renderStudentTables(studentsToRender) {
     const table = studentTableBody;
     
