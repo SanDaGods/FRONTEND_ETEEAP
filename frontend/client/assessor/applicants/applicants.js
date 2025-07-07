@@ -219,22 +219,26 @@ async function unassignApplicant(applicantId, event) {
 
   showLoading();
   try {
+    // Ensure the applicantId is correctly formatted
+    console.log(`Attempting to unassign applicant: ${applicantId}`);
+    
     const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/unassign`, {
-      method: 'POST', // Changed from PATCH to POST
-      credentials: 'include'
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
 
-    // Rest of the function remains the same
-    const data = await response.json();
-    
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Applicant not found or not assigned to you');
-      } else {
-        throw new Error(data.error || 'Failed to unassign applicant');
-      }
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Failed to unassign applicant';
+      console.error('Unassign failed:', errorMessage);
+      throw new Error(errorMessage);
     }
 
+    const data = await response.json();
+    
     if (data.success) {
       showNotification('Applicant unassigned successfully', 'success');
       await loadAssignedApplicants();
@@ -243,7 +247,16 @@ async function unassignApplicant(applicantId, event) {
     }
   } catch (error) {
     console.error('Error unassigning applicant:', error);
-    showNotification(error.message, 'error');
+    
+    // More specific error messages
+    let userMessage = error.message;
+    if (error.message.includes('not found')) {
+      userMessage = "The applicant was not found in our records or is no longer assigned to you.";
+    } else if (error.message.includes('Failed to fetch')) {
+      userMessage = "Network error. Please check your connection and try again.";
+    }
+    
+    showNotification(userMessage, 'error');
   } finally {
     hideLoading();
   }
