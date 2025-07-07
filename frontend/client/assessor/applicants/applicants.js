@@ -500,9 +500,6 @@ async function handleLogout() {
   }
 }
 
-
-
-
 // Make functions available globally
 window.unassignApplicant = unassignApplicant;
 window.viewApplicant = viewApplicant;

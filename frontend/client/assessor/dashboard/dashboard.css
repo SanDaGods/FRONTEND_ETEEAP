@@ -250,7 +250,7 @@
             color: var(--text-color);
         }
 
-        /* Student List Table */
+        /* Applicant List Table */
         .student-list {
             background-color: white;
             padding: 20px;
@@ -278,31 +278,24 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
-            min-width: 900px;
         }
 
         th, td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
-            word-wrap: break-word;
-            vertical-align: middle;
         }
 
         th {
             background-color: #f8fafc;
             color: #64748b;
             font-weight: 600;
-            position: sticky;
-            top: 0;
-        }
+            }
 
         tr:hover {
-            background-color: #f8fafc;
+        background-color: #f8fafc;
         }
         
-        /* Column Width Adjustments */
         /* Column Width Adjustments */
         th:nth-child(1), td:nth-child(1) { width: 10%; }  /* ID */
         th:nth-child(2), td:nth-child(2) { width: 20%; }  /* Name */

@@ -633,57 +633,54 @@ async function loadAssignedApplicants() {
 
 // Update the renderStudentTables function
 function renderStudentTables(studentsToRender) {
-    const tables = [studentTableBody, allStudentsTableBody];
+    const table = studentTableBody;
+    
+    if (!table) return;
 
-    tables.forEach(table => {
-        if (!table) return;
+    table.innerHTML = "";
 
-        table.innerHTML = "";
-
-        if (studentsToRender.length === 0) {
-            const colSpan = table.closest("table").querySelectorAll("th").length;
-            table.innerHTML = `
-                <tr>
-                    <td colspan="${colSpan}" class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>No Applicants Assigned to You</h3>
-                        <p>Applicants assigned to you will appear here</p>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        studentsToRender.forEach(student => {
-            const statusClass = student.status.toLowerCase().replace(/\s+/g, '-');
-            
-            const row = document.createElement("tr"); // Properly define row here
-            row.innerHTML = `
-                <td>${student.applicantId || student._id}</td>
-                <td>${escapeHtml(student.name)}</td>
-                <td>${escapeHtml(student.course)}</td>
-                <td>
-                    <span class="status-badge status-${statusClass}">
-                        ${formatStatus(student.status)}
-                    </span>
+    if (studentsToRender.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>No Applicants Assigned to You</h3>
+                    <p>Applicants assigned to you will appear here</p>
                 </td>
-                <td>${student.score || student.score === 0 ? student.score : '0'}</td>
-                <td>${formatDate(student.applicationDate)}</td>
-                <td class="action-buttons">
-                    <button class="action-btn view-btn" onclick="viewStudent('${student._id}')">
-                        <i class="fas fa-eye"></i> View
-                    </button>
-                    <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)"
-                        ${student.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                    <button class="action-btn remove-btn" onclick="unassignApplicant('${student._id}', event)">
-                        <i class="fas fa-user-minus"></i> Remove
-                    </button>
-                </td>
-            `;
-            table.appendChild(row);
-        });
+            </tr>
+        `;
+        return;
+    }
+
+    studentsToRender.forEach(student => {
+        const statusClass = student.status.toLowerCase().replace(/\s+/g, '-');
+        
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${student.applicantId || student._id}</td>
+            <td>${escapeHtml(student.name)}</td>
+            <td>${escapeHtml(student.course)}</td>
+            <td>${formatDate(student.applicationDate)}</td>
+            <td>
+                <span class="status-badge status-${statusClass}">
+                    ${formatStatus(student.status)}
+                </span>
+            </td>
+            <td>${student.score || student.score === 0 ? student.score : '0'}</td>
+            <td class="action-buttons">
+                <button class="action-btn view-btn" onclick="viewStudent('${student._id}')">
+                    <i class="fas fa-eye"></i> View
+                </button>
+                <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)"
+                    ${student.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
+                    <i class="fas fa-times"></i> Reject
+                </button>
+                <button class="action-btn remove-btn" onclick="unassignApplicant('${student._id}', event)">
+                    <i class="fas fa-user-minus"></i> Remove
+                </button>
+            </td>
+        `;
+        table.appendChild(row);
     });
 }
 
