@@ -279,30 +279,29 @@
     border-radius: 12px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
     padding: 20px;
+    gap: 20px;
 }
 
 .sec-02 .eteeap-logo {
-    width: 100%;
-    max-width: 140px;
+    flex-shrink: 0;
+    width: 200px;
     height: auto;
-    display: block;
-    margin: 0 auto 20px;
-    filter: drop-shadow(1px 1px 5px black);
+    filter: drop-shadow(1px 1px 6px black);
 }
 
 .sec-02 .content {
-    width: 100%;
-    padding: 0 10px;
-    text-align: center;
+    flex: 1;
+    padding: 0;
+    text-align: left;
 }
 
 .sec-02 h2 {
-    font-size: 1.6rem;
+    font-size: 2rem;
     color: #fff;
     margin-bottom: 15px;
 }
@@ -314,22 +313,62 @@
     line-height: 1.6;
 }
 
-/* Responsive media query for smaller devices */
-@media (max-width: 480px) {
+/* 📱 Responsive adjustments for mobile */
+@media (max-width: 768px) {
     .sec-02 .container {
-        padding: 15px 10px;
+        flex-direction: column;
+        text-align: left;
+        padding: 20px 15px;
+    }
+
+    .sec-02 .eteeap-logo {
+        width: 80%;
+        max-width: 300px;
+        margin-bottom: 20px;
+    }
+
+    .sec-02 .content {
+        width: 100%;
     }
 
     .sec-02 h2 {
-        font-size: 1.3rem;
+        font-size: 1.6rem;
     }
 
     .sec-02 p {
         font-size: 0.95rem;
     }
+}
+
+
+/* Responsive media query for smaller devices */
+@media (max-width: 480px) {
+    .sec-02 .container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 15px;
+    }
 
     .sec-02 .eteeap-logo {
-        max-width: 120px;
+        width: 100%;
+        max-width: 280px;
+        margin-bottom: 20px;
+        align-self: center;
+    }
+
+    .sec-02 .content {
+        width: 100%;
+        text-align: left;
+    }
+
+    .sec-02 h2 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    .sec-02 p {
+        font-size: 1rem;
+        line-height: 1.6;
         margin-bottom: 12px;
     }
 }
