@@ -339,52 +339,63 @@
         }
 
         /* Base Button Styles */
+        /* Action Buttons Container */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 4px;
+        }
+
+        /* Base Button Styles */
         .action-btn {
-            padding: 6px 8px;
+            padding: 4px 6px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
             white-space: nowrap;
             transition: all 0.2s ease;
-            min-width: 30px;
+            min-width: 26px;
+            max-width: 90px;
         }
 
+        /* Icon inside button */
         .action-btn i {
-            font-size: 12px;
+            font-size: 11px;
         }
 
+        /* View Button */
         .view-btn {
-        background-color: #dbeafe;
-        color: #1d4ed8;
+            background-color: #dbeafe;
+            color: #1d4ed8;
         }
-
         .view-btn:hover {
-         background-color: #bfdbfe;
+            background-color: #bfdbfe;
         }
 
-        /* Style for the remove button */
-        .action-btn.remove-btn {
-          background-color: #f39c12;
-          color: white;
-        }
-
-        .action-btn.remove-btn:hover {
-           background-color: #e67e22;
-        }
-        
+        /* Reject Button */
         .reject-btn {
             background-color: #fee2e2;
             color: #b91c1c;
         }
-
         .reject-btn:hover {
             background-color: #fecaca;
         }
+
+        /* Remove Button */
+        .remove-btn {
+            background-color: #f39c12;
+            color: white;
+        }
+        .remove-btn:hover {
+            background-color: #e67e22;
+        }
+
 
         @media (max-width: 1200px) {
             .student-list {
