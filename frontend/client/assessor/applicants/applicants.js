@@ -500,6 +500,58 @@ async function handleLogout() {
   }
 }
 
+// Add this function to dashboard.js
+async function unassignApplicant(applicantId, event) {
+  if (event) event.preventDefault();
+  
+  if (!confirm('Are you sure you want to unassign this applicant? They will be removed from your list but their account will remain.')) {
+    return;
+  }
+
+  showLoading();
+  try {
+    console.log(`Attempting to unassign applicant: ${applicantId}`);
+    
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/unassign`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || 'Failed to unassign applicant';
+      console.error('Unassign failed:', errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      showNotification('Applicant unassigned successfully', 'success');
+      await loadAssignedApplicants();
+      await updateDashboardStats();
+    } else {
+      throw new Error(data.error || 'Failed to unassign applicant');
+    }
+  } catch (error) {
+    console.error('Error unassigning applicant:', error);
+    
+    let userMessage = error.message;
+    if (error.message.includes('not found')) {
+      userMessage = "The applicant was not found in our records or is no longer assigned to you.";
+    } else if (error.message.includes('Failed to fetch')) {
+      userMessage = "Network error. Please check your connection and try again.";
+    }
+    
+    showNotification(userMessage, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
 
 // Make functions available globally
 window.unassignApplicant = unassignApplicant;

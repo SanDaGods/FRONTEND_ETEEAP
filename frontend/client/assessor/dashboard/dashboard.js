@@ -655,31 +655,31 @@ function renderStudentTables(studentsToRender) {
         }
 
         studentsToRender.forEach(student => {
-            const statusClass = student.status.toLowerCase().replace(' ', '-');
+            const statusClass = student.status.toLowerCase().replace(/\s+/g, '-');
             
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${applicant.applicantId || applicant._id}</td>
-                <td>${escapeHtml(applicant.name)}</td>
-                <td>${escapeHtml(applicant.course)}</td>
-                <td>${formatDate(applicant.applicationDate)}</td>
+                <td>${student.applicantId || student._id}</td>
+                <td>${escapeHtml(student.name)}</td>
+                <td>${escapeHtml(student.course)}</td>
                 <td>
                     <span class="status-badge status-${statusClass}">
-                    ${formatStatus(applicant.status)}
+                        ${formatStatus(student.status)}
                     </span>
                 </td>
-                <td>${applicant.score || applicant.score === 0 ? applicant.score : '0'}</td>
+                <td>${student.score || student.score === 0 ? student.score : '0'}</td>
+                <td>${formatDate(student.applicationDate)}</td>
                 <td class="action-buttons">
-                <button class="action-btn view-btn" onclick="viewApplicant('${applicant._id}')">
-                    <i class="fas fa-eye"></i> View
-                </button>
-                <button class="action-btn reject-btn" onclick="rejectApplicant('${applicant._id}', event)"
-                    ${applicant.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
-                    <i class="fas fa-times"></i> Reject
-                </button>
-                <button class="action-btn remove-btn" onclick="unassignApplicant('${applicant._id}', event)">
-                    <i class="fas fa-user-minus"></i> Remove
-                </button>
+                    <button class="action-btn view-btn" onclick="viewStudent('${student._id}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)"
+                        ${student.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                    <button class="action-btn remove-btn" onclick="unassignApplicant('${student._id}', event)">
+                        <i class="fas fa-user-minus"></i> Remove
+                    </button>
                 </td>
             `;
             table.appendChild(row);
@@ -753,60 +753,9 @@ async function deleteApplicant(applicantId, event) {
 }
 
 
-async function unassignApplicant(applicantId, event) {
-  if (event) event.preventDefault();
-  
-  if (!confirm('Are you sure you want to unassign this applicant? They will be removed from your list but their account will remain.')) {
-    return;
-  }
-
-  showLoading();
-  try {
-    // Ensure the applicantId is correctly formatted
-    console.log(`Attempting to unassign applicant: ${applicantId}`);
-    
-    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/unassign`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || 'Failed to unassign applicant';
-      console.error('Unassign failed:', errorMessage);
-      throw new Error(errorMessage);
-    }
-
-    const data = await response.json();
-    
-    if (data.success) {
-      showNotification('Applicant unassigned successfully', 'success');
-      await loadAssignedApplicants();
-    } else {
-      throw new Error(data.error || 'Failed to unassign applicant');
-    }
-  } catch (error) {
-    console.error('Error unassigning applicant:', error);
-    
-    // More specific error messages
-    let userMessage = error.message;
-    if (error.message.includes('not found')) {
-      userMessage = "The applicant was not found in our records or is no longer assigned to you.";
-    } else if (error.message.includes('Failed to fetch')) {
-      userMessage = "Network error. Please check your connection and try again.";
-    }
-    
-    showNotification(userMessage, 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
 // Add to global scope
 window.unassignApplicant = unassignApplicant;
 window.deleteApplicant = deleteApplicant;
 window.handleLogout = handleLogout;
 window.rejectStudent = rejectStudent;
+window.viewStudent = viewStudent;
