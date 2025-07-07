@@ -252,27 +252,17 @@
 
         /* Applicant List Table */
         .student-list {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
         .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
         }
 
         table {
@@ -290,11 +280,12 @@
             background-color: #f8fafc;
             color: #64748b;
             font-weight: 600;
-            }
+        }
 
         tr:hover {
-        background-color: #f8fafc;
+            background-color: #f8fafc;
         }
+
         
         /* Column Width Adjustments */
         th:nth-child(1), td:nth-child(1) { width: 10%; }  /* ID */
@@ -309,98 +300,95 @@
         }
 
 
-        /* Status badges */
+       /* Status badges */
         .status-badge {
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 12px;
-        font-weight: 500;
-        }
-
-        .status-active {
-        background-color: #dcfce7;
-        color: #166534;
-        }
-
-        .status-inactive {
-        background-color: #fee2e2;
-        color: #991b1b;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
         }
 
         .status-pending {
-        background-color: #fef9c3;
-        color: #854d0e;
+            background-color: #fef9c3;
+            color: #854d0e;
         }
 
         .status-approved {
-        background-color: #dcfce7;
-        color: #166534;
+            background-color: #dcfce7;
+            color: #166534;
         }
 
         .status-rejected {
-        background-color: #fee2e2;
-        color: #991b1b;
+            background-color: #fee2e2;
+            color: #991b1b;
         }
 
         .status-in-progress {
-        background-color: #dbeafe;
-        color: #1e40af;
+            background-color: #dbeafe;
+            color: #1e40af;
         }
 
 
         /* Action Buttons Container */
 
-        /* Action buttons */
         .action-buttons {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        }
+    display: flex;
+    gap: 8px;
+}
 
-        .action-btn {
-        padding: 5px 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        white-space: nowrap;
-        transition: all 0.2s ease;
-        }
+.action-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 
-        .action-btn i {
-        font-size: 12px;
-        }
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
-        /* View Button */
-        .view-btn {
-        background-color: #dbeafe;
-        color: #1d4ed8;
-        }
-        .view-btn:hover {
-        background-color: #bfdbfe;
-        }
+.view-btn {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
 
-        /* Reject Button */
-        .reject-btn {
-        background-color: #fee2e2;
-        color: #b91c1c;
-        }
-        .reject-btn:hover {
-        background-color: #fecaca;
-        }
+.reject-btn {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
 
-        /* Remove Button */
-        .remove-btn {
-        background-color: #f39c12;
-        color: white;
-        }
-        .remove-btn:hover {
-        background-color: #e67e22;
-        }
+/* Style for the remove button */
+.action-btn.remove-btn {
+    background-color: #f39c12;
+    color: white;
+}
+
+.action-btn.remove-btn:hover {
+    background-color: #e67e22;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #94a3b8;
+}
+
+.empty-state h3 {
+    margin-bottom: 10px;
+    color: #1e293b;
+}
 
 
         /* Responsive fallback */
@@ -439,23 +427,6 @@
         }
         .notification.info {
             background-color: #2196f3;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #94a3b8;
-        }
-
-        .empty-state h3 {
-            margin-bottom: 10px;
-            color: #1e293b;
         }
 
         .course-list,
