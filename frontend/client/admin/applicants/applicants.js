@@ -498,44 +498,60 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Export functionality - Updated to export all filtered data
 document.addEventListener("DOMContentLoaded", function() {
   const exportBtn = document.getElementById("export-btn");
-  
-  exportBtn.addEventListener("click", function() {
-    // Get the table element
-    const table = document.querySelector("#studentsSection table");
-    
-    // Clone the table to avoid modifying the original
-    const clonedTable = table.cloneNode(true);
-    
-    // Remove the "Actions" column (last column) from the cloned table
-    const rows = clonedTable.querySelectorAll("tr");
-    rows.forEach((row) => {
-      if (row.lastElementChild) {
-        row.removeChild(row.lastElementChild);
-      }
+
+  if (exportBtn) {
+    exportBtn.addEventListener("click", function() {
+      // Create a new table element for export
+      const exportTable = document.createElement("table");
+
+      // Create header row
+      const headerRow = exportTable.insertRow();
+      const headers = ["Applicant ID", "Name", "Course", "Application Date", "Current Score", "Status"];
+
+      headers.forEach(headerText => {
+        const th = document.createElement("th");
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+      });
+
+      // Add all filtered applicants (not just paginated ones)
+      filteredApplicants.forEach(applicant => {
+        const row = exportTable.insertRow();
+
+        const appDate = new Date(applicant.applicationDate);
+        const formattedDate = appDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+
+        const cells = [
+          applicant.applicantId || 'N/A',
+          applicant.name || 'No name provided',
+          applicant.course || 'Not specified',
+          formattedDate,
+          applicant.currentScore || 0,
+          applicant.status
+        ];
+
+        cells.forEach(cellData => {
+          const cell = row.insertCell();
+          cell.textContent = cellData;
+        });
+      });
+
+      // Convert to Excel
+      const ws = XLSX.utils.table_to_sheet(exportTable);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Applicants");
+      XLSX.writeFile(wb, "applicants.xlsx");
+
+      showNotification("Export successful! All filtered data exported.", "success");
     });
-    
-    // Convert the table to a worksheet
-    const ws = XLSX.utils.table_to_sheet(clonedTable);
-    
-    // Create a new workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Applicants");
-    
-    // Export the workbook
-    XLSX.writeFile(wb, "applicants.xlsx");
-    
-    // Show notification
-    const notification = document.getElementById("notification");
-    notification.textContent = "Export successful!";
-    notification.style.display = "block";
-    notification.style.backgroundColor = "#4CAF50";
-    
-    setTimeout(() => {
-      notification.style.display = "none";
-    }, 3000);
-  });
+  }
 });
 
 
