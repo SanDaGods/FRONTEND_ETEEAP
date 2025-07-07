@@ -210,45 +210,44 @@ function renderApplicantTable(applicantsToRender) {
 }
 
 
-exports.deleteApplicant = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const assessorId = req.assessor.userId;
+async function deleteApplicant(applicantId, event) {
+  if (event) event.preventDefault();
+  
+  if (!confirm('Are you sure you want to permanently delete this applicant? This will remove all their data and cannot be undone.')) {
+    return;
+  }
 
-    // Verify the applicant exists and is assigned to this assessor
-    const applicant = await Applicant.findOne({
-      _id: id,
-      assignedAssessors: assessorId
+  showLoading();
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}`, {
+      method: 'DELETE',
+      credentials: 'include'
     });
 
-    if (!applicant) {
-      return res.status(404).json({
-        success: false,
-        error: "Applicant not found or not assigned to you"
-      });
+    const data = await response.json();
+    
+    if (!response.ok) {
+      // Handle specific error cases
+      if (response.status === 404) {
+        throw new Error('Applicant not found or not assigned to you');
+      } else {
+        throw new Error(data.error || 'Failed to delete applicant');
+      }
     }
 
-    // Remove the applicant reference from the assessor's assignedApplicants
-    await Assessor.findByIdAndUpdate(
-      assessorId,
-      { $pull: { assignedApplicants: { applicantId: id } } }
-    );
-
-    // Delete the applicant from database
-    await Applicant.findByIdAndDelete(id);
-
-    res.status(200).json({
-      success: true,
-      message: "Applicant deleted successfully"
-    });
+    if (data.success) {
+      showNotification('Applicant deleted successfully', 'success');
+      await loadAssignedApplicants();
+    } else {
+      throw new Error(data.error || 'Failed to delete applicant');
+    }
   } catch (error) {
-    console.error("Error deleting applicant:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to delete applicant"
-    });
+    console.error('Error deleting applicant:', error);
+    showNotification(error.message, 'error');
+  } finally {
+    hideLoading();
   }
-};
+}
 
 // Utility functions (same as dashboard.js)
 function formatStatus(status) {
