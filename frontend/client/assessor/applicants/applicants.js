@@ -210,35 +210,45 @@ function renderApplicantTable(applicantsToRender) {
 }
 
 
-async function deleteApplicant(applicantId, event) {
-  if (event) event.preventDefault();
-  
-  if (!confirm('Are you sure you want to permanently delete this applicant? This will remove all their data and cannot be undone.')) {
-    return;
-  }
-
-  showLoading();
+exports.deleteApplicant = async (req, res) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}`, {
-      method: 'DELETE',
-      credentials: 'include'
+    const { id } = req.params;
+    const assessorId = req.assessor.userId;
+
+    // Verify the applicant exists and is assigned to this assessor
+    const applicant = await Applicant.findOne({
+      _id: id,
+      assignedAssessors: assessorId
     });
 
-    const data = await response.json();
-    
-    if (data.success) {
-      showNotification('Applicant deleted successfully', 'success');
-      await loadAssignedApplicants();
-    } else {
-      throw new Error(data.error || 'Failed to delete applicant');
+    if (!applicant) {
+      return res.status(404).json({
+        success: false,
+        error: "Applicant not found or not assigned to you"
+      });
     }
+
+    // Remove the applicant reference from the assessor's assignedApplicants
+    await Assessor.findByIdAndUpdate(
+      assessorId,
+      { $pull: { assignedApplicants: { applicantId: id } } }
+    );
+
+    // Delete the applicant from database
+    await Applicant.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Applicant deleted successfully"
+    });
   } catch (error) {
-    console.error('Error deleting applicant:', error);
-    showNotification(error.message, 'error');
-  } finally {
-    hideLoading();
+    console.error("Error deleting applicant:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to delete applicant"
+    });
   }
-}
+};
 
 // Utility functions (same as dashboard.js)
 function formatStatus(status) {

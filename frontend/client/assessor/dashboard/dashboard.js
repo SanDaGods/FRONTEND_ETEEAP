@@ -585,8 +585,6 @@ async function rejectStudent(applicantId, event) {
     }
 }
 
-
-
 // Update the formatDate function to handle missing dates better
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
@@ -601,8 +599,6 @@ function formatDate(dateString) {
         return 'N/A';
     }
 }
-
-
 
 // Add this function to fetch assigned applicants
 async function loadAssignedApplicants() {
@@ -697,9 +693,6 @@ function formatStatus(status) {
         .join(' ');
 }
 
-
-
-
 // First, add this function to your script
 function viewStudent(applicantId) {
     // Find the student in our local data to get the applicantId
@@ -724,9 +717,6 @@ row.innerHTML = `
         </button>
     </td>
 `;
-
-
-
 
 
 // Add this function to both dashboard.js and applicants.js
