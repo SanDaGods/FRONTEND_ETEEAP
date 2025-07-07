@@ -493,30 +493,29 @@ const navigation = {
 // Export Functions
 const exportFunctions = {
     exportAssignedApplicants: () => {
-        if (!filteredApplicants || filteredApplicants.length === 0) {
+        if (!currentAssessor || !currentAssessor.assignedApplicants || currentAssessor.assignedApplicants.length === 0) {
             utils.showNotification('No applicants to export', 'info');
             return;
         }
 
         try {
-            // Create a map to ensure uniqueness in the export
-            const uniqueExportData = new Map();
-            
-            filteredApplicants.forEach(applicant => {
-                // Use applicant ID as the key to ensure uniqueness
-                if (!uniqueExportData.has(applicant._id)) {
-                    uniqueExportData.set(applicant._id, {
-                        'Applicant ID': applicant.applicantId || 'N/A',
-                        'Full Name': applicant.name || 'No name provided',
-                        'Course': applicant.course || 'Not specified',
-                        'Status': applicant.status || 'Under Assessment',
-                        'Date Assigned': utils.formatDate(applicant.dateAssigned) || 'N/A'
-                    });
-                }
+            // Prepare the data for export
+            const exportData = currentAssessor.assignedApplicants.map(applicant => {
+                const applicantData = applicant.applicantId || {};
+                const isPopulatedApplicant = applicantData && applicantData._id;
+                
+                return {
+                    'Applicant ID': isPopulatedApplicant ? 
+                        applicantData.applicantId : 
+                        (applicant.applicantId && typeof applicant.applicantId === 'string' ? applicant.applicantId : 'N/A'),
+                    'Full Name': applicantData.personalInfo ? 
+                        `${applicantData.personalInfo.lastname || ''}, ${applicantData.personalInfo.firstname || ''}`.trim() : 
+                        applicant.fullName || 'No name provided',
+                    'Course': applicantData.personalInfo?.firstPriorityCourse || applicant.course || 'Not specified',
+                    'Status': applicantData.status || applicant.status || 'Under Assessment',
+                    'Date Assigned': utils.formatDate(applicant.dateAssigned) || 'N/A'
+                };
             });
-
-            // Convert to array for export
-            const exportData = Array.from(uniqueExportData.values());
 
             // Create worksheet
             const ws = XLSX.utils.json_to_sheet(exportData);
@@ -528,7 +527,7 @@ const exportFunctions = {
             // Export the file
             XLSX.writeFile(wb, `Assigned_Applicants_${currentAssessor.assessorId || 'Export'}_${new Date().toISOString().slice(0,10)}.xlsx`);
             
-            utils.showNotification('Export successful! Unique applicants exported.', 'success');
+            utils.showNotification('Export successful!', 'success');
         } catch (error) {
             console.error('Export error:', error);
             utils.showNotification(`Export failed: ${error.message}`, 'error');
