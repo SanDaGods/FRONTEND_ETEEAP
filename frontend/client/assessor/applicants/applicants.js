@@ -248,7 +248,7 @@ async function unassignApplicant(applicantId, event) {
   }
 }
 
-// Utility functions (same as dashboard.js)
+/// Utility functions (same as dashboard.js)
 function formatStatus(status) {
   return status.split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
