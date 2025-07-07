@@ -683,7 +683,7 @@ function renderStudentTables(studentsToRender) {
     });
 }  
 
-// Helper function to format names as "Last, First"
+// Helper function to format names as "Last, First"//
 function formatName(name) {
     if (!name) return '';
     
