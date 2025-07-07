@@ -159,7 +159,7 @@ header {
     justify-content: flex-start;
     position: relative;
     text-align: center;
-    margin-top: 120px;
+    margin-top: 150px;
 }
 
 .sec-01 .container {
@@ -175,69 +175,68 @@ header {
 }
 
 .sec-01 .rtu-logo {
-    width: 80px;
-    margin-right: 8px;
+    width: 100px;
+    margin-right: 10px;
     filter: drop-shadow(1px 1px 10px black);
 }
 
 .sec-01 .title {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: #532989;
     font-weight: bold;
 }
 
 .sec-01 .main-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
     color: #532989;
     font-weight: bold;
     text-align: center;
-    margin: 40px auto 0;
+    margin: 50px auto 0;
     display: block;
 }
 
 .sec-01 .content {
     position: relative;
+    margin-top: 60px;
     bottom: -90%;
     left: 5%;
-    position: relative;
-    margin: 0 auto;
-    text-align: center;
+    text-align: left;
 }
 
-
 .sec-01 .text {
-    font-size: 1.2rem;
+    font-size: 24px;
     color: #532989;
     font-weight: bold;
     margin: 0;
 }
 
 .sec-01 .subtext {
-    font-size: 1rem;
+    font-size: 18px;
     color: #532989;
     font-weight: 500;
+    margin: 10px;
     max-width: 35%;
     line-height: 1.2;
-    margin: 10px auto;
 }
 
 .sec-01 .apply-now-btn {
-    padding: 8px 16px;
+    padding: 10px 20px;
     background-color: transparent;
-    border: 2px solid #532989;
+    border: 3px solid #532989;
     color: #532989;
     border-radius: 5px;
-    font-size: 1rem;
+    font-size: 18px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
 .sec-01 .apply-now-btn:hover {
-    color: #dfd9ec;
+    color: #DFD9EC;
     background-color: #532989;
-    border: 2px solid #532989;
+    border: 3px solid #532989;
 }
+
 /* ETEEAP Section */
 .sec-02 {
     position: relative;
