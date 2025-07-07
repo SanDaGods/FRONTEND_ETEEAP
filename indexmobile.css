@@ -315,31 +315,35 @@
 
 /* 📱 Responsive adjustments for tablets and below */
 @media (max-width: 768px) {
-    .sec-02 .container {
-        flex-direction: column;
-        align-items: flex-start; /* Ensures text is left-aligned */
-        text-align: left;
-        padding: 20px 20px;
-    }
+  .sec-02 .container {
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    padding: 20px;
+  }
 
-    .sec-02 .eteeap-logo {
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto 15px; /* Centers logo */
-    }
+  .sec-02 .eteeap-logo {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
 
-    .sec-02 .content {
-        width: 100%;
-        text-align: left;
-    }
+  .sec-02 .content {
+    width: 100%;
+    max-width: 600px; /* Limits text width */
+    padding: 0 15px; /* Adds left and right padding */
+  }
 
-    .sec-02 h2 {
-        font-size: 1.6rem;
-    }
+  .sec-02 h2 {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+  }
 
-    .sec-02 p {
-        font-size: 0.95rem;
-    }
+  .sec-02 p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
 }
 
 
