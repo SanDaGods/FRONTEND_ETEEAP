@@ -220,10 +220,11 @@ async function unassignApplicant(applicantId, event) {
   showLoading();
   try {
     const response = await fetch(`${API_BASE_URL}/api/assessor/applicants/${applicantId}/unassign`, {
-      method: 'PATCH',
+      method: 'POST', // Changed from PATCH to POST
       credentials: 'include'
     });
 
+    // Rest of the function remains the same
     const data = await response.json();
     
     if (!response.ok) {
