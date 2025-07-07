@@ -134,28 +134,26 @@ function renderApplicantsTable(applicantsToRender) {
     });
 
     row.innerHTML = `
-      <td>${applicant.applicantId || applicant._id || "N/A"}</td>
-      <td>${escapeHtml(applicant.name || "No name")}</td>
-      <td>${escapeHtml(applicant.course || "Not specified")}</td>
-      <td>
-        <span class="status-badge status-${statusClass}">
-          ${formatStatus(applicant.status)}
-        </span>
-      </td>
-      <td>${applicant.score || applicant.currentScore || 0}</td>
-      <td>${formattedDate}</td>
-      <td class="action-buttons">
-        <a href=/frontend/client/admin/applicantprofile/applicantprofile.html?id=${
-          applicant._id
-        }" class="action-btn view-btn">
-          <i class="fas fa-eye"></i> View
-        </a>
-        <button class="action-btn reject-btn" data-id="${applicant._id}" 
-          ${applicant.status.toLowerCase() === "rejected" ? "disabled" : ""}>
-          <i class="fas fa-times"></i> Reject
-        </button>
-      </td>
-    `;
+  <td>${applicant.applicantId || applicant._id || "N/A"}</td>
+  <td>${escapeHtml(applicant.name || "No name")}</td>
+  <td>${escapeHtml(applicant.course || "Not specified")}</td>
+  <td>
+    <span class="status-badge status-${statusClass}">
+      ${formatStatus(applicant.status)}
+    </span>
+  </td>
+  <td>${applicant.score || applicant.currentScore || 0}</td>
+  <td>${formattedDate}</td>
+  <td class="action-buttons">
+    <button class="action-btn view-btn" data-id="${applicant._id}">
+      <i class="fas fa-eye"></i> View
+    </button>
+    <button class="action-btn reject-btn" data-id="${applicant._id}" 
+      ${applicant.status.toLowerCase() === "rejected" ? "disabled" : ""}>
+      <i class="fas fa-times"></i> Reject
+    </button>
+  </td>
+`;
     studentTableBody.appendChild(row);
   });
 
@@ -244,24 +242,31 @@ async function rejectApplicant(applicantId) {
 
 // View applicant details
 function viewApplicantDetails(applicantId) {
-  window.location.href = `/frontend/client/admin/applicantprofile/applicantprofile.html?id=${applicantId}`;
+  // Clean the ID by removing any quotes or special characters
+  const cleanId = applicantId.replace(/["']/g, '');
+  
+  // Store in sessionStorage
+  sessionStorage.setItem('currentApplicantId', cleanId);
+  
+  // Redirect to profile page
+  window.location.href = `/frontend/client/admin/applicantprofile/applicantprofile.html?id=${encodeURIComponent(cleanId)}`;
 }
 
-// Utility functions
-function formatDate(dateString) {
-  if (!dateString) return "N/A";
-  try {
-    const date = new Date(dateString);
-    return isNaN(date.getTime())
-      ? "N/A"
-      : date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-  } catch {
-    return "N/A";
-  }
+// 3. Update addActionButtonListeners:
+function addActionButtonListeners() {
+  document.querySelectorAll('.view-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const applicantId = e.currentTarget.getAttribute('data-id');
+      viewApplicantDetails(applicantId);
+    });
+  });
+
+  document.querySelectorAll('.reject-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const applicantId = e.currentTarget.getAttribute('data-id');
+      rejectApplicant(applicantId);
+    });
+  });
 }
 
 function formatStatus(status) {
