@@ -670,7 +670,7 @@ function renderStudentTables(studentsToRender) {
                 <button class="action-btn view-btn" onclick="viewStudent('${student._id}')">
                     <i class="fas fa-eye"></i> View
                 </button>
-                button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)"
+              <button class="action-btn reject-btn" onclick="rejectStudent('${student._id}', event)"
                     ${student.status.toLowerCase().includes("rejected") ? "disabled" : ""}>
                     <i class="fas fa-times"></i> Reject
                 </button>
