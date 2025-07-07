@@ -244,7 +244,7 @@ async function rejectApplicant(applicantId) {
 
 // View applicant details
 function viewApplicantDetails(applicantId) {
-  window.location.href = `/client/admin/applicantprofile/applicantprofile.html?id=${applicantId}`;
+  window.location.href = `/frontend/client/admin/applicantprofile/applicantprofile.html?id=${applicantId}`;
 }
 
 // Utility functions
