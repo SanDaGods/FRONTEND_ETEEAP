@@ -856,3 +856,73 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* FInal Comments */
+
+/* Final Comments Modal Styles */
+#finalCommentsModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.final-comments-container {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.final-comments-container h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.final-comments-container textarea {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  margin: 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.final-comments-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.final-comments-buttons button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.final-comments-cancel {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+}
+
+.final-comments-submit {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.final-comments-submit:hover {
+  background-color: #45a049;
+}

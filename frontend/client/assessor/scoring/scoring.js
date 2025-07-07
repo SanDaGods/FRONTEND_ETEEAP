@@ -462,9 +462,6 @@ function updateApplicantInfo(applicant) {
     }
 }
 
-
-
-
 function loadExistingEvaluation(evaluation) {
     if (evaluation.educationalQualification) {
         document.getElementById('eduAccumulated').textContent = evaluation.educationalQualification.score || 0;
@@ -567,8 +564,33 @@ async function finalizeEvaluation() {
     return;
   }
 
-  const finalComments = prompt('Please enter your final comments for this evaluation:');
-  if (finalComments === null) return; // User cancelled
+  // Show the modal instead of using prompt()
+  const modal = document.getElementById('finalCommentsModal');
+  const textarea = document.getElementById('finalCommentsTextarea');
+  const cancelBtn = document.querySelector('.final-comments-cancel');
+  const submitBtn = document.querySelector('.final-comments-submit');
+
+  // Reset textarea
+  textarea.value = '';
+
+  // Show modal
+  modal.style.display = 'flex';
+
+  // Wrap in Promise to use async/await
+  const finalComments = await new Promise((resolve) => {
+    cancelBtn.onclick = () => {
+      modal.style.display = 'none';
+      resolve(null); // User cancelled
+    };
+
+    submitBtn.onclick = () => {
+      modal.style.display = 'none';
+      resolve(textarea.value.trim()); // Return comments or empty string
+    };
+  });
+
+  // If user cancelled (clicked cancel or closed modal)
+  if (finalComments === null) return;
 
   try {
     showLoading();
@@ -581,7 +603,7 @@ async function finalizeEvaluation() {
       credentials: 'include',
       body: JSON.stringify({
         applicantId: currentApplicantId,
-        comments: finalComments
+        comments: finalComments || '' // Send empty string if no comments
       })
     });
 
@@ -992,6 +1014,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Finalize button
     document.getElementById('finalizeButton')?.addEventListener('click', finalizeEvaluation);
+
+    // Close modal when clicking outside the container
+        document.getElementById('finalCommentsModal').addEventListener('click', function(e) {
+          if (e.target === this) {
+            this.style.display = 'none';
+          }
+        });
     
     // Logout handler
     document.getElementById('logoutLink')?.addEventListener('click', (e) => {
