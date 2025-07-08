@@ -15,6 +15,7 @@
         background-color: #DFD9EC;
         z-index: 1000;
         display: flex;
+        justify-content: space-between; /* This is key */
         align-items: center;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
@@ -23,8 +24,10 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        max-width: 80%;
+        max-width: calc(100% - 50px); /* Leave space for menu button */
+        flex: 1; /* Allow it to grow */
     }
+
 
     .logo1, .logo2 {
         width: 30px !important;
@@ -67,6 +70,8 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        margin-left: auto; /* This pushes it to the far right */
+        order: 2; /* Ensures it stays on the right */
     }
 
     .hamburger-icon {
