@@ -3,7 +3,7 @@
         min-height: 100vh;
     }
 
-    /* Mobile Header */
+    /* Mobile Header - Matches news.html exactly */
     header {
         position: sticky;
         top: 0;
@@ -20,19 +20,17 @@
         display: flex;
         justify-content: space-between;
         width: 100%;
-        align-items: center;
     }
 
     .logo-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
         flex: 1;
         min-width: 0;
+        gap: 8px;
+        display: flex;
+        align-items: center;
     }
 
-    .logo1,
-    .logo2 {
+    .logo1, .logo2 {
         width: 30px !important;
         height: auto;
     }
@@ -71,7 +69,7 @@
         gap: 12px;
     }
 
-    /* Hamburger Button */
+    /* Hamburger Button - Exact match */
     .mobile-menu-btn {
         display: flex;
         flex-direction: column;
@@ -130,7 +128,7 @@
         transition: all 0.3s ease;
     }
 
-    /* Mobile Nav Menu */
+    /* Mobile Nav Menu - Exact match */
     .mobile-nav {
         position: absolute;
         top: 75px;
@@ -178,7 +176,7 @@
         white-space: nowrap;
     }
 
-    /* Optional: Center login form */
+    /* Login Form Styles (keep existing login-specific styles) */
     .wrapper {
         margin-top: 100px;
         padding: 0 20px;
@@ -186,6 +184,9 @@
 
     .wrapper .form-box {
         padding: 20px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
     }
 
     .form-box h2 {
@@ -194,13 +195,133 @@
         text-align: center;
     }
 
-    .form-box .input-box input {
-        font-size: 0.9rem;
+    .role-tabs {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .role-tab {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        background: #f0f0f0;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+
+    .role-tab.active {
+        background: #532989;
+        color: white;
+    }
+
+    .input-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .input-box input {
+        width: 100%;
         padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    }
+
+    .input-box label {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: #666;
+        transition: all 0.3s;
+        pointer-events: none;
+    }
+
+    .input-box input:focus ~ label,
+    .input-box input:valid ~ label {
+        top: -10px;
+        left: 5px;
+        font-size: 0.7rem;
+        background: white;
+        padding: 0 5px;
+        color: #532989;
     }
 
     .btn {
-        font-size: 0.9rem;
+        width: 100%;
         padding: 10px;
+        background: #532989;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
     }
+
+    .login-register,
+    .forgot-password {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 0.8rem;
+    }
+
+    .login-register a,
+    .forgot-link {
+        color: #532989;
+        text-decoration: none;
+    }
+
+    /* Hide all forms except the active one */
+    .login-form {
+        display: none;
+    }
+
+    .login-form.active {
+        display: block;
+    }
+
+    /* Terms and conditions popup */
+    .terms-con {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1001;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .terms-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    /* Notification popup */
+    .notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px;
+        background: #532989;
+        color: white;
+        border-radius: 5px;
+        z-index: 1000;
+        display: none;
+    }
+}
+
+/* Ensure these styles are available outside media query for consistency */
+.mobile-menu-btn {
+    display: none; /* Will be shown in mobile view via media query */
+}
+
+.mobile-nav {
+    display: none; /* Will be shown in mobile view via media query */
 }
