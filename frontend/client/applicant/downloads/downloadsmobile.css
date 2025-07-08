@@ -196,14 +196,28 @@
     }
 
     /* Footer adjustments */
-    .footer {
+     .footer {
+        background: linear-gradient(to top, #532989, #dfd9eccc),
+            url("../img/background-footer.png") no-repeat top center;
+        background-size: cover;
         padding: 25px 0 8px;
+        position: relative;
+    }
+
+    .footer .container {
+        max-width: 100%;
+        margin: auto;
     }
 
     .footer .row {
+        display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
+    }
+
+    .footer ul {
+        list-style: none;
     }
 
     .footer-col {
@@ -214,12 +228,20 @@
 
     .footer-col h4 {
         font-size: 1rem;
+        color: #532989;
         margin-bottom: 15px;
+        font-weight: bold;
+        position: relative;
     }
 
     .footer-col h4::before {
+        content: "";
+        position: absolute;
         left: 50%;
         transform: translateX(-50%);
+        background-color: #532989;
+        height: 2px;
+        box-sizing: border-box;
         width: 45px;
         bottom: -8px;
     }
@@ -229,38 +251,74 @@
     }
 
     .footer-col div {
-        justify-content: center;
+        display: flex;
+        align-items: center;
         margin-bottom: 8px;
+        justify-content: center;
     }
 
     .footer-col p,
     .footer-col a,
     .footer-col ul li a {
         font-size: 0.8rem;
+        color: #fff;
+        font-weight: 300;
     }
 
     .footer-col i {
         font-size: 1rem;
+        color: #532989;
+        margin-right: 8px;
+    }
+
+    .footer-col ul li a {
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .footer-col ul li a:hover {
+        color: #532989;
+        padding-left: 6px;
     }
 
     .footer-col .social-links a {
+        display: inline-block;
         height: 35px;
         width: 35px;
+        background-color: rgba(255, 255, 255, 0.2);
+        margin: 0 5px 5px 0;
+        text-align: center;
         line-height: 35px;
+        border-radius: 50%;
+        color: #532989;
+        transition: all 0.5s ease;
+    }
+
+    .footer-col .social-links a:hover {
+        background-color: #dfd9ec;
     }
 
     .logo-left,
     .logo-right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         margin: 10px 0;
     }
 
     .logo-left img,
     .logo-right img {
         max-width: 120px;
+        height: auto;
+        filter: drop-shadow(1px 1px 10px black);
     }
 
     .copyrightText {
+        display: flex;
+        justify-content: center;
         font-size: 0.8rem;
+        color: #fff;
+        font-weight: 300;
         padding-top: 20px;
     }
 
@@ -281,16 +339,9 @@
         .logo-subtext {
             font-size: 0.5rem !important;
         }
+    } 
 
-        .box h3 {
-            font-size: 14px;
-        }
-
-        .box a {
-            font-size: 0.7rem;
-        }
-    }
-}
+} 
 
 /* iOS-specific fix */
 @supports (-webkit-touch-callout: none) {
