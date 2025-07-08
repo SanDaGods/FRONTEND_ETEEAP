@@ -319,7 +319,7 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
 
 });
 
-    // Mobile menu functionality
+ // Mobile menu functionality
     document.addEventListener('DOMContentLoaded', function() {
       const mobileMenuBtn = document.getElementById('mobileMenuBtn');
       const mobileNav = document.getElementById('mobileNav');
@@ -327,17 +327,10 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
       mobileMenuBtn.addEventListener('click', function() {
         this.classList.toggle('open');
         mobileNav.classList.toggle('active');
-        
-        // Toggle body overflow to prevent scrolling when menu is open
-        if (mobileNav.classList.contains('active')) {
-          document.body.style.overflow = 'hidden';
-        } else {
-          document.body.style.overflow = '';
-        }
+        document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
       });
       
-      // Close mobile menu when clicking on a link
-      const mobileLinks = mobileNav.querySelectorAll('a');
+      const mobileLinks = mobileNav.querySelectorAll('a, .mobile-login-btn');
       mobileLinks.forEach(link => {
         link.addEventListener('click', function() {
           mobileMenuBtn.classList.remove('open');
@@ -345,17 +338,4 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
           document.body.style.overflow = '';
         });
       });
-      
-      // Handle mobile login button click
-      const mobileLoginBtn = document.querySelector('.mobile-login-btn');
-      const desktopLoginBtn = document.querySelector('.btnLogin-popup');
-      
-      if (mobileLoginBtn && desktopLoginBtn) {
-        mobileLoginBtn.addEventListener('click', function() {
-          desktopLoginBtn.click();
-          mobileMenuBtn.classList.remove('open');
-          mobileNav.classList.remove('active');
-          document.body.style.overflow = '';
-        });
-      }
     });
