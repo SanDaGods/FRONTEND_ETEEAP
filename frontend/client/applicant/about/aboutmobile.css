@@ -63,7 +63,7 @@
     .nav {
         display: none;
     }
-    
+
     .mobile-nav-container {
         display: flex;
         align-items: center;
@@ -108,7 +108,6 @@
         top: 6px;
     }
 
-    /* Open state animation */
     .mobile-menu-btn.open .hamburger-icon {
         background: transparent;
     }
