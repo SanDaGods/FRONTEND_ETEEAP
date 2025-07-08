@@ -949,7 +949,8 @@ input:checked + label .text-bx {
 }
 
 @media (min-width: 769px) {
-    .mobile-menu-btn, .mobile-nav {
+    .mobile-menu-btn,
+    .mobile-nav {
         display: none;
     }
 }
