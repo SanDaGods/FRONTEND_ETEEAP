@@ -245,3 +245,12 @@
         -webkit-text-fill-color: #fff !important;
     }
 }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+
+/* End of mobile navigation styles */
