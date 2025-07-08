@@ -318,3 +318,14 @@ header {
     font-weight: 300;
     padding-top: 50px;
 }
+
+/* Hide hamburger and mobile nav on desktop view */
+.mobile-menu-btn,
+.mobile-nav-container {
+    display: none;
+}
+
+/* Hide mobile login button on desktop */
+.mobile-login {
+    display: none;
+}
