@@ -319,14 +319,21 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
 
 });
 
-// Mobile Menu Toggle
-document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
       const mobileMenuBtn = document.getElementById('mobileMenuBtn');
       const mobileNav = document.getElementById('mobileNav');
       
       mobileMenuBtn.addEventListener('click', function() {
         this.classList.toggle('open');
         mobileNav.classList.toggle('active');
+        
+        // Toggle body overflow to prevent scrolling when menu is open
+        if (mobileNav.classList.contains('active')) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
       });
       
       // Close mobile menu when clicking on a link
@@ -335,17 +342,20 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function() {
           mobileMenuBtn.classList.remove('open');
           mobileNav.classList.remove('active');
+          document.body.style.overflow = '';
         });
       });
       
       // Handle mobile login button click
       const mobileLoginBtn = document.querySelector('.mobile-login-btn');
-      if (mobileLoginBtn) {
+      const desktopLoginBtn = document.querySelector('.btnLogin-popup');
+      
+      if (mobileLoginBtn && desktopLoginBtn) {
         mobileLoginBtn.addEventListener('click', function() {
-          // Trigger the same action as desktop login button
-          document.querySelector('.btnLogin-popup').click();
+          desktopLoginBtn.click();
           mobileMenuBtn.classList.remove('open');
           mobileNav.classList.remove('active');
+          document.body.style.overflow = '';
         });
       }
     });
