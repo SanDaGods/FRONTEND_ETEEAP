@@ -318,3 +318,37 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
 });
 
 });
+
+// Mobile Menu Toggle
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const mobileNav = document.getElementById('mobileNav');
+
+if (mobileMenuBtn && mobileNav) {
+    mobileMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        mobileNav.classList.toggle('active');
+        mobileMenuBtn.classList.toggle('open');
+        
+        // Update ARIA attributes
+        const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+        mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!mobileNav.contains(e.target)) {
+            mobileNav.classList.remove('active');
+            mobileMenuBtn.classList.remove('open');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    // Close menu when clicking on a link
+    document.querySelectorAll('.mobile-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileNav.classList.remove('active');
+            mobileMenuBtn.classList.remove('open');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        });
+    });
+}
