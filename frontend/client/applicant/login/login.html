@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ETEEAP Tracking System</title>
   <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="loginmobile.css" />
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png" />
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ETEEAP Tracking System</title>
+  <link rel="stylesheet" href="login.css" />
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -12,13 +26,19 @@
 </head>
 <body>
   <header>
-    <div class="logo-container">
-      <img src="../img/RTU Logo.png" class="logo1" />
-      <img src="../img/IFLDE Logo.png" class="logo2" />
-      <div class="logo-text-container">
-        <h2 class="logo-text">Rizal Technological University</h2>
-        <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+    <div class="header-container">
+      <div class="logo-container">
+        <img src="../img/RTU Logo.png" class="logo1" />
+        <img src="../img/IFLDE Logo.png" class="logo2" />
+        <div class="logo-text-container">
+          <h2 class="logo-text">Rizal Technological University</h2>
+          <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+        </div>
       </div>
+      <!-- Mobile Menu Button -->
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span class="hamburger-icon"></span>
+      </button>
     </div>
     <nav class="nav">
       <ul>
@@ -29,6 +49,16 @@
         <button class="btnLogin-popup">Login</button>
       </ul>
     </nav>
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+      <ul>
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="../about/about.html">About Us</a></li>
+        <li><a href="../downloads/downloads.html">Downloads</a></li>
+        <li><a href="../news/news.html">News</a></li>
+        <li><button class="mobile-login-btn">Login</button></li>
+      </ul>
+    </div>
   </header>
 
   <div class="wrapper">

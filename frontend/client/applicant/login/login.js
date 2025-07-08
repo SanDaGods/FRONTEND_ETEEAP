@@ -320,35 +320,32 @@ document.getElementById("assessorLoginForm")?.addEventListener("submit", async (
 });
 
 // Mobile Menu Toggle
-const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-const mobileNav = document.getElementById('mobileNav');
-
-if (mobileMenuBtn && mobileNav) {
-    mobileMenuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileNav = document.getElementById('mobileNav');
+      
+      mobileMenuBtn.addEventListener('click', function() {
+        this.classList.toggle('open');
         mobileNav.classList.toggle('active');
-        mobileMenuBtn.classList.toggle('open');
-        
-        // Update ARIA attributes
-        const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
-        mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!mobileNav.contains(e.target)) {
-            mobileNav.classList.remove('active');
-            mobileMenuBtn.classList.remove('open');
-            mobileMenuBtn.setAttribute('aria-expanded', 'false');
-        }
-    });
-
-    // Close menu when clicking on a link
-    document.querySelectorAll('.mobile-nav a').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileNav.classList.remove('active');
-            mobileMenuBtn.classList.remove('open');
-            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+      });
+      
+      // Close mobile menu when clicking on a link
+      const mobileLinks = mobileNav.querySelectorAll('a');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          mobileMenuBtn.classList.remove('open');
+          mobileNav.classList.remove('active');
         });
+      });
+      
+      // Handle mobile login button click
+      const mobileLoginBtn = document.querySelector('.mobile-login-btn');
+      if (mobileLoginBtn) {
+        mobileLoginBtn.addEventListener('click', function() {
+          // Trigger the same action as desktop login button
+          document.querySelector('.btnLogin-popup').click();
+          mobileMenuBtn.classList.remove('open');
+          mobileNav.classList.remove('active');
+        });
+      }
     });
-}
