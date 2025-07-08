@@ -59,20 +59,21 @@ header {
 .nav {
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
-/* Nav list items should be in a row */
 .nav ul {
-  display: flex;
   list-style-type: none;
-  padding: 0;
-  margin: 0;
-  gap: 20px;
+  display: flex;
+  padding: 10px 0;
+  justify-content: center;
 }
 
 .nav ul li {
   display: flex;
   align-items: center;
+  margin-right: 40px;
   height: 45px;
   position: relative;
 }
