@@ -7,24 +7,18 @@
     }
 
     /* Header Styles - Exact Match to Reference Image */
-    header {
-        position: sticky;
-        top: 0;
-        padding: 10px 20px;
-        height: 70px;
-        background-color: #DFD9EC;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
+        header {
+                position: sticky;
+                top: 0;
+                padding: 10px 20px;
+                height: 70px;
+                background-color: #DFD9EC;
+                z-index: 1000;
+                display: flex;
+                justify-content: space-between; /* Add this */
+                align-items: center;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
 
     .logo-container {
         display: flex;
@@ -74,6 +68,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        margin-left: auto; /* This pushes it to the right */
     }
 
     .hamburger-icon {
