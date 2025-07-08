@@ -1,16 +1,9 @@
 @media screen and (max-width: 768px) {
-    body {
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-        font-family: 'Arial', sans-serif;
-    }
-
-    /* Header */
+    /* Mobile Header - Exact Match to Reference Image */
     header {
         position: sticky;
         top: 0;
-        padding: 10px 20px;
+        padding: 10px 15px;
         height: 70px;
         background-color: #DFD9EC;
         z-index: 1000;
@@ -29,13 +22,14 @@
     .logo-container {
         display: flex;
         align-items: center;
-        gap: 12px;
-        max-width: 80%;
+        gap: 10px;
+        max-width: 75%;
     }
 
-    .logo1, .logo2 {
-        width: 30px !important;
-        height: auto;
+    .logo1 {
+        width: 35px;
+        height: 35px;
+        object-fit: contain;
     }
 
     .logo-text-container {
@@ -43,7 +37,7 @@
     }
 
     .logo-text {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: bold;
         color: #002AB4;
         margin: 0;
@@ -54,7 +48,7 @@
     }
 
     .logo-subtext {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: #532989;
         margin: 0;
         white-space: nowrap;
@@ -63,7 +57,7 @@
         line-height: 1.3;
     }
 
-    /* Mobile Menu Button */
+    /* Mobile Menu Button - Clean Three-Line Hamburger */
     .mobile-menu-btn {
         background: none;
         border: none;
@@ -78,7 +72,7 @@
 
     .hamburger-icon {
         display: block;
-        width: 25px;
+        width: 24px;
         height: 2px;
         background: #532989;
         position: relative;
@@ -89,7 +83,7 @@
     .hamburger-icon::after {
         content: '';
         position: absolute;
-        width: 25px;
+        width: 24px;
         height: 2px;
         background: #532989;
         left: 0;
@@ -97,11 +91,11 @@
     }
 
     .hamburger-icon::before {
-        top: -8px;
+        top: -7px;
     }
 
     .hamburger-icon::after {
-        top: 8px;
+        top: 7px;
     }
 
     .mobile-menu-btn.open .hamburger-icon {
@@ -118,19 +112,19 @@
         top: 0;
     }
 
-    /* Mobile Navigation Panel */
+    /* Mobile Navigation Panel - Full Screen Overlay */
     .mobile-nav {
         position: fixed;
         top: 70px;
-        right: 0;
+        left: 0;
         width: 100%;
         height: calc(100vh - 70px);
         background: #DFD9EC;
         transform: translateX(100%);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 999;
         overflow-y: auto;
-        padding-top: 20px;
+        padding: 20px 25px 0;
     }
 
     .mobile-nav.active {
@@ -139,30 +133,32 @@
 
     .mobile-nav ul {
         list-style: none;
-        padding: 0 25px;
+        padding: 0;
         margin: 0;
     }
 
     .mobile-nav li {
         margin-bottom: 15px;
-        border-bottom: 1px solid rgba(83, 41, 137, 0.2);
         padding-bottom: 15px;
+        border-bottom: 1px solid rgba(83, 41, 137, 0.15);
     }
 
     .mobile-nav li:last-child {
         border-bottom: none;
+        margin-top: 20px;
     }
 
     .mobile-nav a {
-        font-size: 1.1rem;
+        display: block;
+        font-size: 1.05rem;
         color: #532989;
         text-decoration: none;
-        display: block;
         padding: 8px 0;
         font-weight: 500;
     }
 
     .mobile-login-btn {
+        display: block;
         width: 100%;
         padding: 12px;
         background: #532989;
@@ -171,9 +167,13 @@
         border-radius: 6px;
         font-size: 1rem;
         font-weight: 600;
-        cursor: pointer;
-        margin-top: 10px;
         text-align: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .mobile-login-btn:hover {
+        background: #3a1d5f;
     }
 
     /* Hide desktop navigation */
@@ -331,20 +331,22 @@
     /* Extra small screens */
     @media (max-width: 480px) {
         .logo-text {
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
-
         .logo-subtext {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
-
         .mobile-nav a {
-            font-size: 1rem;
+            font-size: 0.95rem;
+        }
+        .mobile-login-btn {
+            font-size: 0.95rem;
+            padding: 10px;
         }
     }
 }
 
-/* Hide mobile menu button and nav on desktop */
+/* Hide mobile elements on desktop */
 @media (min-width: 769px) {
     .mobile-menu-btn,
     .mobile-nav {
