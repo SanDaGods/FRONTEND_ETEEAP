@@ -399,6 +399,20 @@
 .hamburger-icon::before { top: -4px; }
 .hamburger-icon::after { top: 4px; }
 
+.mobile-nav {
+    position: absolute;
+    top: 35px;
+    right: 0;
+    width: 140px;
+    background: #dfd9ec;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease;
+    z-index: 1000;
+    margin-top: -75px;
+}
 
 .mobile-nav.active {
     max-height: 220px;
