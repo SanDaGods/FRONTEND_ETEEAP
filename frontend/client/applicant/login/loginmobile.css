@@ -96,6 +96,13 @@
 
 
 /* Responsive Styles */
+
+@media screen and (min-width: 769px) {
+    .mobile-nav-container {
+        display: none !important;
+    }
+}
+
 @media (max-width: 768px) {
 
       header {
