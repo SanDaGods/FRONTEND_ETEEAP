@@ -127,6 +127,7 @@
 
 
 
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     header {
@@ -188,6 +189,7 @@
         line-height: 1.3;
     }
 
+
     .nav {
         display: none;
     }
@@ -197,11 +199,17 @@
         align-items: center;
         position: relative;
         z-index: 1001;
+        gap: 12px;
     }
 
     /* Hide desktop elements */
     .nav, .btnLogin-popup {
         display: none;
+    }
+
+    /* Prevent scrolling when menu is open */
+    body.no-scroll {
+        overflow: hidden;
     }
 
     /* Hamburger button styling */
@@ -931,5 +939,11 @@ input:checked + label .text-bx {
 
     .copyrightText {
         font-size: 0.7rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-menu-btn, .mobile-nav {
+        display: none;
     }
 }
