@@ -13,6 +13,7 @@
 </head>
 <body>
   <header>
+    <!-- Desktop Header (unchanged from original) -->
     <div class="logo-container">
       <img src="../img/RTU Logo.png" class="logo1" />
       <img src="../img/IFLDE Logo.png" class="logo2" />
@@ -21,13 +22,6 @@
         <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
       </div>
     </div>
-    
-    <!-- Mobile Menu Button (hidden on desktop) -->
-    <button class="mobile-menu-btn" id="mobileMenuBtn">
-      <span class="hamburger-icon"></span>
-    </button>
-    
-    <!-- Desktop Navigation (unchanged from original) -->
     <nav class="nav">
       <ul>
         <li><a href="/index.html">Home</a></li>
@@ -37,6 +31,21 @@
         <button class="btnLogin-popup">Login</button>
       </ul>
     </nav>
+    
+    <!-- Mobile Header (only visible on mobile) -->
+    <div class="mobile-header">
+      <div class="mobile-logo-container">
+        <img src="../img/RTU Logo.png" class="logo1" />
+        <img src="../img/IFLDE Logo.png" class="logo2" />
+        <div class="mobile-logo-text-container">
+          <h2 class="mobile-logo-text">Rizal Technological University</h2>
+          <p class="mobile-logo-subtext">Institute of Flexible Learning & Digital Education</p>
+        </div>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span class="hamburger-icon"></span>
+      </button>
+    </div>
     
     <!-- Mobile Navigation (hidden on desktop) -->
     <div class="mobile-nav" id="mobileNav">
@@ -49,6 +58,7 @@
       </ul>
     </div>
   </header>
+
 
   <div class="wrapper">
     <!-- Login Form -->
