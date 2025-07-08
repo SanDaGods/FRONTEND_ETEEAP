@@ -12,22 +12,21 @@
     <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
 </head>
 <body>
-<header>
-    <div class="header-container">
+    <header>
         <div class="logo-container">
-            <img src="../img/RTU Logo.png" class="logo1" alt="RTU Logo">
-            <img src="../img/IFLDE Logo.png" class="logo2" alt="IFLDE Logo">
+            <img src="../img/RTU Logo.png" class="logo1">
+            <img src="../img/IFLDE Logo.png" class="logo2">
             <div class="logo-text-container">
                 <h2 class="logo-text">Rizal Technological University</h2>
                 <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
             </div>
         </div>
 
-        <!-- Mobile Navigation -->
         <div class="mobile-nav-container">
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileNav">
                 <span class="hamburger-icon"></span>
             </button>
+            <button class="btnLogin-popup mobile-login" onclick="window.location.href='../login/login.html';">Login</button>
             
             <!-- Mobile Navigation Menu -->
             <nav class="mobile-nav" id="mobileNav">
@@ -36,12 +35,12 @@
                     <li><a href="../about/about.html">About Us</a></li>
                     <li><a href="../downloads/downloads.html">Downloads</a></li>
                     <li><a href="../news/news.html">News</a></li>
-                    <li><button class="mobile-login-btn" onclick="window.location.href='../login/login.html';">Login</button></li>
                 </ul>
             </nav>
+        </div>
 
-            <nav class="nav">
-                <ul>
+        <nav class="nav">
+            <ul>
                 <li><a href="../../../../index.html">Home</a></li>
                 <li><a href="../about/about.html">About Us</a></li>
                 <li><a href="../downloads/downloads.html">Downloads</a></li>
@@ -49,10 +48,7 @@
                 <button class="btnLogin-popup" onclick="window.location.href='../login/login.html';">Login</button>
             </ul>
         </nav>
-
-        </div>
-    </div>
-</header>
+    </header>
 
     <div class="wrapper">
         <!-- Login Form with Role Selection at Top -->
