@@ -33,10 +33,9 @@
         max-width: 80%;
     }
 
-    .logo1 {
-        width: 40px;
-        height: 40px;
-        object-fit: contain;
+    .logo1, .logo2 {
+        width: 30px !important;
+        height: auto;
     }
 
     .logo-text-container {
