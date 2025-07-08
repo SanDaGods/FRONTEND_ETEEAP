@@ -327,6 +327,47 @@
         .logo-subtext {
             font-size: 0.5rem !important;
         }
+
+
+.hamburger-icon,
+.hamburger-icon::before,
+.hamburger-icon::after {
+    transition: all 0.3s ease;
+}
+        .about h2 {
+            font-size: 1.5rem;
+        }
+
+        .rtu {
+            font-size: 1.1rem;
+        }
+
+        .iflde {
+            font-size: 0.8rem;
+        }
+
+        .title {
+            font-size: 1.1rem;
+        }
+
+        .content {
+            font-size: 0.8rem;
+        }
+
+        .sop-title {
+            font-size: 1.1rem;
+        }
+
+        .box .sop {
+            font-size: 1rem;
+        }
+
+        .box a {
+            font-size: 0.7rem;
+            padding: 5px 10px;
+        }
+
+
     } 
 
 } 
@@ -347,34 +388,6 @@
 
 /* ===== MOBILE NAVIGATION ===== */
 
-
-.mobile-nav-container {
-   display: none;
-}
-
-.nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-.mobile-menu-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    z-index: 1001;
-}
-
-.hamburger-icon {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: #532989;
-    position: relative;
-}
-
 .hamburger-icon::before,
 .hamburger-icon::after {
     content: '';
@@ -387,48 +400,6 @@
 .hamburger-icon::before { top: -4px; }
 .hamburger-icon::after { top: 4px; }
 
-.mobile-nav {
-    position: absolute;
-    top: 35px;
-    right: 0;
-    width: 140px;
-    background: #dfd9ec;
-    border-radius: 0 0 4px 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease;
-    z-index: 1000;
-    margin-top: -75px;
-}
 
-.mobile-nav.active {
-    max-height: 220px;
-}
 
-.mobile-nav ul {
-    list-style: none;
-    padding: 4px 0;
-    margin: 0;
-}
 
-.mobile-nav li {
-    padding: 4px 10px;
-}
-
-.mobile-nav a {
-    font-size: 0.75rem;
-    color: #532989;
-    text-decoration: none;
-    display: block;
-}
-
-.mobile-login {
-    background: transparent;
-    border: 1.5px solid #532989;
-    color: #532989;
-    padding: 3px 6px;
-    border-radius: 3px;
-    font-size: 0.65rem;
-    font-weight: 600;
-}
