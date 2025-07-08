@@ -13,46 +13,49 @@
 </head>
 <body>
   <header>
-  <div class="header-container">
-    <div class="logo-container">
-      <img src="/frontend/client/applicant/img/RTU Logo.png" class="logo1" alt="RTU Logo">
-      <img src="/frontend/client/applicant/img/IFLDE Logo.png" class="logo2" alt="IFLDE Logo">
-      <div class="logo-text-container">
-          <h2 class="logo-text">Rizal Technological University</h2>
-          <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+    <div class="header-container">
+      <div class="logo-container">
+        <img src="/frontend/client/applicant/img/RTU Logo.png" class="logo1" alt="RTU Logo">
+        <img src="/frontend/client/applicant/img/IFLDE Logo.png" class="logo2" alt="IFLDE Logo">
+        <div class="logo-text-container">
+            <h2 class="logo-text">Rizal Technological University</h2>
+            <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
+        </div>
+      </div>
+      
+      <!-- Mobile Navigation -->
+      <div class="mobile-nav-container">
+        <button class="mobile-login" onclick="window.location.href='/frontend/client/applicant/login/login.html';">Login</button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+            <span class="hamburger-icon"></span>
+        </button>
       </div>
     </div>
-    
-   <!-- Mobile Navigation -->
-   <div class="mobile-nav-container">
-      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-          <span class="hamburger-icon"></span>
-      </button>
-      <button class="btnLogin-popup mobile-login" onclick="window.location.href='/frontend/client/applicant/login/login.html';">Login</button>
-  </div>
-  </div>
 
-  <!-- Desktop Navigation -->
-  <nav class="nav">
-      <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="/frontend/client/applicant/about/about.html">About Us</a></li>
-          <li><a href="/frontend/client/applicant/downloads/downloads.html">Downloads</a></li>
-          <li><a href="/frontend/client/applicant/news/news.html">News</a></li>
-          <button class="btnLogin-popup" onclick="window.location.href='/frontend/client/applicant/login/login.html';">Login</button>
-      </ul>
-  </nav>
-</header>
- <!-- Mobile Navigation Menu -->
-    <nav class="mobile-nav" id="mobileNav">
+    <!-- Desktop Navigation -->
+    <nav class="nav">
         <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="/frontend/client/applicant/about/about.html">About Us</a></li>
             <li><a href="/frontend/client/applicant/downloads/downloads.html">Downloads</a></li>
             <li><a href="/frontend/client/applicant/news/news.html">News</a></li>
+            <button class="btnLogin-popup" onclick="window.location.href='/frontend/client/applicant/login/login.html';">Login</button>
         </ul>
     </nav>
-    </header>
+  </header>
+
+  <!-- Mobile Navigation Menu -->
+  <nav class="mobile-nav" id="mobileNav">
+      <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="/frontend/client/applicant/about/about.html">About Us</a></li>
+          <li><a href="/frontend/client/applicant/downloads/downloads.html">Downloads</a></li>
+          <li><a href="/frontend/client/applicant/news/news.html">News</a></li>
+          <li>
+              <button class="mobile-nav-login" onclick="window.location.href='/frontend/client/applicant/login/login.html';">Login</button>
+          </li>
+      </ul>
+  </nav>
   
     
     <section id="home">
@@ -261,22 +264,25 @@
     <script src="https://unpkg.com/scrollreveal"></script>
     <script>
         // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileNav = document.getElementById('mobileNav');
-
-        mobileMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            mobileNav.classList.toggle('active');
-            mobileMenuBtn.classList.toggle('active');
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileNav = document.getElementById('mobileNav');
+      
+      mobileMenuBtn.addEventListener('click', function() {
+        this.classList.toggle('open');
+        mobileNav.classList.toggle('active');
+        document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+      });
+      
+      const mobileLinks = mobileNav.querySelectorAll('a, .mobile-login-btn');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          mobileMenuBtn.classList.remove('open');
+          mobileNav.classList.remove('active');
+          document.body.style.overflow = '';
         });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!mobileNav.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-                mobileNav.classList.remove('active');
-                mobileMenuBtn.classList.remove('active');
-            }
-        });
+      });
+    });
 
         
 
