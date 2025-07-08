@@ -7,7 +7,6 @@
     }
 
     /* Header Styles - Exact Match to Reference Image */
-        /* Header adjustment */
     header {
         position: sticky;
         top: 0;
@@ -16,17 +15,15 @@
         background-color: #DFD9EC;
         z-index: 1000;
         display: flex;
-        justify-content: space-between; /* Key change */
         align-items: center;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
+    
     .logo-container {
         display: flex;
         align-items: center;
         gap: 12px;
-        width: auto; /* Changed from max-width */
-        flex: 1; /* Allows it to grow but not push menu button */
+        max-width: 80%;
     }
 
     .logo1, .logo2 {
@@ -60,7 +57,7 @@
     }
 
     /* Mobile Menu Button - Styled to Match Reference */
-.mobile-menu-btn {
+    .mobile-menu-btn {
         background: none;
         border: none;
         padding: 8px;
@@ -70,10 +67,8 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        margin-left: 15px; /* Adds spacing from logo */
-        order: 2; /* Ensures it stays on the right */
     }
-    
+
     .hamburger-icon {
         display: block;
         width: 25px;
