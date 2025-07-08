@@ -162,17 +162,18 @@
         display: block;
     }
 
-    .mobile-login {
-        background: transparent;
-        border: 1.5px solid #532989;
-        color: #532989;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
+        .mobile-login {
+            display: inline-block;
+            background: transparent;
+            border: 1.5px solid #532989;
+            color: #532989;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
     /* News Content */
     .news {
         width: 90%;
@@ -408,7 +409,7 @@
 
 .mobile-nav li {
     padding: 4px 10px;
-}
+}.mobile-login
 
 .mobile-nav a {
     font-size: 0.75rem;
