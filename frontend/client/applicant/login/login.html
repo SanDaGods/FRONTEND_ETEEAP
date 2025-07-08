@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ETEEAP Tracking System</title>
   <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="loginmobile.css" />
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -20,6 +21,8 @@
         <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
       </div>
     </div>
+    
+    <!-- Desktop Navigation -->
     <nav class="nav">
       <ul>
         <li><a href="/index.html">Home</a></li>
@@ -29,7 +32,23 @@
         <button class="btnLogin-popup">Login</button>
       </ul>
     </nav>
+    
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <span class="hamburger-icon"></span>
+    </button>
   </header>
+
+  <!-- Mobile Navigation Panel -->
+  <nav class="mobile-nav" id="mobileNav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="../about/about.html">About Us</a></li>
+      <li><a href="../downloads/downloads.html">Downloads</a></li>
+      <li><a href="../news/news.html">News</a></li>
+      <li><button class="mobile-login-btn">Login</button></li>
+    </ul>
+  </nav>
 
   <div class="wrapper">
     <!-- Login Form -->
@@ -65,28 +84,28 @@
         </div>
       </form>
 
-  <!-- Admin Login -->
-<form id="adminLoginForm" class="login-form" data-role="admin">
-  <div class="input-box">
-    <span class="icon"><ion-icon name="mail"></ion-icon></span>
-    <input type="email" id="adminEmail" required />
-    <label>Email</label>
-  </div>
-  <div class="input-box">
-    <input type="password" id="adminPassword" required />
-    <label>Password</label>
-    <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
-  </div>
-  <div class="remember-forgot">
-    <label><input type="checkbox" id="rememberMe" /> Remember me</label>
-    <a href="#" class="forgot-link">Forgot Password?</a>
-  </div>
-  <button type="submit" class="btn">Login</button>
-  <div id="admin-error-message" class="error-message"></div>
-  <div class="login-register">
-    <p>Need admin access? <a href="#" class="admin-register-link">Request credentials</a></p>
-  </div>
-</form>
+      <!-- Admin Login -->
+      <form id="adminLoginForm" class="login-form" data-role="admin">
+        <div class="input-box">
+          <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          <input type="email" id="adminEmail" required />
+          <label>Email</label>
+        </div>
+        <div class="input-box">
+          <input type="password" id="adminPassword" required />
+          <label>Password</label>
+          <span class="toggle-password"><ion-icon name="eye-off"></ion-icon></span>
+        </div>
+        <div class="remember-forgot">
+          <label><input type="checkbox" id="rememberMe" /> Remember me</label>
+          <a href="#" class="forgot-link">Forgot Password?</a>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <div id="admin-error-message" class="error-message"></div>
+        <div class="login-register">
+          <p>Need admin access? <a href="#" class="admin-register-link">Request credentials</a></p>
+        </div>
+      </form>
 
       <!-- Assessor Login -->
       <form id="assessorLoginForm" class="login-form" data-role="assessor">
