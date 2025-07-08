@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETEEAP Tracking System</title>
     <link rel="stylesheet" href="news.css">
+    <link rel="stylesheet" href="newsmobile.css">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="../img/RTU Logo.png">
-
+</head>
 <body>
     <header>
+        <div class="header-container">
         <div class="logo-container">
             <img src="../img/RTU Logo.png" class="logo1">
             <img src="../img/IFLDE Logo.png" class="logo2">
@@ -20,15 +22,37 @@
                 <p class="logo-subtext">Institute of Flexible Learning & Digital Education</p>
             </div>
         </div>
-        <nav class="nav">
-            <ul>
-                <li><a href="../../../../index.html">Home</a></li>
-                <li><a href="../about/about.html">About Us</a></li>
-                <li><a href="../downloads/downloads.html">Downloads</a></li>
-                <li><a href="../news/news.html">News</a></li>
-                <button class="btnLogin-popup" onclick="window.location.href='../login/login.html';">Login</button>
-            </ul>
-    </header>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav-container">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span class="hamburger-icon"></span>
+            </button>
+            <button class="btnLogin-popup mobile-login" onclick="window.location.href='../login/login.html';">SIGN IN</button>
+            
+            <!-- Mobile Navigation Menu -->
+            <nav class="mobile-nav" id="mobileNav">
+                <ul>
+                    <li><a href="../../../../index.html">Home</a></li>
+                    <li><a href="../about/about.html">About Us</a></li>
+                    <li><a href="../downloads/downloads.html">Downloads</a></li>
+                    <li><a href="../news/news.html">News</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <nav class="nav">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="../about/about.html">About Us</a></li>
+            <li><a href="../downloads/downloads.html">Downloads</a></li>
+            <li><a href="../news/news.html">News</a></li>
+            <button class="btnLogin-popup" onclick="window.location.href='../login/login.html';">SIGN IN</button>
+        </ul>
+    </nav>
+</header>
     
     <section class="news">
         <div class="container">
@@ -102,6 +126,46 @@
     <!-- News Page Animation -->
     <script src="https://unpkg.com/scrollreveal"></script>
     <script>
+        // Hamburger menu functionality for mobile view
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            
+            // Only add these if we're in mobile view (elements exist)
+            if (mobileMenuBtn && mobileNav) {
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent event bubbling
+                    // Toggle the active class on the mobile nav
+                    mobileNav.classList.toggle('active');
+                    
+                    // Toggle the hamburger icon animation
+                    this.classList.toggle('open');
+                    
+                    // Update ARIA attributes
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isExpanded);
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!mobileNav.contains(e.target)) {
+                        mobileNav.classList.remove('active');
+                        mobileMenuBtn.classList.remove('open');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+                
+                // Close menu when clicking on a link
+                document.querySelectorAll('.mobile-nav a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileNav.classList.remove('active');
+                        mobileMenuBtn.classList.remove('open');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+        });
+
         // Scroll to the top on page refresh
         window.addEventListener("beforeunload", () => {
             window.scrollTo(0, 0);
