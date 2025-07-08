@@ -331,6 +331,28 @@
   }
 }
 
+/* Section 5 adjustments - Mobile View */
+.sec-05 {
+    margin: 60px 15px 0;
+    padding: 30px 20px;
+    background: linear-gradient(to right, #532989, #946eca);
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.sec-05 .content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.sec-05 .text {
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
 
 /* Responsive media query for smaller devices */
 @media (max-width: 480px) {
@@ -472,6 +494,20 @@
         justify-content: start;
         overflow-x: auto;
         padding: 0 5px;
+    }
+
+     /* Section 5 adjustments for small screens */
+    .sec-05 {
+        margin: 60px 10px 0;
+        padding: 25px 15px;
+    }
+    
+    .sec-05 .text {
+        font-size: 1.1rem;
+    }
+    
+    .sec-05 .subtext {
+        font-size: 0.9rem;
     }
 
     .slide-card {
